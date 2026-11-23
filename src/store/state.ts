@@ -1,14 +1,12 @@
-import { blessingCategoryMeta, quickMitzvot } from '../data';
+import { blessingCategoryMeta } from '../data';
+import { ActionKey } from '../data/actions';
+import { DEFAULT_CITY_ID } from '../data/locations';
+import { DEFAULT_TRACKS } from '../lib/learning';
 import { DAY_MS, localDateKey } from '../lib/dates';
-import { ActionKey, ActivityLog, AppSettings, AppState, BlessingCategory, IconName, LogKind } from '../types';
+import { ActionInput, buildLog } from '../lib/scoring';
+import { ActivityLog, AppSettings, AppState, BlessingCategory, IconName, LogKind, UserProfile } from '../types';
 
 export const STORAGE_KEY = 'mitzvot_plus_state_v1';
-export const BLESSING_POINTS = 5;
-export const DAILY_TORAH_POINTS = 20;
-
-function makeId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
 
 const defaultSettings: AppSettings = { notifications: true, privateProfile: true };
 
@@ -31,15 +29,10 @@ export function createFreshState(now = Date.now()): AppState {
     reflections: {},
     settings: { ...defaultSettings },
     joinedGroups: {},
+    profile: { gender: 'male', nusach: 'sefard', cityId: DEFAULT_CITY_ID },
+    learningTracks: [...DEFAULT_TRACKS],
+    backfilledRestDays: [],
   };
-}
-
-function makeLog(
-  input: { title: string; icon: IconName; points: number; kind: LogKind; actionKey?: ActionKey; category?: BlessingCategory },
-  createdAt: number,
-  idPrefix = input.kind,
-): ActivityLog {
-  return { id: makeId(idPrefix), createdAt, dateKey: localDateKey(createdAt), ...input };
 }
 
 /** Deterministic pseudo-random generator so the demo looks the same every time. */
@@ -54,48 +47,42 @@ function seeded(seed: number) {
 /** Demo user with ~3 weeks of realistic history. */
 export function createDemoState(now = Date.now()): AppState {
   const rand = seeded(42);
-  const logs: ActivityLog[] = [];
+  const fresh = createFreshState(now);
+  let logs: ActivityLog[] = [];
+  const add = (input: Omit<ActionInput, 'now'>, at: number) => {
+    if (at > now) return;
+    const log = buildLog(logs, { ...input, now: at }, fresh.blessingGoal);
+    if (log) logs = [log, ...logs];
+  };
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
   const blessingCategories: BlessingCategory[] = ['enjoyment', 'enjoyment', 'prayer', 'mitzvah', 'other'];
+  const extras: ActionKey[] = ['charity', 'chesed', 'parents', 'torahStudy', 'tehillim', 'birkatHamazon'];
 
   for (let daysAgo = 21; daysAgo >= 0; daysAgo -= 1) {
     const dayStart = startOfToday.getTime() - daysAgo * DAY_MS;
     if (new Date(dayStart).getDay() === 6) continue; // no app use on Shabbat
-    const isToday = daysAgo === 0;
-    const limit = isToday ? Math.min(now, dayStart + DAY_MS - 1) : dayStart + 22 * 60 * 60 * 1000;
-    const at = (hour: number) => Math.min(limit, dayStart + hour * 60 * 60 * 1000 + Math.floor(rand() * 40) * 60 * 1000);
+    const at = (hour: number) => dayStart + hour * 60 * 60 * 1000 + Math.floor(rand() * 40) * 60 * 1000;
 
-    const actions = quickMitzvot.filter((m) => m.key !== 'blessing');
-    const count = isToday ? 5 : 3 + Math.floor(rand() * 5);
+    add({ key: 'shacharit', minyan: rand() > 0.3, onTime: rand() > 0.2 }, at(7));
+    add({ key: 'tefillin' }, at(7));
+    if (rand() > 0.3) add({ key: 'mincha', minyan: rand() > 0.5 }, at(13));
+    if (rand() > 0.2) add({ key: 'arvit', minyan: rand() > 0.5 }, at(19));
+    const count = 1 + Math.floor(rand() * 4);
     for (let i = 0; i < count; i += 1) {
-      const item = actions[Math.floor(rand() * actions.length)];
-      const createdAt = at(7 + i * 2);
-      if (!item || createdAt > now) continue;
-      logs.push(makeLog({ title: item.title, icon: item.icon, points: item.points, kind: 'mitzvah', actionKey: item.key }, createdAt));
+      const key = extras[Math.floor(rand() * extras.length)] ?? 'chesed';
+      add({ key }, at(9 + i * 2));
     }
-    const blessings = isToday ? 6 : 4 + Math.floor(rand() * 8);
+    const blessings = 8 + Math.floor(rand() * 15);
     for (let i = 0; i < blessings; i += 1) {
       const category = blessingCategories[Math.floor(rand() * blessingCategories.length)] ?? 'other';
-      const meta = blessingCategoryMeta[category];
-      const createdAt = at(6 + i);
-      if (createdAt > now) continue;
-      logs.push(
-        makeLog({ title: meta.sample, icon: meta.icon, points: BLESSING_POINTS, kind: 'blessing', actionKey: 'blessing', category }, createdAt),
-      );
+      add({ key: 'blessing', category, title: blessingCategoryMeta[category].sample }, at(6 + i * 0.6));
     }
-    if (!isToday && rand() > 0.15) {
-      logs.push(
-        makeLog(
-          { title: 'דבר תורה יומי', icon: 'book', points: DAILY_TORAH_POINTS, kind: 'torah', actionKey: 'dailyTorah' },
-          at(20),
-        ),
-      );
-    }
+    if (rand() > 0.15) add({ key: 'dailyTorah' }, at(20));
   }
 
   return {
-    ...createFreshState(now),
+    ...fresh,
     onboarded: true,
     userName: 'יאיר',
     memberSince: now - 120 * DAY_MS,
@@ -126,8 +113,15 @@ type V1State = {
   reflection?: string;
 };
 
+const V1_TITLES: Record<string, ActionKey> = {
+  'תפילה': 'prayer',
+  'לימוד תורה': 'torahStudy',
+  'נתינת צדקה': 'charity',
+  'מעשה חסד': 'chesed',
+  'כיבוד הורים': 'parents',
+};
 function actionKeyForTitle(title: string): ActionKey | undefined {
-  return quickMitzvot.find((m) => m.title === title)?.key;
+  return V1_TITLES[title];
 }
 
 /** v1 kept only today's logs plus a running points counter; carry both over. */
@@ -183,6 +177,9 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     reflections: value.reflections ?? {},
     settings: { ...fresh.settings, ...(value.settings ?? {}) },
     joinedGroups: value.joinedGroups ?? {},
+    profile: { ...fresh.profile, ...(value.profile ?? {}) },
+    learningTracks: Array.isArray(value.learningTracks) ? value.learningTracks : fresh.learningTracks,
+    backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
   };
 }
 
@@ -190,16 +187,17 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
 
 export type Action =
   | { type: 'hydrate'; payload: AppState }
-  | { type: 'completeOnboarding'; payload: { userName: string; dailyGoal: number } }
-  | { type: 'addMitzvah'; payload: { title: string; icon: IconName; points: number; actionKey?: ActionKey }; now?: number }
-  | { type: 'addBlessing'; payload: { category: BlessingCategory; title?: string }; now?: number }
+  | { type: 'completeOnboarding'; payload: { userName: string; dailyGoal: number; profile: Partial<UserProfile> } }
+  | { type: 'addAction'; payload: ActionInput }
+  | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
   | { type: 'resetSpeech'; now?: number }
   | { type: 'toggleTorahSaved' }
-  | { type: 'completeTorah'; now?: number }
   | { type: 'setReflection'; payload: { dateKey: string; text: string } }
   | { type: 'updateGoals'; payload: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>> }
   | { type: 'updateSettings'; payload: Partial<AppSettings> }
+  | { type: 'updateProfile'; payload: Partial<UserProfile> }
+  | { type: 'toggleTrack'; payload: { key: string } }
   | { type: 'toggleGroup'; payload: { key: string } }
   | { type: 'loadDemo' }
   | { type: 'resetAll' };
@@ -223,28 +221,26 @@ export function reducer(state: AppState, action: Action): AppState {
         dailyGoal: clampGoal(action.payload.dailyGoal, 1, 50),
         weeklyGoal: clampGoal(action.payload.dailyGoal * 5, 5, 300),
         memberSince: Date.now(),
+        profile: { ...state.profile, ...action.payload.profile },
       };
 
-    case 'addMitzvah':
-      return prepend(state, makeLog({ ...action.payload, kind: 'mitzvah' }, action.now ?? Date.now()));
+    case 'addAction': {
+      const log = buildLog(state.logs, action.payload, state.blessingGoal);
+      return log ? prepend(state, log) : state;
+    }
 
-    case 'addBlessing': {
-      // There is no upper limit: one may (and should) bless more than 100 times a day.
-      const meta = blessingCategoryMeta[action.payload.category];
-      return prepend(
-        state,
-        makeLog(
-          {
-            title: action.payload.title ?? meta.sample,
-            icon: meta.icon,
-            points: BLESSING_POINTS,
-            kind: 'blessing',
-            actionKey: 'blessing',
-            category: action.payload.category,
-          },
-          action.now ?? Date.now(),
-        ),
-      );
+    case 'addActions': {
+      let logs = state.logs;
+      for (const input of action.payload) {
+        const log = buildLog(logs, input, state.blessingGoal);
+        if (log) logs = [log, ...logs];
+      }
+      const marked = action.markBackfilled ?? [];
+      return {
+        ...state,
+        logs,
+        backfilledRestDays: [...new Set([...state.backfilledRestDays, ...marked])].slice(-30),
+      };
     }
 
     case 'removeLog':
@@ -264,16 +260,6 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'toggleTorahSaved':
       return { ...state, torahSaved: !state.torahSaved };
 
-    case 'completeTorah': {
-      const now = action.now ?? Date.now();
-      const today = localDateKey(now);
-      if (state.logs.some((log) => log.kind === 'torah' && log.dateKey === today)) return state;
-      return prepend(
-        state,
-        makeLog({ title: 'דבר תורה יומי', icon: 'book', points: DAILY_TORAH_POINTS, kind: 'torah', actionKey: 'dailyTorah' }, now),
-      );
-    }
-
     case 'setReflection':
       return { ...state, reflections: { ...state.reflections, [action.payload.dateKey]: action.payload.text } };
 
@@ -290,6 +276,19 @@ export function reducer(state: AppState, action: Action): AppState {
 
     case 'updateSettings':
       return { ...state, settings: { ...state.settings, ...action.payload } };
+
+    case 'updateProfile':
+      return { ...state, profile: { ...state.profile, ...action.payload } };
+
+    case 'toggleTrack': {
+      const has = state.learningTracks.includes(action.payload.key);
+      return {
+        ...state,
+        learningTracks: has
+          ? state.learningTracks.filter((k) => k !== action.payload.key)
+          : [...state.learningTracks, action.payload.key],
+      };
+    }
 
     case 'toggleGroup':
       return {

@@ -3,13 +3,14 @@ import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { ProfileFields } from '../components/ProfileFields';
 import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { IconName } from '../types';
 
 export function ProfileScreen() {
-  const { state, derived, updateSettings, updateGoals, loadDemo, resetAll } = useAppStore();
+  const { state, derived, updateSettings, updateGoals, updateProfile, loadDemo, resetAll } = useAppStore();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
@@ -36,6 +37,13 @@ export function ProfileScreen() {
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={`${derived.consistency}%`} label="עקביות (30 יום)" />
         </div>
+      </Card>
+
+      <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
+        מנהג ומיקום
+      </p>
+      <Card className="p-4 mb-5">
+        <ProfileFields value={state.profile} onChange={updateProfile} />
       </Card>
 
       <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">

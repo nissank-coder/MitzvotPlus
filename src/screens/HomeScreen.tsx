@@ -11,6 +11,9 @@ import { Card } from '../components/Card';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
+import { TodayCard } from '../components/TodayCard';
+import { TodayPlanCard } from '../components/TodayPlanCard';
+import { BackfillSheet } from '../components/BackfillSheet';
 
 type Props = {
   onOpenFeature: (feature: Exclude<FeatureKey, null>) => void;
@@ -20,26 +23,47 @@ type Props = {
 };
 
 export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQuickAdd }: Props) {
-  const { state, derived, removeLog } = useAppStore();
+  const { state, derived, calendar, removeLog } = useAppStore();
   const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
+  const [backfillOpen, setBackfillOpen] = useState(false);
+  const pending = calendar.pendingBackfill;
   const todayCount = derived.todayCount;
   const dailyProgress = Math.min(1, todayCount / state.dailyGoal);
   const weeklyProgress = Math.min(1, derived.week.total / state.weeklyGoal);
   const latestLogs = derived.todayLogs.slice(0, 4);
 
-  const handleShortcut = (key: (typeof shortcuts)[number]['key']) => {
-    if (key === 'blessings' || key === 'torah' || key === 'speech') {
-      onOpenFeature(key);
-      return;
-    }
-    onQuickAdd();
-  };
+  const handleShortcut = (key: (typeof shortcuts)[number]['key']) => onOpenFeature(key);
 
   return (
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
-      <div className="relative min-h-[178px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-3 bg-gradient-to-b from-[#F7FCFF] to-[#E7F5F5] card-shadow flex items-center">
+      {pending.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setBackfillOpen(true)}
+          dir="rtl"
+          className="w-full mb-3 rounded-[22px] bg-[#17324D] text-white p-4 flex flex-row items-center gap-3 text-right hover:opacity-95"
+        >
+          <AppIcon name="flame" size={26} color={colors.gold} />
+          <span className="flex-1 flex flex-col">
+            <span className="text-[16px] font-black">שבוע טוב! מה עשית {calendar.day.isRestDay ? '' : 'ב'}{pending.length > 1 ? 'חג' : 'שבת'}?</span>
+            <span className="text-[12px] text-[#BDECE3] mt-0.5">רישום קידוש, סעודות, תפילות והבדלה – בדיעבד</span>
+          </span>
+          <AppIcon name="chevronLeft" size={20} color={colors.white} />
+        </button>
+      ) : null}
+
+      <TodayCard onOpenZmanim={() => onOpenFeature('prayers')} />
+
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onOpenFeature('goals')}
+        onKeyDown={(e) => (e.key === 'Enter' ? onOpenFeature('goals') : undefined)}
+        aria-label="התקדמות ויעדים"
+        className="relative min-h-[178px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-3 bg-gradient-to-b from-[#F7FCFF] to-[#E7F5F5] card-shadow flex items-center cursor-pointer"
+      >
         <CitySilhouette opacity={0.23} />
         <div className="relative z-10 w-full flex flex-row-reverse items-center justify-between gap-4">
           <ProgressRing progress={dailyProgress} size={124} strokeWidth={12}>
@@ -79,7 +103,9 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
         <MetricChip icon="star" label="ברכות" value={`${derived.blessingTotal}/${state.blessingGoal}`} color={colors.teal} />
       </div>
 
-      <SectionHeader title="פעולות מהירות" icon="plus" />
+      <TodayPlanCard />
+
+      <SectionHeader title="קיצורי דרך" icon="plus" />
       <div className="flex flex-row gap-3 overflow-x-auto no-scrollbar pb-5">
         {[...shortcuts].reverse().map((item) => (
           <button
@@ -207,6 +233,8 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
         onConfirm={() => pendingRemove && removeLog(pendingRemove.id)}
         onClose={() => setPendingRemove(null)}
       />
+
+      {backfillOpen ? <BackfillSheet days={pending} onClose={() => setBackfillOpen(false)} /> : null}
     </div>
   );
 }

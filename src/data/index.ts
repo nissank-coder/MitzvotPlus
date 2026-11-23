@@ -1,21 +1,22 @@
-import { ActionKey, BlessingCategory, IconName } from './types';
-import { colors } from './theme';
+import { BlessingCategory, IconName } from '../types';
+import { colors } from '../theme';
 
 export const TORAH_TEXT =
   'גם מצווה קטנה מאירה את היום ומוסיפה לו משמעות. כל מעשה טוב, אפילו קטן, יוצר אור בעולם ומחזק את הקשר שלנו עם התורה ועם הקב״ה. כשמצרפים עוד מצווה ועוד מצווה, מתגלה שינוי גדול בחיים - יותר שמחה, יותר מיקוד ויותר טוב סביבנו.';
 
 export const shortcuts: Array<{
-  key: 'blessings' | 'torah' | 'speech' | 'charity' | 'prayer';
+  key: 'blessings' | 'torah' | 'speech' | 'prayers' | 'learning' | 'holidays' | 'mitzvot' | 'blessingGuide';
   title: string;
   icon: IconName;
   color: string;
   background: string;
 }> = [
-  { key: 'prayer', title: 'תפילה', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
-  { key: 'charity', title: 'צדקה', icon: 'charity', color: colors.green, background: colors.greenSoft },
-  { key: 'speech', title: 'לשון הרע', icon: 'chat', color: colors.coral, background: colors.coralSoft },
-  { key: 'torah', title: 'דבר תורה', icon: 'book', color: colors.purple, background: colors.purpleSoft },
+  { key: 'prayers', title: 'תפילות וזמנים', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
+  { key: 'learning', title: 'לימוד יומי', icon: 'bookmark', color: colors.purple, background: colors.purpleSoft },
   { key: 'blessings', title: '100 ברכות', icon: 'star', color: colors.teal, background: colors.mintSoft },
+  { key: 'holidays', title: 'חגים ומועדים', icon: 'calendar', color: colors.green, background: colors.greenSoft },
+  { key: 'speech', title: 'שמירת הלשון', icon: 'chat', color: colors.coral, background: colors.coralSoft },
+  { key: 'torah', title: 'דבר תורה', icon: 'book', color: colors.purple, background: colors.purpleSoft },
 ];
 
 export const blessingCategoryMeta: Record<
@@ -52,21 +53,6 @@ export const blessingCategoryMeta: Record<
   },
 };
 
-export const quickMitzvot: Array<{
-  key: ActionKey;
-  title: string;
-  icon: IconName;
-  points: number;
-  color: string;
-  background: string;
-}> = [
-  { key: 'prayer', title: 'תפילה', icon: 'prayer', points: 20, color: colors.primary, background: colors.blueSoft },
-  { key: 'torahStudy', title: 'לימוד תורה', icon: 'book', points: 20, color: colors.purple, background: colors.purpleSoft },
-  { key: 'charity', title: 'נתינת צדקה', icon: 'charity', points: 15, color: colors.green, background: colors.greenSoft },
-  { key: 'chesed', title: 'מעשה חסד', icon: 'heart', points: 15, color: colors.coral, background: colors.coralSoft },
-  { key: 'parents', title: 'כיבוד הורים', icon: 'user', points: 15, color: colors.teal, background: colors.mintSoft },
-  { key: 'blessing', title: 'ברכה', icon: 'cup', points: 5, color: colors.gold, background: colors.goldSoft },
-];
 
 /** Demo friends until the social backend exists. Points are weekly points. */
 export const demoFriends = [

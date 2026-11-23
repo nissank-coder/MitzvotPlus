@@ -7,6 +7,7 @@ import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { TORAH_TEXT } from '../data';
 import { useAppStore } from '../store/AppStore';
+import { actionDef } from '../data/actions';
 import { colors } from '../theme';
 
 type Props = {
@@ -177,7 +178,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
               derived.torahCompletedToday ? 'text-[#4DAA78]' : 'text-white'
             }`}
           >
-            {derived.torahCompletedToday ? 'הלימוד נרשם להיום' : 'סיימתי ללמוד - הוסף 20 נקודות'}
+            {derived.torahCompletedToday ? 'הלימוד נרשם להיום' : `סיימתי ללמוד - הוסף ${actionDef('dailyTorah').points} נקודות`}
           </span>
         </button>
       </Card>

@@ -12,6 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@hebcal/core": "^5.10.1",
+    "@hebcal/learning": "^5.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

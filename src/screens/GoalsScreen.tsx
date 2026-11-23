@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppHeader } from '../components/AppHeader';
+import { FeatureHeader } from '../components/FeatureHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ProgressRing } from '../components/ProgressRing';
@@ -10,6 +11,7 @@ import { IconName } from '../types';
 import { BadgeKey } from '../lib/progress';
 
 type Props = {
+  onBack: () => void;
   onOpenProfile: () => void;
   onOpenBlessings: () => void;
   onOpenTorah: () => void;
@@ -22,7 +24,7 @@ const badgeStyle: Record<BadgeKey, { icon: IconName; color: string; background: 
   torah: { icon: 'book', color: colors.purple, background: colors.purpleSoft },
 };
 
-export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Props) {
+export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTorah }: Props) {
   const { state, derived } = useAppStore();
   const { level, week, blessingTotal } = derived;
   const dailyProgress = Math.min(1, derived.todayCount / state.dailyGoal);
@@ -33,19 +35,7 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
-      <div className="flex flex-row-reverse items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
-          <AppIcon name="target" size={23} color={colors.primary} />
-        </div>
-        <div className="flex-1 flex flex-col items-end">
-          <h1 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
-            התקדמות ויעדים
-          </h1>
-          <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
-            התמונה הגדולה של המסע שלך
-          </p>
-        </div>
-      </div>
+      <FeatureHeader title="התקדמות ויעדים" subtitle="התמונה הגדולה של המסע שלך" icon="target" onBack={onBack} />
 
       <Card className="min-h-[160px] p-5 flex flex-row items-center gap-4 mb-4 overflow-hidden">
         <div className="w-[72px] h-[72px] rounded-full bg-[#FFF5DB] flex items-center justify-center shrink-0">

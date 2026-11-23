@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
+import { ProfileFields } from '../components/ProfileFields';
+import { DEFAULT_CITY_ID } from '../data/locations';
+import { UserProfile } from '../types';
 import { CitySilhouette } from '../components/Decorations';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -15,6 +18,7 @@ export function OnboardingScreen() {
   const { completeOnboarding, loadDemo } = useAppStore();
   const [name, setName] = useState('');
   const [goal, setGoal] = useState(12);
+  const [profile, setProfile] = useState<UserProfile>({ gender: 'male', nusach: 'sefard', cityId: DEFAULT_CITY_ID });
   const canStart = name.trim().length > 0;
 
   return (
@@ -65,13 +69,16 @@ export function OnboardingScreen() {
             );
           })}
         </div>
+        <div className="mt-5">
+          <ProfileFields value={profile} onChange={(patch) => setProfile((p) => ({ ...p, ...patch }))} />
+        </div>
         <p className="text-[#718397] text-[11px] mt-3">אפשר לשנות בכל עת בפרופיל.</p>
       </Card>
 
       <button
         type="button"
         disabled={!canStart}
-        onClick={() => completeOnboarding(name, goal)}
+        onClick={() => completeOnboarding(name, goal, profile)}
         className="w-full min-h-[54px] rounded-full bg-[#2AAE9B] text-white text-[16px] font-black flex flex-row items-center justify-center gap-2 disabled:opacity-45 hover:opacity-90 transition-opacity"
       >
         בואו נתחיל

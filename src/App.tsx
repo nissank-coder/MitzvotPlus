@@ -2,18 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
+import { BlessingGuideScreen } from './screens/BlessingGuideScreen';
 import { BlessingsScreen } from './screens/BlessingsScreen';
 import { CommunityScreen } from './screens/CommunityScreen';
+import { ContentScreen } from './screens/ContentScreen';
 import { GoalsScreen } from './screens/GoalsScreen';
+import { HolidaysScreen } from './screens/HolidaysScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { LashonHaraScreen } from './screens/LashonHaraScreen';
+import { LearningScreen } from './screens/LearningScreen';
+import { MitzvotScreen } from './screens/MitzvotScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
+import { PrayersScreen } from './screens/PrayersScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
+import { ShabbatLockScreen } from './screens/ShabbatLockScreen';
 import { TorahScreen } from './screens/TorahScreen';
 import { FeatureKey, TabKey } from './types';
 
 function MitzvotApp() {
-  const { hydrated, state } = useAppStore();
+  const { hydrated, state, calendar } = useAppStore();
   const [tab, setTab] = useState<TabKey>('home');
   const [feature, setFeature] = useState<FeatureKey>(null);
   const [quickAddVisible, setQuickAddVisible] = useState(false);
@@ -38,28 +45,43 @@ function MitzvotApp() {
   };
 
   const openProfile = () => selectTab('profile');
-  const openCommunity = () => selectTab('community');
+  const back = () => openFeature(null);
 
   const content = (() => {
-    if (feature === 'blessings') {
-      return <BlessingsScreen onBack={() => openFeature(null)} onOpenProfile={openProfile} />;
-    }
-    if (feature === 'torah') {
-      return <TorahScreen onBack={() => openFeature(null)} onOpenProfile={openProfile} />;
-    }
-    if (feature === 'speech') {
-      return <LashonHaraScreen onBack={() => openFeature(null)} onOpenProfile={openProfile} />;
-    }
-
-    switch (tab) {
+    const common = { onBack: back, onOpenProfile: openProfile };
+    switch (feature) {
+      case 'blessings':
+        return <BlessingsScreen {...common} />;
+      case 'torah':
+        return <TorahScreen {...common} />;
+      case 'speech':
+        return <LashonHaraScreen {...common} />;
+      case 'prayers':
+        return <PrayersScreen {...common} />;
+      case 'blessingGuide':
+        return <BlessingGuideScreen {...common} />;
+      case 'learning':
+        return <LearningScreen {...common} />;
+      case 'mitzvot':
+        return <MitzvotScreen {...common} />;
+      case 'holidays':
+        return <HolidaysScreen {...common} />;
       case 'goals':
         return (
           <GoalsScreen
+            onBack={back}
             onOpenProfile={openProfile}
             onOpenBlessings={() => openFeature('blessings')}
             onOpenTorah={() => openFeature('torah')}
           />
         );
+      default:
+        break;
+    }
+
+    switch (tab) {
+      case 'content':
+        return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
       case 'community':
         return <CommunityScreen onOpenProfile={openProfile} />;
       case 'profile':
@@ -70,7 +92,7 @@ function MitzvotApp() {
           <HomeScreen
             onOpenFeature={openFeature}
             onOpenProfile={openProfile}
-            onOpenCommunity={openCommunity}
+            onOpenCommunity={() => selectTab('community')}
             onQuickAdd={() => setQuickAddVisible(true)}
           />
         );
@@ -92,6 +114,10 @@ function MitzvotApp() {
 
   if (!state.onboarded) {
     return <OnboardingScreen />;
+  }
+
+  if (calendar.rest.active) {
+    return <ShabbatLockScreen />;
   }
 
   return (

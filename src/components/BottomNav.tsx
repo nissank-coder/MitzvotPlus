@@ -7,7 +7,7 @@ const items: Array<{ key: TabKey | 'add'; label: string; icon: IconName }> = [
   { key: 'profile', label: 'פרופיל', icon: 'user' },
   { key: 'community', label: 'קהילה', icon: 'community' },
   { key: 'add', label: 'הוספה', icon: 'plus' },
-  { key: 'goals', label: 'יעדים', icon: 'target' },
+  { key: 'content', label: 'תוכן', icon: 'book' },
   { key: 'home', label: 'בית', icon: 'home' },
 ];
 

@@ -1,5 +1,15 @@
-export type TabKey = 'home' | 'goals' | 'community' | 'profile';
-export type FeatureKey = 'blessings' | 'torah' | 'speech' | null;
+export type TabKey = 'home' | 'content' | 'community' | 'profile';
+export type FeatureKey =
+  | 'blessings'
+  | 'torah'
+  | 'speech'
+  | 'goals'
+  | 'prayers'
+  | 'blessingGuide'
+  | 'learning'
+  | 'mitzvot'
+  | 'holidays'
+  | null;
 
 export type IconName =
   | 'home'
@@ -49,8 +59,17 @@ export type BlessingCategory = 'enjoyment' | 'prayer' | 'mitzvah' | 'other';
 
 export type LogKind = 'mitzvah' | 'blessing' | 'torah';
 
-/** Stable identifier of a quick action, used for badges and statistics. */
-export type ActionKey = 'prayer' | 'torahStudy' | 'charity' | 'chesed' | 'parents' | 'blessing' | 'dailyTorah';
+export type { ActionKey } from './data/actions';
+import type { ActionKey } from './data/actions';
+
+export type Gender = 'male' | 'female';
+export type Nusach = 'ashkenaz' | 'sefard' | 'edot';
+
+export type UserProfile = {
+  gender: Gender;
+  nusach: Nusach;
+  cityId: string;
+};
 
 /** A single recorded mitzvah / blessing / learning session. History is kept permanently. */
 export type ActivityLog = {
@@ -64,6 +83,12 @@ export type ActivityLog = {
   kind: LogKind;
   actionKey?: ActionKey;
   category?: BlessingCategory;
+  refId?: string;
+  minyan?: boolean;
+  /** Recorded after Shabbat / Yom Tov. */
+  backfill?: boolean;
+  /** Daily cap reached – recorded without points. */
+  capped?: boolean;
 };
 
 export type AppSettings = {
@@ -90,4 +115,9 @@ export type AppState = {
   reflections: Record<string, string>;
   settings: AppSettings;
   joinedGroups: Record<string, boolean>;
+  profile: UserProfile;
+  /** Daily learning tracks the user follows (see src/lib/learning.ts). */
+  learningTracks: string[];
+  /** Shabbat / Yom Tov days already filled in after the fact. */
+  backfilledRestDays: string[];
 };
