@@ -1,0 +1,16 @@
+decision_id,question,recommended_default,owner,approved_value,approved_at,evidence,status
+D01,Operator and developer-account type,Publish under the real operator; organization account only if an entity exists,product owner,,,06_DECISIONS_HE.md,PENDING_OWNER
+D02,Launch audience age 13+ or 18+,18+ if initial audience is adults,product owner,,,06_DECISIONS_HE.md,PENDING_OWNER
+D03,Countries and languages,Israel + Hebrew first; English review notes,product owner,,,06_DECISIONS_HE.md,PENDING_OWNER
+D04,Identity / guest / sync,Local guest core; account for sync+friends; Sign in with Apple if Google offered; defer SMS,product owner,,,06_DECISIONS_HE.md,PENDING_OWNER
+D05,Sabbath/holiday behavior,Lock recording per approved policy; separate support/privacy/deletion access; no hidden reviewer bypass,product owner + rabbinic adviser,,,06_DECISIONS_HE.md; code: src/lib/jewishCalendar.ts getRestWindow,PENDING_OWNER
+D06,Day/week/month boundaries and zmanim customs,Separate 100-blessings day from ranking period; approve with content authority; do not assume midnight,product owner + rabbinic adviser,,,06_DECISIONS_HE.md; code currently uses civil midnight (contradiction C04),PENDING_OWNER
+D07,Calendar engine licensing,Choose a distribution path verified against the exact license,product owner + counsel,,,license-inventory.md (GPL finding),PENDING_OWNER
+D08,Content source and reviewer,Small approved licensed edition bundled offline,product owner + content reviewer,,,06_DECISIONS_HE.md,PENDING_OWNER
+D09,Social scope,Invite-only friends; narrow shared score; no speech/charity sharing,product owner,,,06_DECISIONS_HE.md,PENDING_OWNER
+D10,Speech-timer privacy,Local only; no server/analytics/social,product owner,,,06_DECISIONS_HE.md; implemented: kv row only; Android allowBackup=false,PENDING_OWNER
+D11,Retention/deletion/backups/telemetry,Minimum collection; replay/autocapture off,product owner + counsel,,,06_DECISIONS_HE.md; DB encryption + backup choice pending,PENDING_OWNER
+D12,Notifications and Sabbath promise,Defer social push; enable reminders only after delivery path proven,product owner,,,06_DECISIONS_HE.md; push not implemented,PENDING_OWNER
+D13,Name/identity/app IDs,Working name until checked; original assets,product owner,,,capacitor.config.ts uses development id com.mitzvotplus.app,PENDING_OWNER
+D14,Minimum OS/devices,Choose by audience + Tailwind 4 floor,product owner,,,iOS app target raised to 16.4; Android minSdk 24 but WebView 111+ needed,PENDING_OWNER
+ADR-001,Retain React/Vite UI in a Capacitor 8 shell,Capacitor (engineering proposal),engineering → owner confirm,Capacitor 8.6.2,,ADR-001-capacitor.md; evidence/g1-android-build.txt,PROPOSED

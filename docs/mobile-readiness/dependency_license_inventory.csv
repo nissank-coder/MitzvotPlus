@@ -1,0 +1,14 @@
+package_or_sdk,exact_version,direct_or_transitive,runtime_platform,license,license_evidence,distribution_obligations,privacy_manifest_requirement,crypto_dependency,native_16kb_status,decision_owner,approval_status
+@hebcal/core,5.10.1,direct,web+ios+android (bundled JS),GPL-2.0,package-lock.json license field,GPL-2.0 copyleft for distributed binary incl. source availability; App Store compatibility contested – legal review,n/a (JS),no,n/a,owner + counsel (D07),BLOCKED
+@hebcal/hdate,0.14.5,transitive (@hebcal/core),bundled JS,GPL-2.0,package-lock.json,as above,n/a,no,n/a,owner + counsel (D07),BLOCKED
+@hebcal/noaa,0.9.2,transitive (@hebcal/core),bundled JS,LGPL-2.1,package-lock.json,LGPL: allow replacement/relinking of the library; review for bundled JS,n/a,no,n/a,owner + counsel (D07),BLOCKED
+@hebcal/learning,5.1.2,direct,bundled JS,BSD-2-Clause,package-lock.json,keep copyright notice,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
+react / react-dom / scheduler,19.3.1 / 19.3.1 / 0.28.0,direct / transitive,bundled JS,MIT,package-lock.json,keep notice,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
+@capacitor/core android ios,8.6.2,direct,native+JS,MIT,npm registry 2026-11-23,keep notice,Capacitor ships its own PrivacyInfo – verify in Xcode,no,no native .so,engineering,PROPOSED_NOT_VERIFIED
+@capacitor/app keyboard status-bar splash-screen,8.1.2 / 8.0.6 / 8.0.4 / 8.0.2,direct,native+JS,MIT,npm registry 2026-11-23,keep notice,verify per plugin in Xcode,no,no native .so,engineering,PROPOSED_NOT_VERIFIED
+@capacitor-community/sqlite,8.1.1,direct,native+JS,MIT,npm registry 2026-11-23,keep notice,verify (file timestamp / UserDefaults required-reason APIs),YES – bundles SQLCipher (export compliance; ITSAppUsesNonExemptEncryption left unset),libsqlcipher.so 16KB-aligned (static),engineering + owner (export declaration),PROPOSED_NOT_VERIFIED
+SQLCipher (native),as bundled by plugin,transitive,ios+android,BSD-style (Zetetic community edition) – verify exact text in plugin sources,not yet extracted,attribution notice,n/a,YES,16KB OK (static),engineering,NOT_RUN
+jeep-sqlite,2.8.x,transitive,web only (not used at runtime: web uses localStorage),MIT,npm registry,keep notice,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
+@fontsource/heebo,5.3.0,direct,bundled font,OFL-1.1,npm registry,ship OFL text with font; no renaming restrictions issue,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
+temporal-polyfill / quick-lru / temporal-spec / tslib,lockfile,transitive,bundled JS,MIT / MIT / ISC / 0BSD,package-lock.json,keep notices,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
+Sefaria texts (runtime fetch),per text,runtime content,network,per-text licenses (CC-BY / PD / other),not inventoried,see content_license_manifest (D08),n/a,no,n/a,content owner (D08),BLOCKED

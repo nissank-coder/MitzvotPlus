@@ -19,7 +19,7 @@ type Props = {
 
 export function BottomNav({ active, onSelect, onAdd }: Props) {
   return (
-    <nav className="sticky bottom-0 z-30 min-h-[74px] flex flex-row items-center justify-around bg-white border-t border-[#DDE8EE] px-2 pt-2 pb-2">
+    <nav className="sticky bottom-0 z-30 min-h-[74px] flex flex-row items-center justify-around bg-white border-t border-[#DDE8EE] px-2 pt-2 safe-bottom">
       {items.map((item) => {
         const isAdd = item.key === 'add';
         const isActive = item.key === active;

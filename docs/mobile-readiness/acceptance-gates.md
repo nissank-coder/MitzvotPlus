@@ -1,0 +1,15 @@
+# שערי קבלה – סטטוס
+
+ההגדרות: [04_RELEASE_GATES_AND_TEST_MATRIX_HE.md](MitzvotPlus_Claude_Handoff/04_RELEASE_GATES_AND_TEST_MATRIX_HE.md). עודכן: 2026-11-23. פירוט לכל בדיקה: [test_evidence.csv](test_evidence.csv).
+
+| שער | סטטוס | בדיקות | מה חוסם |
+|---|---|---|---|
+| G0: בסיס קוד | **PASS** עם ממצא פתוח | T01 PASS, T02 PASS | ממצא GPL (D07) נרשם; אינו חוסם את G0 עצמו |
+| G1: היתכנות נייטיבית | **BLOCKED** | T03 BLOCKED, T04 BLOCKED (סטטי PASS), T06 BLOCKED (יחידה PASS), T07 NOT_RUN, T14 NOT_RUN, T28 NOT_RUN | Mac/Xcode, מכשירים, חתימה; D04, D12 להתחברות והתראות |
+| G2: ליבה מקומית | NOT_RUN | T08 ו-T12 עם ראיות יחידה בלבד | תלוי ב-G1 במכשיר; C04, C05, C08 |
+| G3: ענן ופרטיות | NOT_RUN | — | D04, D11 |
+| G4: קהילה | NOT_RUN | — | D09; תפעול דיווחים |
+| G5: תוכן, זמן והתראות | NOT_RUN | — | D05, D06, D08, D12 |
+| G6: הפצה | NOT_RUN | — | D01, D07, D13 ושאר השערים |
+
+אין לראות בטבלה טענה למוכנות לחנויות או לאישור Apple/Google.

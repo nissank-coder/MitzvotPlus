@@ -1,4 +1,6 @@
-import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { localStorageStorage, StateStorage } from '../storage/persistence';
 import { ActionKey } from '../data/actions';
 import { cityById, CityOption } from '../data/locations';
 import { localDateKey } from '../lib/dates';
@@ -15,7 +17,7 @@ import { ActionInput } from '../lib/scoring';
 import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
 import { AppSettings, AppState, BlessingCategory, UserProfile } from '../types';
 import { computeDerived, Derived } from './derived';
-import { createFreshState, loadState, reducer, STORAGE_KEY } from './state';
+import { createFreshState, loadState, reducer } from './state';
 
 export type ActionOptions = Omit<ActionInput, 'key' | 'now'>;
 
@@ -35,6 +37,13 @@ type StoreValue = {
   derived: Derived;
   calendar: CalendarState;
   hydrated: boolean;
+  /** Set when stored data could not be read; saving is then disabled so nothing is overwritten. */
+  storageError: string | null;
+  storageKind: StateStorage['kind'] | null;
+  /** Writes pending changes now (called when the app goes to the background). */
+  flush: () => Promise<void>;
+  /** Re-reads the clock (called when the app returns to the foreground). */
+  refreshClock: () => void;
   completeOnboarding: (userName: string, dailyGoal: number, profile: Partial<UserProfile>) => void;
   addAction: (key: ActionKey, options?: ActionOptions) => void;
   addBlessing: (category: BlessingCategory, title?: string) => void;
@@ -56,40 +65,78 @@ type StoreValue = {
 const AppStoreContext = createContext<StoreValue | null>(null);
 
 /** Ticks every 30 seconds so "today", zmanim and Shabbat mode stay current without reloading. */
-function useNow(): Date {
+function useNow(): [Date, () => void] {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
-  return now;
+  const refresh = useCallback(() => setNow(new Date()), []);
+  return [now, refresh];
+}
+
+/** SQLite on iOS/Android, browser storage on the web. */
+async function openStorage(): Promise<StateStorage> {
+  if (Capacitor.isNativePlatform()) {
+    const { openNativeSqlite } = await import('../storage/sqliteStorage');
+    return openNativeSqlite();
+  }
+  return localStorageStorage();
 }
 
 export function AppStoreProvider({ children }: PropsWithChildren): React.ReactElement {
   const [state, dispatch] = useReducer(reducer, undefined, () => createFreshState());
   const [hydrated, setHydrated] = useState(false);
-  const now = useNow();
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const storageRef = useRef<StateStorage | null>(null);
+  const latest = useRef(state);
+  latest.current = state;
+  const saveTimer = useRef<number | null>(null);
+  const [now, refreshClock] = useNow();
   const todayKey = localDateKey(now);
   const minuteKey = Math.floor(now.getTime() / 60_000);
 
   useEffect(() => {
-    try {
-      dispatch({ type: 'hydrate', payload: loadState(window.localStorage.getItem(STORAGE_KEY)) });
-    } catch (error) {
-      console.warn('Could not load app data', error);
-    } finally {
-      setHydrated(true);
-    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const storage = await openStorage();
+        const raw = await storage.load();
+        if (cancelled) return;
+        storageRef.current = storage;
+        dispatch({ type: 'hydrate', payload: loadState(raw) });
+      } catch (error) {
+        console.warn('Could not load app data', error);
+        if (!cancelled) setStorageError(error instanceof Error ? error.message : String(error));
+      } finally {
+        if (!cancelled) setHydrated(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
+  const flush = useCallback(async () => {
+    if (saveTimer.current !== null) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    const storage = storageRef.current;
+    if (!storage) return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      await storage.save(latest.current);
     } catch (error) {
       console.warn('Could not save app data', error);
     }
-  }, [hydrated, state]);
+  }, []);
+
+  // Debounced save; a failed load leaves storageRef empty, so stored data is never overwritten.
+  useEffect(() => {
+    if (!hydrated || !storageRef.current) return;
+    if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(() => void flush(), 250);
+  }, [hydrated, state, flush]);
 
   const derived = useMemo(() => computeDerived(state, todayKey), [state, todayKey]);
 
@@ -132,6 +179,10 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       derived,
       calendar,
       hydrated,
+      storageError,
+      storageKind: storageRef.current?.kind ?? null,
+      flush,
+      refreshClock,
       completeOnboarding: (userName, dailyGoal, profile) =>
         dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile } }),
       addAction,
@@ -155,7 +206,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, derived, hydrated, state, todayKey]);
+  }, [calendar, derived, hydrated, state, todayKey, storageError, flush, refreshClock]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

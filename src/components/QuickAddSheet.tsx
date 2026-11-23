@@ -33,7 +33,7 @@ export function QuickAddSheet({ visible, onClose }: Props) {
       aria-label="הוספת מצווה"
     >
       <div
-        className="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 pb-8 card-shadow"
+        className="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />

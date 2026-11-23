@@ -18,9 +18,10 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { ShabbatLockScreen } from './screens/ShabbatLockScreen';
 import { TorahScreen } from './screens/TorahScreen';
 import { FeatureKey, TabKey } from './types';
+import { useNativeShell } from './native/useNativeShell';
 
 function MitzvotApp() {
-  const { hydrated, state, calendar } = useAppStore();
+  const { hydrated, state, calendar, storageError, flush, refreshClock } = useAppStore();
   const [tab, setTab] = useState<TabKey>('home');
   const [feature, setFeature] = useState<FeatureKey>(null);
   const [quickAddVisible, setQuickAddVisible] = useState(false);
@@ -43,6 +44,31 @@ function MitzvotApp() {
     setFeature(next);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+
+  useNativeShell({
+    onBack: () => {
+      if (quickAddVisible) {
+        setQuickAddVisible(false);
+        return true;
+      }
+      if (feature) {
+        setFeature(null);
+        return true;
+      }
+      if (tab !== 'home') {
+        setTab('home');
+        return true;
+      }
+      return false;
+    },
+    onDeepLink: (target) => {
+      setQuickAddVisible(false);
+      setTab(target.tab);
+      setFeature(target.feature);
+    },
+    onBackground: () => void flush(),
+    onForeground: refreshClock,
+  });
 
   const openProfile = () => selectTab('profile');
   const back = () => openFeature(null);
@@ -108,6 +134,15 @@ function MitzvotApp() {
         <p dir="rtl" className="text-[#718397] text-[14px] mt-2">
           מכינים את היום שלך...
         </p>
+      </div>
+    );
+  }
+
+  if (storageError) {
+    return (
+      <div dir="rtl" role="alert" className="min-h-dvh max-w-[460px] mx-auto flex flex-col items-center justify-center bg-[#F4F8FB] px-6 text-center">
+        <p className="text-[#17324D] text-[20px] font-black">לא הצלחנו לקרוא את הנתונים שבמכשיר</p>
+        <p className="text-[#718397] text-[14px] mt-2">הנתונים לא נמחקו. סגרו את האפליקציה ופתחו אותה שוב.</p>
       </div>
     );
   }

@@ -54,7 +54,7 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={onClose} role="dialog" aria-modal="true" aria-label="רישום שבת">
-      <div dir="rtl" className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-white rounded-t-[28px] px-5 pt-2 pb-8 card-shadow" onClick={(e) => e.stopPropagation()}>
+      <div dir="rtl" className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow" onClick={(e) => e.stopPropagation()}>
         <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
         <h2 className="text-[#17324D] text-[22px] font-black">מה עשית ב{sections.length > 1 ? 'ימים הקדושים' : sections[0]?.info.isShabbat ? 'שבת' : 'חג'}?</h2>
         <p className="text-[#718397] text-[13px] mt-1">המצוות יירשמו בתאריך שבו נעשו. שבת מלאה (קידוש, שלוש סעודות והבדלה) מזכה בבונוס.</p>

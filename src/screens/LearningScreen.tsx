@@ -106,7 +106,7 @@ function Reader({ item, onClose }: { item: TrackItem; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={onClose} role="dialog" aria-modal="true" aria-label={item.track.title}>
-      <div dir="rtl" className="w-full max-w-[460px] max-h-[85dvh] overflow-y-auto bg-white rounded-t-[28px] px-5 pt-2 pb-8 card-shadow" onClick={(e) => e.stopPropagation()}>
+      <div dir="rtl" className="w-full max-w-[460px] max-h-[85dvh] overflow-y-auto bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow" onClick={(e) => e.stopPropagation()}>
         <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
         <h2 className="text-[#17324D] text-[20px] font-black">{item.track.title}</h2>
         <p className="text-[#7D78C9] text-[13px] font-extrabold mb-3">{item.label}</p>

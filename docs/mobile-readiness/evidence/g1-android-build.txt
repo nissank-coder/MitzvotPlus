@@ -1,0 +1,21 @@
+date: 2026-11-23 (UTC)
+commit_base: f88f607 + uncommitted G1 changes (see commit that adds this file)
+env: Linux container, OpenJDK 21, Gradle wrapper 8.14.3, Android SDK platform 36, build-tools 36.0.0
+command: npm run build && npx cap sync && cd android && ./gradlew assembleDebug
+result: BUILD SUCCESSFUL – debug build, debug keystore (NOT a signed release build)
+apk_size_bytes: 13888009
+apk_sha256: 34de41c3b0722506639caa3077e5ed8fcf0a0689af2a86edb1385468549099df
+package: name='com.mitzvotplus.app' versionCode='1' versionName='1.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+targetSdkVersion:'36'
+application-label:'מצוות+'
+--- manifest
+        A: http://schemas.android.com/apk/res/android:allowBackup(0x01010280)=false
+                    A: http://schemas.android.com/apk/res/android:scheme(0x01010027)="mitzvotplus" (Raw: "mitzvotplus")
+--- 16KB static audit (zipalign -c -P 16)
+ 4669440 lib/arm64-v8a/libsqlcipher.so (OK)
+ 6782976 lib/armeabi-v7a/libsqlcipher.so (OK)
+ 7831552 lib/x86/libsqlcipher.so (OK)
+10092544 lib/x86_64/libsqlcipher.so (OK)
+Verification successful
+ELF LOAD p_align: all libsqlcipher.so (arm64-v8a, armeabi-v7a, x86, x86_64) = 16384
+--- runtime on device / 16KB emulator: BLOCKED (no device, no KVM)
