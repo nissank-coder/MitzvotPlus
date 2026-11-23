@@ -2,15 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { SectionHeader } from '../components/SectionHeader';
-import { Chip, ExternalLink, FeatureScreen, Notice } from '../components/ui';
+import { Chip, FeatureScreen, Notice } from '../components/ui';
 import { afterLabel, BLESSING_DISCLAIMER, blessingGroups, BlessingText, blessingTexts, firstLabel, foods } from '../data/blessingGuide';
-import { siddurUrl } from '../data/siddur';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 
-type Props = { onBack: () => void; onOpenProfile: () => void };
+type Props = { onBack: () => void; onOpenProfile: () => void; onOpenSiddur: (id?: string) => void };
 
-export function BlessingGuideScreen({ onBack, onOpenProfile }: Props) {
+export function BlessingGuideScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
   const { state, addBlessing } = useAppStore();
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState<BlessingText['group']>('first');
@@ -85,7 +84,13 @@ export function BlessingGuideScreen({ onBack, onOpenProfile }: Props) {
               </div>
               {b.inSiddur ? (
                 <div className="mt-2">
-                  <ExternalLink href={siddurUrl[state.profile.nusach]}>הנוסח המלא בסידור</ExternalLink>
+                  <button
+                    type="button"
+                    onClick={() => onOpenSiddur(b.id === 'birkatHamazon' ? 'birkat-hamazon' : 'meein-shalosh')}
+                    className="text-[#1B6F8F] text-[13px] font-extrabold hover:underline"
+                  >
+                    לנוסח המלא בסידור ←
+                  </button>
                 </div>
               ) : (
                 <p className="text-[#17324D] text-[17px] leading-8 mt-1">{b.text}</p>

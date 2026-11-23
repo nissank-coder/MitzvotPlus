@@ -8,9 +8,9 @@ import { formatClock, zmanimList } from '../lib/jewishCalendar';
 import { countToday } from '../lib/scoring';
 import { useAppStore } from '../store/AppStore';
 
-type Props = { onBack: () => void; onOpenProfile: () => void };
+type Props = { onBack: () => void; onOpenProfile: () => void; onOpenSiddur: (id?: string) => void };
 
-export function PrayersScreen({ onBack, onOpenProfile }: Props) {
+export function PrayersScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
   const { state, derived, calendar, addAction } = useAppStore();
   const { zmanim, city, now, day } = calendar;
   const [minyan, setMinyan] = useState(false);
@@ -60,8 +60,17 @@ export function PrayersScreen({ onBack, onOpenProfile }: Props) {
             />
           );
         })}
+        <button
+          type="button"
+          onClick={() => onOpenSiddur()}
+          className="w-full min-h-[48px] mt-3 rounded-full bg-[#1B6F8F] text-white text-[15px] font-black"
+        >
+          פתיחת הסידור (נוסח ספרד)
+        </button>
         <div className="mt-3 flex flex-row-reverse">
-          <ExternalLink href={siddurUrl[state.profile.nusach]}>לסידור המלא – נוסח {nusachLabel[state.profile.nusach]} (ספריא)</ExternalLink>
+          {state.profile.nusach !== 'sefard' ? (
+            <ExternalLink href={siddurUrl[state.profile.nusach]}>נוסח {nusachLabel[state.profile.nusach]} באתר ספריא</ExternalLink>
+          ) : null}
         </div>
       </Card>
 

@@ -4,7 +4,7 @@ import { COMMUNITY_ENABLED } from '../config/features';
 export const URL_SCHEME = 'mitzvotplus';
 
 const FEATURES: Array<Exclude<FeatureKey, null>> = [
-  'blessings', 'torah', 'speech', 'goals', 'prayers', 'blessingGuide', 'learning', 'mitzvot', 'holidays',
+  'blessings', 'torah', 'speech', 'goals', 'prayers', 'blessingGuide', 'learning', 'mitzvot', 'holidays', 'siddur', 'tehillim',
 ];
 const TABS: TabKey[] = COMMUNITY_ENABLED ? ['home', 'content', 'community', 'profile'] : ['home', 'content', 'profile'];
 

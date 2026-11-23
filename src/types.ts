@@ -9,6 +9,8 @@ export type FeatureKey =
   | 'learning'
   | 'mitzvot'
   | 'holidays'
+  | 'siddur'
+  | 'tehillim'
   | null;
 
 export type IconName =
@@ -100,6 +102,8 @@ export type ActivityLog = {
 export type AppSettings = {
   notifications: boolean;
   privateProfile: boolean;
+  /** Font size of prayer / Tehillim text (px). */
+  readerFontSize?: number;
 };
 
 export type AppState = {

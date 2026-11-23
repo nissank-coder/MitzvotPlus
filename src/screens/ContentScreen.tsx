@@ -13,6 +13,8 @@ export function ContentScreen({ onOpenFeature, onOpenProfile }: { onOpenFeature:
   const nextHoliday = calendar.day.holidays[0]?.title;
 
   const tiles: Tile[] = [
+    { key: 'siddur', title: 'סידור', subtitle: 'נוסח ספרד – שחרית, מנחה, ערבית, ברכת המזון', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
+    { key: 'tehillim', title: 'תהילים', subtitle: 'כל 150 הפרקים, ותהילים היום', icon: 'book', color: colors.teal, background: colors.mintSoft },
     { key: 'prayers', title: 'תפילות וזמנים', subtitle: 'סידור, זמני היום ומניין', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
     { key: 'blessingGuide', title: 'מה מברכים?', subtitle: 'ברכות הנהנין, הריח והראייה', icon: 'cup', color: colors.gold, background: colors.goldSoft },
     { key: 'blessings', title: 'מונה 100 ברכות', subtitle: `${derived.blessingTotal} ברכות היום`, icon: 'star', color: colors.teal, background: colors.mintSoft },

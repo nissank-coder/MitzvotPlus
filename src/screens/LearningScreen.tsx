@@ -9,9 +9,9 @@ import { fetchSefariaText, TrackItem, trackItem, TRACKS } from '../lib/learning'
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 
-type Props = { onBack: () => void; onOpenProfile: () => void };
+type Props = { onBack: () => void; onOpenProfile: () => void; onOpenTehillim: () => void };
 
-export function LearningScreen({ onBack, onOpenProfile }: Props) {
+export function LearningScreen({ onBack, onOpenProfile, onOpenTehillim }: Props) {
   const { state, derived, calendar, addAction, toggleTrack } = useAppStore();
   const [reading, setReading] = useState<TrackItem | null>(null);
   const [editing, setEditing] = useState(false);
@@ -66,7 +66,7 @@ export function LearningScreen({ onBack, onOpenProfile }: Props) {
                   item.url ? (
                     <button
                       type="button"
-                      onClick={() => setReading(item)}
+                      onClick={() => (item.track.key === 'psalms' ? onOpenTehillim() : setReading(item))}
                       aria-label={`קריאה: ${item.track.title}`}
                       className="w-9 h-9 rounded-full bg-[#F0EEFB] flex items-center justify-center shrink-0 hover:opacity-80"
                     >

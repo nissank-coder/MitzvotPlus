@@ -21,6 +21,9 @@ import { useNativeShell } from './native/useNativeShell';
 
 // Loaded on demand: the learning schedules are the largest data in the bundle.
 const LearningScreen = lazy(() => import('./screens/LearningScreen').then((m) => ({ default: m.LearningScreen })));
+// Prayer and Tehillim texts are large; they load only when opened.
+const SiddurScreen = lazy(() => import('./screens/SiddurScreen').then((m) => ({ default: m.SiddurScreen })));
+const TehillimScreen = lazy(() => import('./screens/TehillimScreen').then((m) => ({ default: m.TehillimScreen })));
 import { COMMUNITY_ENABLED } from './config/features';
 
 function MitzvotApp() {
@@ -39,12 +42,27 @@ function MitzvotApp() {
 
   const selectTab = (next: TabKey) => {
     setFeature(null);
+    setHistory([]);
     setTab(next);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const openFeature = (next: FeatureKey) => {
+  // Screens opened from inside another screen (e.g. the Siddur from "What blessing?") return to it.
+  const [history, setHistory] = useState<Array<{ feature: FeatureKey; param?: string }>>([]);
+  const [featureParam, setFeatureParam] = useState<string | undefined>(undefined);
+
+  const openFeature = (next: FeatureKey, param?: string) => {
+    setHistory(next === null ? [] : (h) => (feature ? [...h, { feature, param: featureParam }] : []));
     setFeature(next);
+    setFeatureParam(param);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const goBack = () => {
+    const prev = history[history.length - 1];
+    setHistory((h) => h.slice(0, -1));
+    setFeature(prev ? prev.feature : null);
+    setFeatureParam(prev?.param);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
@@ -55,7 +73,7 @@ function MitzvotApp() {
         return true;
       }
       if (feature) {
-        setFeature(null);
+        goBack();
         return true;
       }
       if (tab !== 'home') {
@@ -67,6 +85,7 @@ function MitzvotApp() {
     onDeepLink: (target) => {
       setQuickAddVisible(false);
       setTab(target.tab);
+      setHistory([]);
       setFeature(target.feature);
     },
     onBackground: () => void flush(),
@@ -74,10 +93,13 @@ function MitzvotApp() {
   });
 
   const openProfile = () => selectTab('profile');
-  const back = () => openFeature(null);
+  const back = goBack;
 
   const content = (() => {
     const common = { onBack: back, onOpenProfile: openProfile };
+    const lazyFallback = <p dir="rtl" className="p-6 text-center text-[#718397]">טוען…</p>;
+    const openSiddur = (id?: string) => openFeature('siddur', id);
+    const openTehillim = () => openFeature('tehillim');
     switch (feature) {
       case 'blessings':
         return <BlessingsScreen {...common} />;
@@ -86,13 +108,25 @@ function MitzvotApp() {
       case 'speech':
         return <LashonHaraScreen {...common} />;
       case 'prayers':
-        return <PrayersScreen {...common} />;
+        return <PrayersScreen {...common} onOpenSiddur={openSiddur} />;
       case 'blessingGuide':
-        return <BlessingGuideScreen {...common} />;
+        return <BlessingGuideScreen {...common} onOpenSiddur={openSiddur} />;
       case 'learning':
         return (
           <Suspense fallback={<p dir="rtl" className="p-6 text-center text-[#718397]">טוען…</p>}>
-            <LearningScreen {...common} />
+            <LearningScreen {...common} onOpenTehillim={openTehillim} />
+          </Suspense>
+        );
+      case 'siddur':
+        return (
+          <Suspense fallback={lazyFallback}>
+            <SiddurScreen {...common} initialId={featureParam} />
+          </Suspense>
+        );
+      case 'tehillim':
+        return (
+          <Suspense fallback={lazyFallback}>
+            <TehillimScreen {...common} />
           </Suspense>
         );
       case 'mitzvot':

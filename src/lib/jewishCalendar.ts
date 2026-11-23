@@ -94,6 +94,9 @@ export type DayInfo = {
   omerDay: number | null;
   omerText: string | null;
   chanukahCandles: number | null;
+  /** Day of the Hebrew month (1–30) and the month's length. */
+  hebrewDay: number;
+  hebrewMonthLength: 29 | 30;
 };
 
 function holidaysOn(hd: HDate, il: boolean): Event[] {
@@ -177,6 +180,8 @@ export function getDayInfo(dateKey: string, il: boolean): DayInfo {
     omerDay,
     omerText,
     chanukahCandles,
+    hebrewDay: hd.getDate(),
+    hebrewMonthLength: hd.daysInMonth() === 29 ? 29 : 30,
   };
 }
 

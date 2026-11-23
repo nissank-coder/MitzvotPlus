@@ -1,3 +1,5 @@
+import '@fontsource/frank-ruhl-libre/400.css';
+import '@fontsource/frank-ruhl-libre/700.css';
 import '@fontsource/heebo/400.css';
 import '@fontsource/heebo/500.css';
 import '@fontsource/heebo/700.css';

@@ -46,3 +46,9 @@ body {
 .card-shadow {
   box-shadow: 0 6px 18px rgba(25, 52, 79, 0.08);
 }
+
+/* Prayer and Tehillim text: a serif Hebrew face with good vowel-mark (nikud) support. */
+.reader-text {
+  font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'Times New Roman', serif;
+  line-height: 1.9;
+}

@@ -5,12 +5,14 @@ export const TORAH_TEXT =
   'גם מצווה קטנה מאירה את היום ומוסיפה לו משמעות. כל מעשה טוב, אפילו קטן, יוצר אור בעולם ומחזק את הקשר שלנו עם התורה ועם הקב״ה. כשמצרפים עוד מצווה ועוד מצווה, מתגלה שינוי גדול בחיים - יותר שמחה, יותר מיקוד ויותר טוב סביבנו.';
 
 export const shortcuts: Array<{
-  key: 'blessings' | 'torah' | 'speech' | 'prayers' | 'learning' | 'holidays' | 'mitzvot' | 'blessingGuide';
+  key: 'blessings' | 'torah' | 'speech' | 'prayers' | 'learning' | 'holidays' | 'mitzvot' | 'blessingGuide' | 'siddur' | 'tehillim';
   title: string;
   icon: IconName;
   color: string;
   background: string;
 }> = [
+  { key: 'siddur', title: 'סידור', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
+  { key: 'tehillim', title: 'תהילים', icon: 'book', color: colors.teal, background: colors.mintSoft },
   { key: 'prayers', title: 'תפילות וזמנים', icon: 'prayer', color: colors.primary, background: colors.blueSoft },
   { key: 'learning', title: 'לימוד יומי', icon: 'bookmark', color: colors.purple, background: colors.purpleSoft },
   { key: 'blessings', title: '100 ברכות', icon: 'star', color: colors.teal, background: colors.mintSoft },
