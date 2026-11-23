@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "מצוות+",
+    "slug": "mitzvot-plus",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F4F8FB",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F8FB"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.mitzvotplus"
+    },
+    "android": {
+      "package": "com.example.mitzvotplus",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F4F8FB"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
