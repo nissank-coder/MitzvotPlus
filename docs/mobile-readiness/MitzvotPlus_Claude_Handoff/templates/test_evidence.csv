@@ -1,0 +1,1 @@
+﻿test_id,gate,build_id,commit,device_model,os_version,webview_version_if_relevant,preconditions,steps,expected,actual,evidence_path,status,tester,executed_at,blocker_or_defect
