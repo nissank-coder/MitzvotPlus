@@ -28,11 +28,11 @@ function todayHebrewLabel(): string {
 }
 
 export function TorahScreen({ onBack, onOpenProfile }: Props) {
-  const { state, toggleTorahSaved, completeTorah, setReflection } = useAppStore();
+  const { state, derived, toggleTorahSaved, completeTorah, setReflection } = useAppStore();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const dateLabel = useMemo(todayHebrewLabel, []);
-  const streakProgress = Math.min(1, state.torahStreak / 30);
+  const streakProgress = Math.min(1, derived.torahStreak / 30);
 
   useEffect(() => {
     return () => {
@@ -159,25 +159,25 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
         <button
           type="button"
           onClick={completeTorah}
-          disabled={state.torahCompletedToday}
+          disabled={derived.torahCompletedToday}
           className={`w-full min-h-[50px] rounded-[16px] mt-3 flex flex-row-reverse items-center justify-center gap-2 px-3 transition-colors ${
-            state.torahCompletedToday
+            derived.torahCompletedToday
               ? 'bg-[#EAF7EF] border border-[#CFE8D8] cursor-default'
               : 'bg-[#2AAE9B] hover:bg-[#239988]'
           }`}
         >
           <AppIcon
-            name={state.torahCompletedToday ? 'check' : 'book'}
+            name={derived.torahCompletedToday ? 'check' : 'book'}
             size={20}
-            color={state.torahCompletedToday ? colors.green : colors.white}
+            color={derived.torahCompletedToday ? colors.green : colors.white}
           />
           <span
             dir="rtl"
             className={`text-[13px] font-black ${
-              state.torahCompletedToday ? 'text-[#4DAA78]' : 'text-white'
+              derived.torahCompletedToday ? 'text-[#4DAA78]' : 'text-white'
             }`}
           >
-            {state.torahCompletedToday ? 'הלימוד נרשם להיום' : 'סיימתי ללמוד - הוסף 20 נקודות'}
+            {derived.torahCompletedToday ? 'הלימוד נרשם להיום' : 'סיימתי ללמוד - הוסף 20 נקודות'}
           </span>
         </button>
       </Card>
@@ -208,7 +208,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
           <AppIcon name="edit" size={19} color={colors.teal} />
         </div>
         <textarea
-          value={state.reflection}
+          value={derived.reflection}
           onChange={(e) => setReflection(e.target.value)}
           dir="rtl"
           rows={4}
@@ -242,7 +242,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
         </div>
         <ProgressRing progress={streakProgress} size={82} strokeWidth={8}>
           <AppIcon name="book" size={18} color={colors.teal} />
-          <span className="text-[#17324D] text-[11px] font-black mt-0.5">{state.torahStreak}/30</span>
+          <span className="text-[#17324D] text-[11px] font-black mt-0.5">{derived.torahStreak}/30</span>
         </ProgressRing>
       </Card>
 

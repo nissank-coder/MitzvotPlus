@@ -1,4 +1,4 @@
-import { BlessingCategory, IconName } from './types';
+import { ActionKey, BlessingCategory, IconName } from './types';
 import { colors } from './theme';
 
 export const TORAH_TEXT =
@@ -53,24 +53,28 @@ export const blessingCategoryMeta: Record<
 };
 
 export const quickMitzvot: Array<{
+  key: ActionKey;
   title: string;
   icon: IconName;
   points: number;
   color: string;
   background: string;
 }> = [
-  { title: 'תפילה', icon: 'prayer', points: 20, color: colors.primary, background: colors.blueSoft },
-  { title: 'לימוד תורה', icon: 'book', points: 20, color: colors.purple, background: colors.purpleSoft },
-  { title: 'נתינת צדקה', icon: 'charity', points: 15, color: colors.green, background: colors.greenSoft },
-  { title: 'מעשה חסד', icon: 'heart', points: 15, color: colors.coral, background: colors.coralSoft },
-  { title: 'כיבוד הורים', icon: 'user', points: 15, color: colors.teal, background: colors.mintSoft },
-  { title: 'ברכה', icon: 'cup', points: 5, color: colors.gold, background: colors.goldSoft },
+  { key: 'prayer', title: 'תפילה', icon: 'prayer', points: 20, color: colors.primary, background: colors.blueSoft },
+  { key: 'torahStudy', title: 'לימוד תורה', icon: 'book', points: 20, color: colors.purple, background: colors.purpleSoft },
+  { key: 'charity', title: 'נתינת צדקה', icon: 'charity', points: 15, color: colors.green, background: colors.greenSoft },
+  { key: 'chesed', title: 'מעשה חסד', icon: 'heart', points: 15, color: colors.coral, background: colors.coralSoft },
+  { key: 'parents', title: 'כיבוד הורים', icon: 'user', points: 15, color: colors.teal, background: colors.mintSoft },
+  { key: 'blessing', title: 'ברכה', icon: 'cup', points: 5, color: colors.gold, background: colors.goldSoft },
 ];
 
-export const leaderboard = [
-  { id: '1', name: 'נועם לוי', initials: 'נל', points: 6420, streak: 18 },
-  { id: '2', name: 'דניאל כהן', initials: 'דכ', points: 5880, streak: 14 },
-  { id: 'me', name: 'יאיר', initials: 'י', points: 5240, streak: 11 },
-  { id: '4', name: 'אורי מזרחי', initials: 'אמ', points: 4910, streak: 9 },
-  { id: '5', name: 'אלעד פרץ', initials: 'אפ', points: 4460, streak: 8 },
+/** Demo friends until the social backend exists. Points are weekly points. */
+export const demoFriends = [
+  { id: 'f1', name: 'נועם לוי', initials: 'נל', weeklyPoints: 640, streak: 18 },
+  { id: 'f2', name: 'דניאל כהן', initials: 'דכ', weeklyPoints: 585, streak: 14 },
+  { id: 'f3', name: 'אורי מזרחי', initials: 'אמ', weeklyPoints: 410, streak: 9 },
+  { id: 'f4', name: 'אלעד פרץ', initials: 'אפ', weeklyPoints: 365, streak: 8 },
 ];
+
+/** Demo community challenge baseline (mitzvot done by other members this week). */
+export const communityChallenge = { goal: 2000, othersThisWeek: 1540 };

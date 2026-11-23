@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { shortcuts } from '../data';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { FeatureKey } from '../types';
 import { AppHeader } from '../components/AppHeader';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { formatTime } from '../lib/dates';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
@@ -18,13 +20,12 @@ type Props = {
 };
 
 export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQuickAdd }: Props) {
-  const { state, blessingTotal } = useAppStore();
-  const dailyProgress = Math.min(1, state.dailyLogs.length / state.dailyGoal);
-  const weeklyProgress = Math.min(1, state.weeklyProgress / state.weeklyGoal);
-  const latestLogs = useMemo(
-    () => [...state.dailyLogs].sort((a, b) => b.createdAt - a.createdAt).slice(0, 4),
-    [state.dailyLogs],
-  );
+  const { state, derived, removeLog } = useAppStore();
+  const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
+  const todayCount = derived.todayCount;
+  const dailyProgress = Math.min(1, todayCount / state.dailyGoal);
+  const weeklyProgress = Math.min(1, derived.week.total / state.weeklyGoal);
+  const latestLogs = derived.todayLogs.slice(0, 4);
 
   const handleShortcut = (key: (typeof shortcuts)[number]['key']) => {
     if (key === 'blessings' || key === 'torah' || key === 'speech') {
@@ -44,7 +45,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
           <ProgressRing progress={dailyProgress} size={124} strokeWidth={12}>
             <AppIcon name="scroll" size={25} color={colors.teal} />
             <span className="text-[#17324D] text-[17px] font-black mt-0.5">
-              {state.dailyLogs.length}/{state.dailyGoal}
+              {todayCount}/{state.dailyGoal}
             </span>
           </ProgressRing>
           <div className="flex-1 flex flex-col items-end">
@@ -55,12 +56,12 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               <AppIcon name="target" size={18} color={colors.teal} />
             </div>
             <h1 dir="rtl" className="text-[#17324D] text-[23px] leading-[29px] font-black text-right mt-2">
-              {state.dailyLogs.length} מתוך {state.dailyGoal} מצוות
+              {todayCount} מתוך {state.dailyGoal} מצוות
             </h1>
             <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
-              {state.dailyLogs.length >= state.dailyGoal
+              {todayCount >= state.dailyGoal
                 ? 'היעד הושלם. ממשיכים מתוך שמחה'
-                : `עוד ${state.dailyGoal - state.dailyLogs.length} מצוות להשלמת היעד`}
+                : `עוד ${state.dailyGoal - todayCount} מצוות להשלמת היעד`}
             </p>
             <div className="w-full h-[7px] rounded-full bg-[#D8E8EB] mt-3 overflow-hidden">
               <div
@@ -73,9 +74,9 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
       </div>
 
       <div className="flex flex-row-reverse gap-2 mb-5">
-        <MetricChip icon="coin" label="ניקוד" value={state.points.toLocaleString('he-IL')} color={colors.gold} />
-        <MetricChip icon="flame" label="רצף" value={`${state.torahStreak} ימים`} color={colors.coral} />
-        <MetricChip icon="star" label="ברכות" value={`${blessingTotal}/100`} color={colors.teal} />
+        <MetricChip icon="coin" label="ניקוד" value={derived.totalPoints.toLocaleString('he-IL')} color={colors.gold} />
+        <MetricChip icon="flame" label="רצף" value={`${derived.activityStreak} ימים`} color={colors.coral} />
+        <MetricChip icon="star" label="ברכות" value={`${derived.blessingTotal}/${state.blessingGoal}`} color={colors.teal} />
       </div>
 
       <SectionHeader title="פעולות מהירות" icon="plus" />
@@ -119,8 +120,16 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               }`}
             >
               <div className="flex flex-row items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPendingRemove({ id: item.id, title: item.title })}
+                  aria-label={`ביטול הרישום: ${item.title}`}
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[#FDECEC] transition-colors"
+                >
+                  <AppIcon name="close" size={15} color={colors.textMuted} />
+                </button>
                 <AppIcon name="check" size={20} color={colors.green} />
-                <span className="text-[#718397] text-[13px] font-bold">{item.time}</span>
+                <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
               </div>
               <div className="flex-1 flex flex-row-reverse items-center justify-start gap-3">
                 <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold text-right">
@@ -150,7 +159,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               <AppIcon name="trophy" size={21} color={colors.gold} />
             </div>
             <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-1">
-              {state.weeklyProgress} מתוך {state.weeklyGoal} מצוות
+              {derived.week.total} מתוך {state.weeklyGoal} מצוות
             </span>
             <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
               <div
@@ -187,6 +196,17 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
           </div>
         </div>
       </Card>
+
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        title="ביטול רישום"
+        message={pendingRemove ? `להסיר את "${pendingRemove.title}" מהיומן של היום? הנקודות יופחתו.` : ''}
+        confirmLabel="הסרה"
+        cancelLabel="ביטול"
+        destructive
+        onConfirm={() => pendingRemove && removeLog(pendingRemove.id)}
+        onClose={() => setPendingRemove(null)}
+      />
     </div>
   );
 }

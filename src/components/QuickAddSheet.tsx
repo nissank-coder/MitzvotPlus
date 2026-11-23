@@ -15,10 +15,10 @@ export function QuickAddSheet({ visible, onClose }: Props) {
   if (!visible) return null;
 
   const add = (item: (typeof quickMitzvot)[number]) => {
-    if (item.title === 'ברכה') {
+    if (item.key === 'blessing') {
       addBlessing('enjoyment');
     } else {
-      addMitzvah(item.title, item.icon, item.points);
+      addMitzvah(item.title, item.icon, item.points, item.key);
     }
     onClose();
   };

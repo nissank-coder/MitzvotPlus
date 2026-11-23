@@ -4,7 +4,7 @@ import { colors } from '../theme';
 import { AppIcon } from './AppIcon';
 
 export function AppHeader({ onProfilePress }: { onProfilePress?: () => void }) {
-  const { state } = useAppStore();
+  const { state, derived } = useAppStore();
 
   return (
     <header className="min-h-[68px] flex flex-row items-center justify-between mb-4">
@@ -12,7 +12,7 @@ export function AppHeader({ onProfilePress }: { onProfilePress?: () => void }) {
         <div className="flex flex-row items-center gap-2 bg-white px-3 py-2 rounded-full border border-[#DDE8EE]">
           <AppIcon name="coin" size={18} color={colors.gold} strokeWidth={2} />
           <span className="text-[#17324D] text-[13px] font-extrabold">
-            {state.points.toLocaleString('he-IL')}
+            {derived.totalPoints.toLocaleString('he-IL')}
           </span>
         </div>
       </div>

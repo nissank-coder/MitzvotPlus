@@ -7,6 +7,7 @@ import { SectionHeader } from '../components/SectionHeader';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { IconName } from '../types';
+import { BadgeKey } from '../lib/progress';
 
 type Props = {
   onOpenProfile: () => void;
@@ -14,20 +15,19 @@ type Props = {
   onOpenTorah: () => void;
 };
 
-const week = [
-  { day: 'א׳', value: 7 },
-  { day: 'ב׳', value: 10 },
-  { day: 'ג׳', value: 8 },
-  { day: 'ד׳', value: 12 },
-  { day: 'ה׳', value: 9 },
-  { day: 'ו׳', value: 6 },
-  { day: 'ש׳', value: 4 },
-];
+const badgeStyle: Record<BadgeKey, { icon: IconName; color: string; background: string }> = {
+  steady: { icon: 'flame', color: colors.coral, background: colors.coralSoft },
+  kindness: { icon: 'heart', color: colors.green, background: colors.greenSoft },
+  blesser: { icon: 'star', color: colors.gold, background: colors.goldSoft },
+  torah: { icon: 'book', color: colors.purple, background: colors.purpleSoft },
+};
 
 export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Props) {
-  const { state, blessingTotal } = useAppStore();
-  const dailyProgress = Math.min(1, state.dailyLogs.length / state.dailyGoal);
-  const weeklyProgress = Math.min(1, state.weeklyProgress / state.weeklyGoal);
+  const { state, derived } = useAppStore();
+  const { level, week, blessingTotal } = derived;
+  const dailyProgress = Math.min(1, derived.todayCount / state.dailyGoal);
+  const weeklyProgress = Math.min(1, week.total / state.weeklyGoal);
+  const chartMax = Math.max(state.dailyGoal, ...week.days.map((d) => d.count), 1);
 
   return (
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
@@ -56,17 +56,19 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
             הניקוד הכולל
           </span>
           <span className="text-[#17324D] text-[34px] font-black mt-0.5 leading-tight">
-            {state.points.toLocaleString('he-IL')}
+            {derived.totalPoints.toLocaleString('he-IL')}
           </span>
           <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
-            עוד 270 נקודות לדרגה הבאה
+            {level.isMax
+              ? `הגעת לדרגה הגבוהה ביותר – ${level.name}`
+              : `${level.name} · עוד ${level.toNext.toLocaleString('he-IL')} נקודות לדרגה הבאה`}
           </span>
           <div className="w-full h-[7px] rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
-            <div className="h-full rounded-full bg-[#2AAE9B]" style={{ width: '73%' }} />
+            <div className="h-full rounded-full bg-[#2AAE9B]" style={{ width: `${level.progress * 100}%` }} />
           </div>
         </div>
         <div className="w-[60px] h-[60px] rounded-full bg-[#EAF4FB] flex flex-col items-center justify-center shrink-0">
-          <span className="text-[#1B6F8F] text-[22px] font-black leading-none">7</span>
+          <span className="text-[#1B6F8F] text-[22px] font-black leading-none">{level.level}</span>
           <span className="text-[#1B6F8F] text-[9px] font-extrabold mt-0.5">דרגה</span>
         </div>
       </Card>
@@ -74,23 +76,23 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
       <div className="flex flex-row-reverse gap-2 mb-4">
         <SummaryCard
           title="יעד יומי"
-          value={`${state.dailyLogs.length}/${state.dailyGoal}`}
+          value={`${derived.todayCount}/${state.dailyGoal}`}
           progress={dailyProgress}
           icon="target"
           color={colors.teal}
         />
         <SummaryCard
-          title="100 ברכות"
-          value={`${blessingTotal}/100`}
-          progress={blessingTotal / 100}
+          title={`${state.blessingGoal} ברכות`}
+          value={`${blessingTotal}/${state.blessingGoal}`}
+          progress={Math.min(1, blessingTotal / state.blessingGoal)}
           icon="star"
           color={colors.primary}
           onPress={onOpenBlessings}
         />
         <SummaryCard
           title="רצף לימוד"
-          value={`${state.torahStreak} ימים`}
-          progress={Math.min(1, state.torahStreak / 30)}
+          value={`${derived.torahStreak} ימים`}
+          progress={Math.min(1, derived.torahStreak / 30)}
           icon="flame"
           color={colors.coral}
           onPress={onOpenTorah}
@@ -101,19 +103,25 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
         <SectionHeader
           title="השבוע שלי"
           icon="chart"
-          actionLabel={`${state.weeklyProgress}/${state.weeklyGoal}`}
+          actionLabel={`${week.total}/${state.weeklyGoal}`}
         />
         <div className="h-[180px] flex flex-row-reverse items-end justify-between pt-3">
-          {week.map((item) => (
-            <div key={item.day} className="flex-1 h-full flex flex-col items-center justify-end">
-              <span className="text-[#718397] text-[10px] font-bold mb-1">{item.value}</span>
+          {week.days.map((item) => (
+            <div key={item.key} className="flex-1 h-full flex flex-col items-center justify-end">
+              <span className="text-[#718397] text-[10px] font-bold mb-1">{item.isFuture ? '' : item.count}</span>
               <div className="w-5 h-[125px] rounded-full bg-[#EAF4FB] overflow-hidden flex items-end">
-                <div
-                  className="w-full rounded-full bg-[#2AAE9B]"
-                  style={{ height: `${Math.max(18, (item.value / 12) * 100)}%` }}
-                />
+                {item.count > 0 && (
+                  <div
+                    className={`w-full rounded-full ${item.isToday ? 'bg-[#1B6F8F]' : 'bg-[#2AAE9B]'}`}
+                    style={{ height: `${Math.max(8, (item.count / chartMax) * 100)}%` }}
+                  />
+                )}
               </div>
-              <span className="text-[#17324D] text-[13px] font-extrabold mt-2">{item.day}</span>
+              <span
+                className={`text-[13px] font-extrabold mt-2 ${item.isToday ? 'text-[#1B6F8F]' : 'text-[#17324D]'}`}
+              >
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
@@ -132,10 +140,16 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
 
       <SectionHeader title="הישגים" icon="trophy" />
       <div className="flex flex-col gap-3">
-        <Badge title="מתמיד" subtitle="14 ימי לימוד" icon="flame" color={colors.coral} background={colors.coralSoft} />
-        <Badge title="לב פתוח" subtitle="20 מעשי חסד" icon="heart" color={colors.green} background={colors.greenSoft} />
-        <Badge title="מברך" subtitle="500 ברכות" icon="star" color={colors.gold} background={colors.goldSoft} />
-        <Badge title="בן תורה" subtitle="30 דברי תורה" icon="book" color={colors.purple} background={colors.purpleSoft} />
+        {derived.badges.map((badge) => (
+          <Badge
+            key={badge.key}
+            title={badge.title}
+            subtitle={badge.earned ? `${badge.target} ${badge.unit}` : `${badge.value}/${badge.target} ${badge.unit}`}
+            earned={badge.earned}
+            progress={badge.value / badge.target}
+            {...badgeStyle[badge.key]}
+          />
+        ))}
       </div>
     </div>
   );
@@ -182,15 +196,23 @@ function Badge({
   icon,
   color,
   background,
+  earned,
+  progress,
 }: {
   title: string;
   subtitle: string;
   icon: IconName;
   color: string;
   background: string;
+  earned: boolean;
+  progress: number;
 }) {
   return (
-    <div className="min-h-[78px] rounded-[22px] bg-white border border-[#DDE8EE] p-3 flex flex-row-reverse items-center gap-3">
+    <div
+      className={`min-h-[78px] rounded-[22px] bg-white border border-[#DDE8EE] p-3 flex flex-row-reverse items-center gap-3 ${
+        earned ? '' : 'opacity-75'
+      }`}
+    >
       <div
         className="w-[46px] h-[46px] rounded-[16px] flex items-center justify-center shrink-0"
         style={{ backgroundColor: background }}
@@ -204,8 +226,17 @@ function Badge({
         <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
           {subtitle}
         </span>
+        {!earned && (
+          <div className="w-full h-[5px] rounded-full bg-[#EAF0F4] mt-2 overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: `${progress * 100}%`, backgroundColor: color }} />
+          </div>
+        )}
       </div>
-      <AppIcon name="check" size={19} color={colors.green} />
+      {earned ? (
+        <AppIcon name="check" size={19} color={colors.green} />
+      ) : (
+        <AppIcon name="lock" size={17} color={colors.textMuted} />
+      )}
     </div>
   );
 }

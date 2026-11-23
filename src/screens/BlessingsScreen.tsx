@@ -8,6 +8,7 @@ import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { blessingCategoryMeta } from '../data';
+import { formatTime } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { BlessingCategory } from '../types';
@@ -19,6 +20,14 @@ type Props = {
 
 type Period = 'morning' | 'noon' | 'evening' | 'all';
 
+function inPeriod(timestamp: number, period: Period): boolean {
+  const hour = new Date(timestamp).getHours();
+  if (period === 'morning') return hour < 12;
+  if (period === 'noon') return hour >= 12 && hour < 17;
+  if (period === 'evening') return hour >= 17;
+  return true;
+}
+
 const periodItems: Array<{ key: Period; label: string; icon: 'sun' | 'moon' | 'calendar' }> = [
   { key: 'morning', label: 'בוקר', icon: 'sun' },
   { key: 'noon', label: 'צהריים', icon: 'sun' },
@@ -27,25 +36,21 @@ const periodItems: Array<{ key: Period; label: string; icon: 'sun' | 'moon' | 'c
 ];
 
 export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
-  const { state, blessingTotal, addBlessing } = useAppStore();
+  const { state, derived, addBlessing, removeLog } = useAppStore();
+  const blessingTotal = derived.blessingTotal;
   const [period, setPeriod] = useState<Period>('all');
   const [dialog, setDialog] = useState<{ title: string; message: string } | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
   const progress = Math.min(1, blessingTotal / state.blessingGoal);
   const remaining = Math.max(0, state.blessingGoal - blessingTotal);
 
   const latestLogs = useMemo(
-    () => [...state.blessingLogs].sort((a, b) => b.createdAt - a.createdAt).slice(0, 7),
-    [state.blessingLogs],
+    () => derived.todayBlessings.filter((log) => inPeriod(log.createdAt, period)).slice(0, 7),
+    [derived.todayBlessings, period],
   );
 
   const handleAdd = (category: BlessingCategory) => {
-    if (blessingTotal >= state.blessingGoal) {
-      setDialog({
-        title: 'היעד הושלם',
-        message: 'הגעת ל-100 ברכות להיום. כל הכבוד!',
-      });
-      return;
-    }
+    // No cap at the goal: every additional blessing is still counted.
     addBlessing(category);
     if (blessingTotal + 1 === state.blessingGoal) {
       setDialog({
@@ -70,7 +75,7 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
         <div className="relative z-10 w-full flex flex-row-reverse items-center justify-between gap-4">
           <ProgressRing progress={progress} size={132} strokeWidth={12}>
             <AppIcon name="cup" size={25} color={colors.teal} />
-            <span className="text-[#17324D] text-[17px] font-black mt-0.5">{blessingTotal}/100</span>
+            <span className="text-[#17324D] text-[17px] font-black mt-0.5">{blessingTotal}/{state.blessingGoal}</span>
           </ProgressRing>
           <div className="flex-1 flex flex-col items-end">
             <div className="flex flex-row-reverse items-center gap-1">
@@ -80,10 +85,14 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
               <AppIcon name="target" size={18} color={colors.teal} />
             </div>
             <h2 dir="rtl" className="text-[#17324D] text-[27px] font-black mt-2 leading-tight">
-              100 ברכות
+              {state.blessingGoal} ברכות
             </h2>
             <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
-              {remaining === 0 ? 'היעד הושלם להיום' : `עוד ${remaining} ברכות להשלמת היעד`}
+              {remaining === 0
+                ? blessingTotal > state.blessingGoal
+                  ? `היעד הושלם, ועוד ${blessingTotal - state.blessingGoal} ברכות מעבר`
+                  : 'היעד הושלם להיום'
+                : `עוד ${remaining} ברכות להשלמת היעד`}
             </p>
             <div className="mt-3 px-2.5 py-[5px] rounded-full bg-[#FFF5DB] flex flex-row-reverse items-center gap-1">
               <AppIcon name="coin" size={15} color={colors.gold} />
@@ -134,7 +143,7 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
                 <AppIcon name={meta.icon} size={23} color={meta.color} />
               </div>
               <span className="text-[#17324D] text-[23px] font-black mt-2">
-                {state.blessingCounts[key]}
+                {derived.blessingCounts[key]}
               </span>
               <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-0.5 text-center">
                 {meta.title}
@@ -153,14 +162,15 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
         {latestLogs.length === 0 ? (
           <div className="flex flex-col items-center py-5">
             <AppIcon name="cup" size={34} color={colors.teal} />
-            <span className="mt-2 text-[#17324D] text-[17px] font-black">הברכה הראשונה מחכה לך</span>
+            <span className="mt-2 text-[#17324D] text-[17px] font-black">{blessingTotal > 0 ? 'אין ברכות בחלק זה של היום' : 'הברכה הראשונה מחכה לך'}
+            </span>
             <span dir="rtl" className="mt-1 text-[#718397] text-[13px]">
-              בחרו קטגוריה למעלה כדי להתחיל
+              {blessingTotal > 0 ? 'בחרו "כל היום" כדי לראות הכל' : 'בחרו קטגוריה למעלה כדי להתחיל'}
             </span>
           </div>
         ) : (
           latestLogs.map((item, index) => {
-            const meta = blessingCategoryMeta[item.category];
+            const meta = blessingCategoryMeta[item.category ?? 'other'];
             return (
               <div
                 key={item.id}
@@ -169,8 +179,16 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
                 }`}
               >
                 <div className="flex flex-row items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPendingRemove({ id: item.id, title: item.title })}
+                    aria-label={`ביטול הרישום: ${item.title}`}
+                    className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[#FDECEC] transition-colors"
+                  >
+                    <AppIcon name="close" size={15} color={colors.textMuted} />
+                  </button>
                   <AppIcon name="check" size={20} color={colors.green} />
-                  <span className="text-[#718397] text-[13px] font-bold">{item.time}</span>
+                  <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
                 </div>
                 <div className="flex-1 flex flex-row-reverse items-center gap-3">
                   <div className="flex-1 flex flex-col items-end">
@@ -221,6 +239,17 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
         message={dialog?.message ?? ''}
         confirmLabel="מעולה"
         onClose={() => setDialog(null)}
+      />
+
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        title="ביטול רישום"
+        message={pendingRemove ? `להסיר את "${pendingRemove.title}" מהיומן? הנקודות יופחתו.` : ''}
+        confirmLabel="הסרה"
+        cancelLabel="ביטול"
+        destructive
+        onConfirm={() => pendingRemove && removeLog(pendingRemove.id)}
+        onClose={() => setPendingRemove(null)}
       />
     </div>
   );

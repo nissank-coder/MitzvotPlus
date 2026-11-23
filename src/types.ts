@@ -45,42 +45,49 @@ export type IconName =
   | 'lock'
   | 'logout';
 
-export type MitzvahLog = {
+export type BlessingCategory = 'enjoyment' | 'prayer' | 'mitzvah' | 'other';
+
+export type LogKind = 'mitzvah' | 'blessing' | 'torah';
+
+/** Stable identifier of a quick action, used for badges and statistics. */
+export type ActionKey = 'prayer' | 'torahStudy' | 'charity' | 'chesed' | 'parents' | 'blessing' | 'dailyTorah';
+
+/** A single recorded mitzvah / blessing / learning session. History is kept permanently. */
+export type ActivityLog = {
   id: string;
   title: string;
-  time: string;
   icon: IconName;
   points: number;
   createdAt: number;
+  /** Local YYYY-MM-DD of `createdAt`. */
+  dateKey: string;
+  kind: LogKind;
+  actionKey?: ActionKey;
+  category?: BlessingCategory;
 };
 
-export type BlessingCategory = 'enjoyment' | 'prayer' | 'mitzvah' | 'other';
-
-export type BlessingLog = {
-  id: string;
-  title: string;
-  time: string;
-  category: BlessingCategory;
-  createdAt: number;
+export type AppSettings = {
+  notifications: boolean;
+  privateProfile: boolean;
 };
 
 export type AppState = {
-  version: 1;
-  todayKey: string;
+  version: 2;
+  onboarded: boolean;
   userName: string;
-  points: number;
+  memberSince: number;
+  /** Points carried over from the v1 prototype, whose history was not stored. */
+  legacyPoints: number;
   dailyGoal: number;
-  dailyLogs: MitzvahLog[];
   weeklyGoal: number;
-  weeklyProgress: number;
   blessingGoal: number;
-  blessingCounts: Record<BlessingCategory, number>;
-  blessingLogs: BlessingLog[];
+  logs: ActivityLog[];
   lashonHaraSince: number;
   lashonHaraBestMs: number;
   lashonHaraResets: number;
   torahSaved: boolean;
-  torahCompletedToday: boolean;
-  torahStreak: number;
-  reflection: string;
+  /** Personal reflection per day, keyed by YYYY-MM-DD. */
+  reflections: Record<string, string>;
+  settings: AppSettings;
+  joinedGroups: Record<string, boolean>;
 };

@@ -1,21 +1,32 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { HillDecoration } from '../components/Decorations';
 import { SectionHeader } from '../components/SectionHeader';
-import { leaderboard } from '../data';
+import { communityChallenge, demoFriends } from '../data';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 
 export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }) {
-  const { state } = useAppStore();
-  const [joinedGroups, setJoinedGroups] = useState<Record<string, boolean>>({});
-  const communityProgress = 1540 / 2000;
+  const { state, derived, toggleGroup } = useAppStore();
+  const joinedGroups = state.joinedGroups;
+  const myWeeklyPoints = derived.week.points;
+  const communityDone = communityChallenge.othersThisWeek + derived.week.total;
+  const communityProgress = Math.min(1, communityDone / communityChallenge.goal);
 
-  const toggleGroup = (key: string) => {
-    setJoinedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  // Until the social backend exists the friends are demo data; the user's own row is real.
+  const leaderboard = useMemo(() => {
+    const me = {
+      id: 'me',
+      name: state.userName,
+      initials: state.userName.charAt(0),
+      weeklyPoints: myWeeklyPoints,
+      streak: derived.activityStreak,
+    };
+    return [...demoFriends, me].sort((a, b) => b.weeklyPoints - a.weeklyPoints);
+  }, [derived.activityStreak, myWeeklyPoints, state.userName]);
+  const myRank = leaderboard.findIndex((p) => p.id === 'me') + 1;
 
   return (
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
@@ -38,7 +49,7 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
       <Card className="min-h-[148px] p-5 flex flex-row items-center gap-4 mb-4 overflow-hidden">
         <div className="w-[88px] h-[102px] rounded-[22px] bg-[#FFF5DB] flex flex-col items-center justify-center shrink-0">
           <AppIcon name="crown" size={30} color={colors.gold} />
-          <span className="text-[#17324D] text-[28px] font-black mt-0.5 leading-none">3</span>
+          <span className="text-[#17324D] text-[28px] font-black mt-0.5 leading-none">{myRank}</span>
           <span className="text-[#718397] text-[11px] font-extrabold mt-1">מקום</span>
         </div>
         <div className="flex-1 flex flex-col items-end">
@@ -46,19 +57,19 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
             הדירוג השבועי שלך
           </span>
           <span dir="rtl" className="text-[#17324D] text-[27px] font-black mt-1 leading-tight">
-            {state.points.toLocaleString('he-IL')} נקודות
+            {myWeeklyPoints.toLocaleString('he-IL')} נקודות
           </span>
           <div className="flex flex-row-reverse gap-2 mt-3 flex-wrap">
             <div className="flex flex-row-reverse items-center gap-1 px-2 py-[5px] rounded-full bg-[#F4F8FB]">
               <AppIcon name="flame" size={15} color={colors.coral} />
               <span dir="rtl" className="text-[#718397] text-[10px] font-bold">
-                {state.torahStreak} ימי רצף
+                {derived.activityStreak} ימי רצף
               </span>
             </div>
             <div className="flex flex-row-reverse items-center gap-1 px-2 py-[5px] rounded-full bg-[#F4F8FB]">
               <AppIcon name="chart" size={15} color={colors.primary} />
               <span dir="rtl" className="text-[#718397] text-[10px] font-bold">
-                עלייה של מקום אחד
+                {derived.week.total} מצוות השבוע
               </span>
             </div>
           </div>
@@ -75,7 +86,7 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
             <AppIcon name="target" size={21} color={colors.teal} />
           </div>
           <span dir="rtl" className="text-[#718397] text-[13px] mt-1 text-right">
-            יעד קבוצתי: 2,000 מצוות השבוע
+            יעד קבוצתי: {communityChallenge.goal.toLocaleString('he-IL')} מצוות השבוע
           </span>
           <div className="w-full h-2 rounded-full bg-[#EAF0F4] overflow-hidden mt-3">
             <div
@@ -83,12 +94,14 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
               style={{ width: `${communityProgress * 100}%` }}
             />
           </div>
-          <span className="text-[#2AAE9B] text-[11px] font-black mt-1">1,540 מתוך 2,000</span>
+          <span dir="rtl" className="text-[#2AAE9B] text-[11px] font-black mt-1">
+            {communityDone.toLocaleString('he-IL')} מתוך {communityChallenge.goal.toLocaleString('he-IL')}
+          </span>
         </div>
       </Card>
 
       <Card className="p-4 mb-5">
-        <SectionHeader title="המובילים השבוע" icon="trophy" actionLabel="חברים" />
+        <SectionHeader title="המובילים השבוע" icon="trophy" actionLabel="חברים (הדגמה)" />
         {leaderboard.map((person, index) => {
           const isMe = person.id === 'me';
           const medalColor =
@@ -111,7 +124,7 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
               </div>
               <div className="w-[62px] flex flex-col items-center shrink-0">
                 <span className="text-[#17324D] text-[13px] font-black">
-                  {person.points.toLocaleString('he-IL')}
+                  {person.weeklyPoints.toLocaleString('he-IL')}
                 </span>
                 <span className="text-[#718397] text-[9px] mt-0.5">נק׳</span>
               </div>
@@ -145,7 +158,7 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
       <div className="flex flex-row gap-3">
         <GroupCard
           title="לומדים כל יום"
-          members="286 חברים"
+          members={`${286 + (joinedGroups.torah ? 1 : 0)} חברים`}
           icon="book"
           background={colors.purpleSoft}
           color={colors.purple}
@@ -154,7 +167,7 @@ export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }
         />
         <GroupCard
           title="מאה ברכות"
-          members="412 חברים"
+          members={`${412 + (joinedGroups.blessings ? 1 : 0)} חברים`}
           icon="star"
           background={colors.mintSoft}
           color={colors.teal}

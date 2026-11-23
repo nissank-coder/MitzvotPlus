@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
@@ -7,15 +7,24 @@ import { CommunityScreen } from './screens/CommunityScreen';
 import { GoalsScreen } from './screens/GoalsScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { LashonHaraScreen } from './screens/LashonHaraScreen';
+import { OnboardingScreen } from './screens/OnboardingScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { TorahScreen } from './screens/TorahScreen';
 import { FeatureKey, TabKey } from './types';
 
 function MitzvotApp() {
-  const { hydrated } = useAppStore();
+  const { hydrated, state } = useAppStore();
   const [tab, setTab] = useState<TabKey>('home');
   const [feature, setFeature] = useState<FeatureKey>(null);
   const [quickAddVisible, setQuickAddVisible] = useState(false);
+
+  // After "delete all data" the user goes through onboarding again and should land on the home tab.
+  useEffect(() => {
+    if (!state.onboarded) {
+      setTab('home');
+      setFeature(null);
+    }
+  }, [state.onboarded]);
 
   const selectTab = (next: TabKey) => {
     setFeature(null);
@@ -79,6 +88,10 @@ function MitzvotApp() {
         </p>
       </div>
     );
+  }
+
+  if (!state.onboarded) {
+    return <OnboardingScreen />;
   }
 
   return (

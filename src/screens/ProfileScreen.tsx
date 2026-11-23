@@ -3,15 +3,17 @@ import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { IconName } from '../types';
 
 export function ProfileScreen() {
-  const { state, resetDemo } = useAppStore();
-  const [notifications, setNotifications] = useState(true);
-  const [privateProfile, setPrivateProfile] = useState(true);
+  const { state, derived, updateSettings, updateGoals, loadDemo, resetAll } = useAppStore();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
+  const [goalsOpen, setGoalsOpen] = useState(false);
+  const memberYear = hebrewYear(state.memberSince);
 
   return (
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
@@ -23,14 +25,16 @@ export function ProfileScreen() {
         </div>
         <h1 className="text-[#17324D] text-[24px] font-black mt-3">{state.userName}</h1>
         <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
-          חבר במצוות+ מאז תשפ״ה
+          חבר במצוות+ מאז {memberYear} · דרגה {derived.level.level} – {derived.level.name}
         </p>
         <div className="w-full flex flex-row-reverse items-center justify-around mt-5 pt-4 border-t border-[#EAF0F4]">
-          <ProfileStat value={state.points.toLocaleString('he-IL')} label="נקודות" />
+          <ProfileStat value={derived.totalPoints.toLocaleString('he-IL')} label="נקודות" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
-          <ProfileStat value={`${state.torahStreak}`} label="ימי רצף" />
+          <ProfileStat value={`${derived.activityStreak}`} label="ימי רצף" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
-          <ProfileStat value={`${state.dailyLogs.length}`} label="היום" />
+          <ProfileStat value={`${derived.todayCount}`} label="היום" />
+          <div className="w-px h-[34px] bg-[#EAF0F4]" />
+          <ProfileStat value={`${derived.consistency}%`} label="עקביות (30 יום)" />
         </div>
       </Card>
 
@@ -39,16 +43,29 @@ export function ProfileScreen() {
       </p>
       <Card className="px-4 mb-5">
         <SettingRow icon="bell" title="תזכורות יומיות" subtitle="יעדים, לימוד וברכות">
-          <ToggleSwitch checked={notifications} onChange={setNotifications} label="תזכורות יומיות" />
+          <ToggleSwitch
+            checked={state.settings.notifications}
+            onChange={(notifications) => updateSettings({ notifications })}
+            label="תזכורות יומיות"
+          />
         </SettingRow>
         <SettingRow icon="lock" title="פרופיל פרטי" subtitle="הדירוג מוצג בשם פרטי בלבד">
-          <ToggleSwitch checked={privateProfile} onChange={setPrivateProfile} label="פרופיל פרטי" />
+          <ToggleSwitch
+            checked={state.settings.privateProfile}
+            onChange={(privateProfile) => updateSettings({ privateProfile })}
+            label="פרופיל פרטי"
+          />
         </SettingRow>
-        <SettingRow icon="target" title="היעדים שלי" subtitle="12 מצוות ו-100 ברכות ביום">
+        <SettingRow
+          icon="target"
+          title="היעדים שלי"
+          subtitle={`${state.dailyGoal} מצוות ביום, ${state.weeklyGoal} בשבוע ו-${state.blessingGoal} ברכות`}
+          onPress={() => setGoalsOpen(true)}
+        >
           <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
         </SettingRow>
-        <SettingRow icon="settings" title="העדפות" subtitle="שפה, תצוגה ונגישות" last>
-          <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
+        <SettingRow icon="settings" title="העדפות" subtitle="שפה, תצוגה ונגישות – בקרוב" last>
+          <span />
         </SettingRow>
       </Card>
 
@@ -57,6 +74,14 @@ export function ProfileScreen() {
       </p>
       <Card className="px-4 mb-5">
         <SettingRow icon="shield" title="פרטיות" subtitle="הנתונים נשמרים במכשיר בלבד">
+          <span />
+        </SettingRow>
+        <SettingRow
+          icon="star"
+          title="טעינת נתוני הדגמה"
+          subtitle="היסטוריה לדוגמה של שלושה שבועות"
+          onPress={() => setDemoConfirmOpen(true)}
+        >
           <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
         </SettingRow>
         <button
@@ -65,7 +90,7 @@ export function ProfileScreen() {
           className="w-full min-h-[72px] flex flex-row items-center justify-end gap-3 bg-transparent border-0 p-0 hover:opacity-80 transition-opacity"
         >
           <span dir="rtl" className="text-[#C95B53] text-[15px] font-black">
-            איפוס נתוני ההדגמה
+            מחיקת כל הנתונים
           </span>
           <div className="w-[42px] h-[42px] rounded-[16px] bg-[#FDEDEA] flex items-center justify-center shrink-0">
             <AppIcon name="reset" size={20} color={colors.danger} />
@@ -79,14 +104,36 @@ export function ProfileScreen() {
 
       <ConfirmDialog
         open={confirmOpen}
-        title="איפוס נתוני ההדגמה"
-        message="האם להחזיר את האפליקציה לנתוני ההתחלה?"
-        confirmLabel="איפוס"
+        title="מחיקת כל הנתונים"
+        message="כל ההיסטוריה, הנקודות וההגדרות יימחקו מהמכשיר. לא ניתן לשחזר."
+        confirmLabel="מחיקה"
         cancelLabel="ביטול"
         destructive
-        onConfirm={resetDemo}
+        onConfirm={resetAll}
         onClose={() => setConfirmOpen(false)}
       />
+
+      <ConfirmDialog
+        open={demoConfirmOpen}
+        title="טעינת נתוני הדגמה"
+        message="הנתונים הנוכחיים יוחלפו בנתוני הדגמה. להמשיך?"
+        confirmLabel="טעינה"
+        cancelLabel="ביטול"
+        destructive
+        onConfirm={loadDemo}
+        onClose={() => setDemoConfirmOpen(false)}
+      />
+
+      {goalsOpen && (
+        <GoalsEditor
+          initial={{ dailyGoal: state.dailyGoal, weeklyGoal: state.weeklyGoal, blessingGoal: state.blessingGoal }}
+          onSave={(goals) => {
+            updateGoals(goals);
+            setGoalsOpen(false);
+          }}
+          onClose={() => setGoalsOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -137,19 +184,20 @@ function SettingRow({
   subtitle,
   children,
   last = false,
+  onPress,
 }: {
   icon: IconName;
   title: string;
   subtitle: string;
   children: React.ReactNode;
   last?: boolean;
+  onPress?: () => void;
 }) {
-  return (
-    <div
-      className={`min-h-[78px] flex flex-row items-center gap-3 py-3 ${
-        !last ? 'border-b border-[#EAF0F4]' : ''
-      }`}
-    >
+  const className = `w-full min-h-[78px] flex flex-row items-center gap-3 py-3 bg-transparent ${
+    !last ? 'border-b border-[#EAF0F4]' : ''
+  } ${onPress ? 'hover:opacity-80 transition-opacity text-right' : ''}`;
+  const content = (
+    <>
       <div className="min-w-[44px] flex items-center justify-start">{children}</div>
       <div className="flex-1 flex flex-col items-end">
         <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
@@ -161,6 +209,77 @@ function SettingRow({
       </div>
       <div className="w-[42px] h-[42px] rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
         <AppIcon name={icon} size={20} color={colors.primary} />
+      </div>
+    </>
+  );
+  if (onPress) {
+    return (
+      <button type="button" onClick={onPress} className={className}>
+        {content}
+      </button>
+    );
+  }
+  return <div className={className}>{content}</div>;
+}
+
+type Goals = { dailyGoal: number; weeklyGoal: number; blessingGoal: number };
+
+function GoalsEditor({ initial, onSave, onClose }: { initial: Goals; onSave: (goals: Goals) => void; onClose: () => void }) {
+  const [goals, setGoals] = useState<Goals>(initial);
+  const rows: Array<{ key: keyof Goals; label: string; step: number; min: number; max: number }> = [
+    { key: 'dailyGoal', label: 'מצוות ביום', step: 1, min: 1, max: 50 },
+    { key: 'weeklyGoal', label: 'מצוות בשבוע', step: 5, min: 5, max: 300 },
+    { key: 'blessingGoal', label: 'ברכות ביום', step: 10, min: 10, max: 300 },
+  ];
+  const change = (row: (typeof rows)[number], delta: number) =>
+    setGoals((prev) => ({ ...prev, [row.key]: Math.min(row.max, Math.max(row.min, prev[row.key] + delta)) }));
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="עריכת יעדים"
+    >
+      <div
+        dir="rtl"
+        className="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 pb-8 card-shadow"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
+        <h2 className="text-[#17324D] text-[20px] font-black mb-4">היעדים שלי</h2>
+        {rows.map((row) => (
+          <div key={row.key} className="flex flex-row items-center justify-between py-3 border-b border-[#EAF0F4]">
+            <span className="text-[#17324D] text-[15px] font-extrabold">{row.label}</span>
+            <div className="flex flex-row items-center gap-3">
+              <button
+                type="button"
+                aria-label={`הגדלת ${row.label}`}
+                onClick={() => change(row, row.step)}
+                className="w-9 h-9 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
+              >
+                +
+              </button>
+              <span className="w-10 text-center text-[#17324D] text-[17px] font-black">{goals[row.key]}</span>
+              <button
+                type="button"
+                aria-label={`הקטנת ${row.label}`}
+                onClick={() => change(row, -row.step)}
+                className="w-9 h-9 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
+              >
+                −
+              </button>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => onSave(goals)}
+          className="w-full min-h-[52px] mt-5 rounded-full bg-[#2AAE9B] text-white text-[15px] font-black hover:opacity-90"
+        >
+          שמירה
+        </button>
       </div>
     </div>
   );
