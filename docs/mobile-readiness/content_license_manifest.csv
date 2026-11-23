@@ -1,0 +1,6 @@
+content_id,title,passage,language,exact_version,source_url,license_identifier,license_url,rights_holder,required_attribution,permission_evidence,offline_distribution_allowed,commercial_use_review,editorial_reviewer,review_date,content_sha256,approval_status
+dvar-torah/test-placeholder-1,מחשבה יומית,full text (src/data/index.ts TORAH_TEXT),he,1,none,TEST-ONLY-NOT-FOR-DISTRIBUTION,,unknown – written in the prototype,none (no source is claimed),none,NO,NOT_RUN,none,,a988298ff0c7a014d67bb67347f43c985c956f2525dea97d27127c6d041999f8,TEST_ONLY
+sefaria/runtime-texts,Daily learning texts fetched at runtime,per track and date,he,per request,https://www.sefaria.org,per text (not inventoried),,per text,per text,none,NOT_RUN (fetched online; not bundled),NOT_RUN,none,,,BLOCKED
+blessing-guide/texts,Blessing texts and food guide,src/data/blessingGuide.ts,he,1,none (written from common usage),NOT_RUN,,—,—,none,NOT_RUN,NOT_RUN,none (D08),,,PENDING_REVIEW
+mitzvot/selection,56 mitzvot with verses,src/data/mitzvot.ts,he,1,biblical verses (public domain) + summaries written in the prototype,NOT_RUN,,—,—,none,NOT_RUN,NOT_RUN,none (D08),,,PENDING_REVIEW
+holidays/guides,16 holiday guides,src/data/holidays.ts,he,1,none (written in the prototype),NOT_RUN,,—,—,none,NOT_RUN,NOT_RUN,none (D08),,,PENDING_REVIEW

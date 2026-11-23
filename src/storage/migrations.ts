@@ -29,6 +29,27 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX IF NOT EXISTS idx_activities_sync ON activities (sync_status);`,
     ],
   },
+  {
+    version: 2,
+    name: 'outbox',
+    statements: [
+      // Sync outbox (spec §7). Written in the same transaction as the activity it describes.
+      // The speech timer never appears here: it is local-only.
+      `CREATE TABLE IF NOT EXISTS outbox (
+        event_id TEXT PRIMARY KEY NOT NULL,
+        operation TEXT NOT NULL CHECK (operation IN ('create', 'void')),
+        target_event_id TEXT,
+        payload TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'deferred', 'accepted', 'rejected')),
+        attempts INTEGER NOT NULL DEFAULT 0,
+        next_attempt_at INTEGER NOT NULL,
+        reason_code TEXT,
+        accepted_score_delta INTEGER,
+        updated_at INTEGER NOT NULL
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_outbox_due ON outbox (status, next_attempt_at);`,
+    ],
+  },
 ];
 
 /** Minimal database surface the migration runner needs – implemented by SQLite and by tests. */

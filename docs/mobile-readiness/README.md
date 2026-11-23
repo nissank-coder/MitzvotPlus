@@ -13,6 +13,7 @@
 | [compatibility_matrix.csv](compatibility_matrix.csv) | תבנית מטריצת התאימות, ממולאת |
 | [dependency_license_inventory.csv](dependency_license_inventory.csv) · [license-inventory.md](license-inventory.md) | מלאי רישיונות וממצאים |
 | [decision_log.csv](decision_log.csv) | D01–D14 (כולן PENDING_OWNER) ו-ADR-001 |
+| [content_license_manifest.csv](content_license_manifest.csv) | מלאי רישיונות תוכן (פריט בדיקה בלבד; השאר ממתין ל-D08) |
 | [test_evidence.csv](test_evidence.csv) | תוצאות הבדיקות שהורצו או נחסמו |
 | [device-test-runbook.md](device-test-runbook.md) | פקודות להרצה על ה-Mac ועל מכשירים אמיתיים |
 | `evidence/` | לוגים, צילום וקובצי ראיה |

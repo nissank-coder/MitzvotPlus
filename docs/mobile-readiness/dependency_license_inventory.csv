@@ -12,3 +12,4 @@ jeep-sqlite,2.8.x,transitive,web only (not used at runtime: web uses localStorag
 @fontsource/heebo,5.3.0,direct,bundled font,OFL-1.1,npm registry,ship OFL text with font; no renaming restrictions issue,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
 temporal-polyfill / quick-lru / temporal-spec / tslib,lockfile,transitive,bundled JS,MIT / MIT / ISC / 0BSD,package-lock.json,keep notices,n/a,no,n/a,engineering,PROPOSED_NOT_VERIFIED
 Sefaria texts (runtime fetch),per text,runtime content,network,per-text licenses (CC-BY / PD / other),not inventoried,see content_license_manifest (D08),n/a,no,n/a,content owner (D08),BLOCKED
+@aparajita/capacitor-secure-storage,8.0.1,direct,ios+android (Keychain / Android Keystore),MIT,npm registry 2026-11-23,keep notice,verify PrivacyInfo in Xcode,uses platform crypto (Keystore/Keychain),no native .so (APK unchanged),engineering,PROPOSED_NOT_VERIFIED

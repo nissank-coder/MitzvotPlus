@@ -5,7 +5,7 @@ import { Card } from '../components/Card';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
-import { TORAH_TEXT } from '../data';
+import { contentRef, dvarTorahFor } from '../content/registry';
 import { useAppStore } from '../store/AppStore';
 import { actionDef } from '../data/actions';
 import { colors } from '../theme';
@@ -29,7 +29,10 @@ function todayHebrewLabel(): string {
 }
 
 export function TorahScreen({ onBack, onOpenProfile }: Props) {
-  const { state, derived, toggleTorahSaved, completeTorah, setReflection } = useAppStore();
+  const { state, derived, toggleTorahSaved, addAction, setReflection } = useAppStore();
+  const item = dvarTorahFor(derived.todayKey);
+  const text = item?.body ?? '';
+  const completeTorah = () => item && addAction('dailyTorah', { content: { id: item.id, version: item.version } });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const dateLabel = useMemo(todayHebrewLabel, []);
@@ -57,7 +60,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(TORAH_TEXT);
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'he-IL';
     utterance.rate = 0.88;
     utterance.onstart = () => setIsSpeaking(true);
@@ -68,14 +71,14 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
   };
 
   const shareText = async () => {
-    const text = `מחשבה יומית ממצוות+\n\n${TORAH_TEXT}`;
+    const message = `מחשבה יומית ממצוות+\n\n${text}${item?.source ? `\n\n${item.source.title}${item.source.ref ? ` ${item.source.ref}` : ''}` : ''}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'דבר תורה יומי - מצוות+', text });
+        await navigator.share({ title: 'דבר תורה יומי - מצוות+', text: message });
         return;
       }
       if (navigator.clipboard) {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(message);
         setShareFeedback('הטקסט הועתק ללוח לשיתוף');
         setTimeout(() => setShareFeedback(null), 2500);
       }
@@ -124,14 +127,16 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
           מחשבה יומית
         </h3>
         <p dir="rtl" className="text-[#17324D] text-[16px] leading-[28px] text-right mt-4">
-          {TORAH_TEXT}
+          {text}
         </p>
 
         <div className="flex justify-center mt-4">
           <div className="px-3 py-2 rounded-full bg-[#F4F8FB]">
-            {/* Placeholder until an approved, licensed edition is bundled (D08). No source is claimed. */}
-            <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
-              טקסט זמני – ממתין לתוכן מאושר
+            {/* Source and approval come from the content registry; a test item claims no source. */}
+            <span dir="rtl" className="text-[#718397] text-[13px] font-bold" data-content-ref={item ? contentRef(item) : undefined}>
+              {item?.approval === 'APPROVED' && item.source
+                ? `${item.source.title}${item.source.ref ? `, ${item.source.ref}` : ''}`
+                : 'טקסט זמני – ממתין לתוכן מאושר'}
             </span>
           </div>
         </div>

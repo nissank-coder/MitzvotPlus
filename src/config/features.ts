@@ -12,3 +12,9 @@ export const FEATURES = {
 
 /** The community module is mock-only until decision D09 and backend stage G3/G4. */
 export const COMMUNITY_ENABLED = FEATURES.demoContent;
+
+/**
+ * Server sync (stage G3). Off until the backend exists and D04 is decided. While off, every point is
+ * local and provisional; the UI says so instead of presenting it as confirmed.
+ */
+export const SYNC_ENABLED = false;

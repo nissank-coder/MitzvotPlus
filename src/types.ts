@@ -93,6 +93,8 @@ export type ActivityLog = {
   recordedAt?: number;
   /** Calendar settings snapshot used to classify the event (policy version, city, zone). */
   context?: { policyVersion: string; cityId: string; tzid: string; il: boolean; candleMins: number };
+  /** Content the action refers to (stable id + version). */
+  content?: { id: string; version: string };
 };
 
 export type AppSettings = {

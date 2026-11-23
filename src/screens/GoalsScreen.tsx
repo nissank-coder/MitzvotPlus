@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { FeatureHeader } from '../components/FeatureHeader';
+import { SYNC_ENABLED } from '../config/features';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ProgressRing } from '../components/ProgressRing';
@@ -48,6 +49,11 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           <span className="text-[#17324D] text-[34px] font-black mt-0.5 leading-tight">
             {derived.totalPoints.toLocaleString('he-IL')}
           </span>
+          {!SYNC_ENABLED ? (
+            <span dir="rtl" className="text-[#718397] text-[10px] mt-0.5">
+              נשמר במכשיר בלבד – לא אומת בשרת
+            </span>
+          ) : null}
           <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
             {level.isMax
               ? `הגעת לדרגה הגבוהה ביותר – ${level.name}`

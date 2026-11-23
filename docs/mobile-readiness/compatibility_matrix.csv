@@ -15,7 +15,7 @@ android_min_sdk,24 (Capacitor 8 default),Choose from audience and full dependenc
 android_webview_floor,Chrome/WebView 111+ required by Tailwind 4 CSS,With Tailwind4 account for Chrome111+; test oldest engine,No runtime check yet; oldest-engine test NOT_RUN,NOT_RUN
 android_native_16kb,libsqlcipher.so x4 ABIs: zipalign -P 16 OK; ELF LOAD p_align 16384,Audit all .so files and run distribution-derived build in16KB environment,evidence/g1-android-build.txt (static); runtime 16KB device/emulator: no KVM/device,BLOCKED
 sqlite_and_encryption,@capacitor-community/sqlite 8.1.1 (MIT) bundles SQLCipher; DB opened 'no-encryption'; migrations v1,Select adapter; migration license backup export and key lifecycle,src/storage/*; src/__tests__/storage.test.ts (real SQLite engine); encryption + key lifecycle = decision D11,PASS_PENDING_DEVICE
-secure_session_storage,not implemented (no auth in scope yet),Keychain/Keystore-backed reviewed adapter; not Preferences,—,NOT_RUN
+secure_session_storage,@aparajita/capacitor-secure-storage 8.0.1 adapter (src/native/secureStore.ts); sync off; whenUnlockedThisDeviceOnly; per-identity partitions,Keychain/Keystore-backed reviewed adapter; not Preferences,unit tests (memory store); native build OK; not exercised on device; no secrets stored yet,PASS_PENDING_DEVICE
 push_provider_and_token_type,not implemented; push disabled,Explicit APNs+FCM or native FCM integration on both,D12 recommends deferring social push,NOT_RUN
 ios_bundle_id,com.mitzvotplus.app (DEVELOPMENT placeholder),Owner-approved stable identifier,capacitor.config.ts,PENDING_OWNER
 android_application_id,com.mitzvotplus.app (DEVELOPMENT placeholder),Owner-approved stable identifier,capacitor.config.ts; aapt2 badging,PENDING_OWNER

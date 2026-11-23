@@ -1,0 +1,5 @@
+date: 2026-11-23 (round 3)
+result: BUILD SUCCESSFUL (debug)
+apk_sha256: 08fffb7843a75b0e090f928d558b2a6fe37e4d4a52c8b9a67158238efe50a7e4
+native libs: libsqlcipher.so x4 (no new .so from secure-storage plugin)
+zipalign -c -P 16: Verification successful

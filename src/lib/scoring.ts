@@ -18,6 +18,8 @@ export type ActionInput = {
   dateKey?: string;
   /** Settings the event was classified with (immutable snapshot). */
   context?: CalendarContext;
+  /** Content the action refers to (e.g. the Dvar Torah that was learned). */
+  content?: { id: string; version: string };
   now: number;
 };
 
@@ -74,6 +76,7 @@ export function buildLog(logs: ActivityLog[], input: ActionInput, blessingGoal: 
     // When the user recorded it; createdAt is the claimed time of the deed (same unless backfilled).
     recordedAt: input.now,
     ...(input.context ? { context: input.context } : {}),
+    ...(input.content ? { content: input.content } : {}),
   };
 }
 

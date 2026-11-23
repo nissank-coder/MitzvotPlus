@@ -32,7 +32,7 @@ const NOW = new Date(2026, 10, 23, 15, 0).getTime();
 describe('migrations', () => {
   it('applies once and records the version', async () => {
     const db = sqliteExecutor();
-    expect(await runMigrations(db)).toEqual([1]);
+    expect(await runMigrations(db)).toEqual(MIGRATIONS.map((m) => m.version));
     expect(await runMigrations(db)).toEqual([]);
     expect(await currentVersion(db)).toBe(MIGRATIONS.at(-1)?.version);
   });
@@ -40,9 +40,9 @@ describe('migrations', () => {
   it('rolls back a failing migration completely', async () => {
     const db = sqliteExecutor();
     await runMigrations(db);
-    const bad = [...MIGRATIONS, { version: 2, name: 'bad', statements: ['CREATE TABLE t2 (x INTEGER);', 'THIS IS NOT SQL;'] }];
+    const bad = [...MIGRATIONS, { version: 99, name: 'bad', statements: ['CREATE TABLE t2 (x INTEGER);', 'THIS IS NOT SQL;'] }];
     await expect(runMigrations(db, bad)).rejects.toThrow();
-    expect(await currentVersion(db)).toBe(1);
+    expect(await currentVersion(db)).toBe(MIGRATIONS.at(-1)?.version);
     expect(await db.query("SELECT name FROM sqlite_master WHERE name = 't2';")).toHaveLength(0);
   });
 });
