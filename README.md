@@ -30,6 +30,10 @@ npm run lint
 npm run build
 ```
 
+## אפיון
+
+אפיון מלא, סטטוס ומפת דרכים: [`docs/SPEC.md`](docs/SPEC.md)
+
 ## מבנה מרכזי
 
 - `src/App.tsx` - ניווט ומעטפת האפליקציה
