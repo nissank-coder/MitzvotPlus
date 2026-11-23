@@ -1,0 +1,22 @@
+﻿component,exact_version_or_value,required_constraint_or_question,evidence,status
+repository_commit,,Record actual repository branch commit and dirty status,,NOT_RUN
+framework,,Verify React DOM/Vite versus Expo/React Native,,NOT_RUN
+package_manager_and_lockfile,,Install reproducibly without replacing lockfile arbitrarily,,NOT_RUN
+node,,Compatible with chosen toolchain,,NOT_RUN
+capacitor_core_cli_ios_android,,Pin compatible versions after audit,,NOT_RUN
+native_plugins,,Inventory direct and transitive dependencies,,NOT_RUN
+xcode,,Current submission baseline 26+; recheck before submission,,NOT_RUN
+ios_sdk,,Current submission baseline 26+; distinct from deployment target,,NOT_RUN
+ios_deployment_target,,With Tailwind4 account for Safari16.4+ or choose compatible CSS,,NOT_RUN
+android_java_gradle_agp,,Pin a compatible tested combination,,NOT_RUN
+android_compile_sdk,,Compatible with selected target and dependencies,,NOT_RUN
+android_target_sdk,,Current standard-mobile submission baseline API36+,,NOT_RUN
+android_min_sdk,,Choose from audience and full dependency constraints,,NOT_RUN
+android_webview_floor,,With Tailwind4 account for Chrome111+; test oldest engine,,NOT_RUN
+android_native_16kb,,Audit all .so files and run distribution-derived build in16KB environment,,NOT_RUN
+sqlite_and_encryption,,Select adapter; migration license backup export and key lifecycle,,NOT_RUN
+secure_session_storage,,Keychain/Keystore-backed reviewed adapter; not Preferences,,NOT_RUN
+push_provider_and_token_type,,Explicit APNs+FCM or native FCM integration on both,,NOT_RUN
+ios_bundle_id,,Owner-approved stable identifier,,PENDING_OWNER
+android_application_id,,Owner-approved stable identifier,,PENDING_OWNER
+distribution_signing_identity,,Record identity references only; never secret keys,,NOT_RUN
