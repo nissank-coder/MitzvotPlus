@@ -1,124 +1,46 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { AppIcon } from './AppIcon';
 
 export function AppHeader({ onProfilePress }: { onProfilePress?: () => void }) {
   const { state } = useAppStore();
 
   return (
-    <View style={styles.header}>
-      <View style={styles.sideColumn}>
-        <View style={styles.pointsPill}>
+    <header className="min-h-[68px] flex flex-row items-center justify-between mb-4">
+      <div className="flex-1 flex flex-row items-center">
+        <div className="flex flex-row items-center gap-2 bg-white px-3 py-2 rounded-full border border-[#DDE8EE]">
           <AppIcon name="coin" size={18} color={colors.gold} strokeWidth={2} />
-          <Text style={styles.pointsText}>{state.points.toLocaleString('he-IL')}</Text>
-        </View>
-      </View>
+          <span className="text-[#17324D] text-[13px] font-extrabold">
+            {state.points.toLocaleString('he-IL')}
+          </span>
+        </div>
+      </div>
 
-      <View style={styles.logoWrap} accessibilityLabel="מצוות פלוס">
-        <Text style={styles.logo}>
-          מצוות<Text style={styles.plus}>+</Text>
-        </Text>
-        <View style={styles.logoLine} />
-      </View>
+      <div className="flex flex-col items-center w-[112px]" aria-label="מצוות פלוס">
+        <span dir="rtl" className="text-[#17324D] text-[24px] font-black tracking-[-0.6px] leading-tight">
+          מצוות<span className="text-[#2AAE9B]">+</span>
+        </span>
+        <div className="mt-0.5 w-12 h-[3px] rounded-full bg-[#2AAE9B] -rotate-3" />
+      </div>
 
-      <Pressable style={[styles.sideColumn, styles.profileSide]} onPress={onProfilePress} hitSlop={8}>
-        <View style={styles.greetingWrap}>
-          <Text style={styles.greeting}>שלום {state.userName}</Text>
-          <Text style={styles.subGreeting}>ממשיכים קדימה</Text>
-        </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{state.userName.charAt(0)}</Text>
-        </View>
-      </Pressable>
-    </View>
+      <button
+        type="button"
+        onClick={onProfilePress}
+        className="flex-1 flex flex-row items-center justify-end text-right bg-transparent border-0 p-0"
+      >
+        <div className="flex flex-col items-end mr-2">
+          <span dir="rtl" className="text-[#17324D] text-[13px] font-extrabold leading-tight">
+            שלום {state.userName}
+          </span>
+          <span dir="rtl" className="text-[#718397] text-[11px] mt-0.5 leading-tight">
+            ממשיכים קדימה
+          </span>
+        </div>
+        <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center bg-[#D9EEF7] border-2 border-white shrink-0">
+          <span className="text-[17px] text-[#14536C] font-black">{state.userName.charAt(0)}</span>
+        </div>
+      </button>
+    </header>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    minHeight: 68,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  sideColumn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profileSide: {
-    justifyContent: 'flex-end',
-  },
-  pointsPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.surface,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  pointsText: {
-    color: colors.text,
-    fontSize: typography.small,
-    fontWeight: '800',
-  },
-  logoWrap: {
-    alignItems: 'center',
-    width: 112,
-  },
-  logo: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    writingDirection: 'rtl',
-  },
-  plus: {
-    color: colors.teal,
-  },
-  logoLine: {
-    marginTop: 2,
-    width: 48,
-    height: 3,
-    borderRadius: radius.pill,
-    backgroundColor: colors.teal,
-    transform: [{ rotate: '-3deg' }],
-  },
-  greetingWrap: {
-    alignItems: 'flex-end',
-    marginRight: spacing.sm,
-  },
-  greeting: {
-    color: colors.text,
-    fontSize: typography.small,
-    fontWeight: '800',
-    writingDirection: 'rtl',
-  },
-  subGreeting: {
-    color: colors.textMuted,
-    fontSize: typography.tiny,
-    marginTop: 2,
-    writingDirection: 'rtl',
-  },
-  avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.sky,
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  avatarText: {
-    fontSize: 17,
-    color: colors.primaryDark,
-    fontWeight: '900',
-  },
-});

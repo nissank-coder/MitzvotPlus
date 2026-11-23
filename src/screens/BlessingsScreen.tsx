@@ -1,16 +1,15 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { blessingCategoryMeta } from '../data';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { BlessingCategory } from '../types';
 
 type Props = {
@@ -30,6 +29,7 @@ const periodItems: Array<{ key: Period; label: string; icon: 'sun' | 'moon' | 'c
 export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
   const { state, blessingTotal, addBlessing } = useAppStore();
   const [period, setPeriod] = useState<Period>('all');
+  const [dialog, setDialog] = useState<{ title: string; message: string } | null>(null);
   const progress = Math.min(1, blessingTotal / state.blessingGoal);
   const remaining = Math.max(0, state.blessingGoal - blessingTotal);
 
@@ -40,21 +40,23 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
 
   const handleAdd = (category: BlessingCategory) => {
     if (blessingTotal >= state.blessingGoal) {
-      Alert.alert('היעד הושלם', 'הגעת ל-100 ברכות להיום. כל הכבוד!');
+      setDialog({
+        title: 'היעד הושלם',
+        message: 'הגעת ל-100 ברכות להיום. כל הכבוד!',
+      });
       return;
     }
     addBlessing(category);
     if (blessingTotal + 1 === state.blessingGoal) {
-      Alert.alert('100 ברכות', 'השלמת את היעד היומי. כל הכבוד!');
+      setDialog({
+        title: '100 ברכות',
+        message: 'השלמת את היעד היומי. כל הכבוד!',
+      });
     }
   };
 
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
       <FeatureHeader
         title="100 ברכות"
@@ -63,271 +65,163 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
         onBack={onBack}
       />
 
-      <LinearGradient colors={['#F8FDFF', '#E8F7F5']} style={styles.hero}>
+      <div className="relative min-h-[184px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-4 bg-gradient-to-b from-[#F8FDFF] to-[#E8F7F5] card-shadow flex items-center">
         <CitySilhouette opacity={0.22} />
-        <View style={styles.heroRow}>
+        <div className="relative z-10 w-full flex flex-row-reverse items-center justify-between gap-4">
           <ProgressRing progress={progress} size={132} strokeWidth={12}>
             <AppIcon name="cup" size={25} color={colors.teal} />
-            <Text style={styles.ringValue}>{blessingTotal}/100</Text>
+            <span className="text-[#17324D] text-[17px] font-black mt-0.5">{blessingTotal}/100</span>
           </ProgressRing>
-          <View style={styles.heroText}>
-            <View style={styles.eyebrowRow}>
-              <Text style={styles.eyebrow}>היעד היומי</Text>
+          <div className="flex-1 flex flex-col items-end">
+            <div className="flex flex-row-reverse items-center gap-1">
+              <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-extrabold">
+                היעד היומי
+              </span>
               <AppIcon name="target" size={18} color={colors.teal} />
-            </View>
-            <Text style={styles.heroTitle}>100 ברכות</Text>
-            <Text style={styles.heroSubtitle}>
+            </div>
+            <h2 dir="rtl" className="text-[#17324D] text-[27px] font-black mt-2 leading-tight">
+              100 ברכות
+            </h2>
+            <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
               {remaining === 0 ? 'היעד הושלם להיום' : `עוד ${remaining} ברכות להשלמת היעד`}
-            </Text>
-            <View style={styles.inlinePill}>
+            </p>
+            <div className="mt-3 px-2.5 py-[5px] rounded-full bg-[#FFF5DB] flex flex-row-reverse items-center gap-1">
               <AppIcon name="coin" size={15} color={colors.gold} />
-              <Text style={styles.inlinePillText}>5 נקודות לכל ברכה</Text>
-            </View>
-          </View>
-        </View>
-      </LinearGradient>
+              <span className="text-[#946300] text-[11px] font-extrabold">5 נקודות לכל ברכה</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <View style={styles.periodRow}>
+      <div className="flex flex-row-reverse gap-2 mb-5">
         {periodItems.map((item) => {
           const active = period === item.key;
           return (
-            <Pressable
+            <button
               key={item.key}
-              style={[styles.periodPill, active && styles.periodPillActive]}
-              onPress={() => setPeriod(item.key)}
+              type="button"
+              onClick={() => setPeriod(item.key)}
+              className={`flex-1 min-h-[44px] rounded-full border flex flex-row-reverse items-center justify-center gap-1 transition-colors ${
+                active
+                  ? 'bg-[#2AAE9B] border-[#2AAE9B] text-white'
+                  : 'bg-white border-[#DDE8EE] text-[#17324D] hover:bg-[#EAF4FB]'
+              }`}
             >
               <AppIcon name={item.icon} size={17} color={active ? colors.white : colors.primary} />
-              <Text style={[styles.periodLabel, active && styles.periodLabelActive]}>{item.label}</Text>
-            </Pressable>
+              <span className={`text-[13px] font-extrabold ${active ? 'text-white' : 'text-[#17324D]'}`}>
+                {item.label}
+              </span>
+            </button>
           );
         })}
-      </View>
+      </div>
 
       <SectionHeader title="הוספת ברכה" icon="plus" />
-      <View style={styles.categoryGrid}>
+      <div className="grid grid-cols-2 gap-3 mb-5" dir="rtl">
         {(Object.keys(blessingCategoryMeta) as BlessingCategory[]).map((key) => {
           const meta = blessingCategoryMeta[key];
           return (
-            <Pressable key={key} style={styles.categoryCard} onPress={() => handleAdd(key)}>
-              <View style={[styles.categoryIcon, { backgroundColor: meta.background }]}> 
+            <button
+              key={key}
+              type="button"
+              onClick={() => handleAdd(key)}
+              className="min-h-[154px] bg-white rounded-[22px] border border-[#DDE8EE] flex flex-col items-center justify-center p-3 hover:border-[#2AAE9B] active:scale-[0.98] transition-all"
+            >
+              <div
+                className="w-11 h-11 rounded-[16px] flex items-center justify-center"
+                style={{ backgroundColor: meta.background }}
+              >
                 <AppIcon name={meta.icon} size={23} color={meta.color} />
-              </View>
-              <Text style={styles.categoryCount}>{state.blessingCounts[key]}</Text>
-              <Text style={styles.categoryTitle}>{meta.title}</Text>
-              <View style={styles.categoryAdd}>
+              </div>
+              <span className="text-[#17324D] text-[23px] font-black mt-2">
+                {state.blessingCounts[key]}
+              </span>
+              <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-0.5 text-center">
+                {meta.title}
+              </span>
+              <div className="mt-2 flex flex-row-reverse items-center gap-0.5">
                 <AppIcon name="plus" size={14} color={colors.teal} strokeWidth={2.2} />
-                <Text style={styles.categoryAddText}>הוספה</Text>
-              </View>
-            </Pressable>
+                <span className="text-[#2AAE9B] text-[11px] font-black">הוספה</span>
+              </div>
+            </button>
           );
         })}
-      </View>
+      </div>
 
-      <Card style={styles.listCard}>
+      <Card className="p-4 mb-4">
         <SectionHeader title="הברכות שלי" icon="calendar" actionLabel={`${blessingTotal} היום`} />
         {latestLogs.length === 0 ? (
-          <View style={styles.emptyState}>
+          <div className="flex flex-col items-center py-5">
             <AppIcon name="cup" size={34} color={colors.teal} />
-            <Text style={styles.emptyTitle}>הברכה הראשונה מחכה לך</Text>
-            <Text style={styles.emptyText}>בחרו קטגוריה למעלה כדי להתחיל</Text>
-          </View>
+            <span className="mt-2 text-[#17324D] text-[17px] font-black">הברכה הראשונה מחכה לך</span>
+            <span dir="rtl" className="mt-1 text-[#718397] text-[13px]">
+              בחרו קטגוריה למעלה כדי להתחיל
+            </span>
+          </div>
         ) : (
           latestLogs.map((item, index) => {
             const meta = blessingCategoryMeta[item.category];
             return (
-              <View key={item.id} style={[styles.logRow, index < latestLogs.length - 1 && styles.logBorder]}>
-                <View style={styles.logStatus}>
+              <div
+                key={item.id}
+                className={`min-h-[62px] flex flex-row items-center justify-between py-2 ${
+                  index < latestLogs.length - 1 ? 'border-b border-[#EAF0F4]' : ''
+                }`}
+              >
+                <div className="flex flex-row items-center gap-2">
                   <AppIcon name="check" size={20} color={colors.green} />
-                  <Text style={styles.logTime}>{item.time}</Text>
-                </View>
-                <View style={styles.logTitleWrap}>
-                  <View style={styles.logTexts}>
-                    <Text style={styles.logTitle}>{item.title}</Text>
-                    <Text style={styles.logCategory}>{meta.title}</Text>
-                  </View>
-                  <View style={[styles.logIcon, { backgroundColor: meta.background }]}> 
+                  <span className="text-[#718397] text-[13px] font-bold">{item.time}</span>
+                </div>
+                <div className="flex-1 flex flex-row-reverse items-center gap-3">
+                  <div className="flex-1 flex flex-col items-end">
+                    <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold">
+                      {item.title}
+                    </span>
+                    <span dir="rtl" className="text-[#718397] text-[11px] mt-0.5">
+                      {meta.title}
+                    </span>
+                  </div>
+                  <div
+                    className="w-[38px] h-[38px] rounded-[16px] flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: meta.background }}
+                  >
                     <AppIcon name={meta.icon} size={19} color={meta.color} />
-                  </View>
-                </View>
-              </View>
+                  </div>
+                </div>
+              </div>
             );
           })
         )}
       </Card>
 
-      <Card style={styles.motivationCard}>
+      <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 overflow-hidden">
         <HillDecoration />
-        <View style={styles.motivationTextWrap}>
-          <View style={styles.motivationTitleRow}>
-            <Text style={styles.motivationTitle}>{remaining === 0 ? 'איזה יופי!' : 'ממשיכים בקצב שלך'}</Text>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              {remaining === 0 ? 'איזה יופי!' : 'ממשיכים בקצב שלך'}
+            </span>
             <AppIcon name="trophy" size={22} color={colors.gold} />
-          </View>
-          <Text style={styles.motivationText}>
+          </div>
+          <span dir="rtl" className="text-[#718397] text-[13px] mt-1">
             {remaining === 0 ? 'השלמת את היעד היומי' : `עוד ${remaining} ברכות להשלמת היעד`}
-          </Text>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-          </View>
-        </View>
+          </span>
+          <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#2AAE9B] transition-all duration-300"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
+        </div>
       </Card>
-    </ScrollView>
+
+      <ConfirmDialog
+        open={Boolean(dialog)}
+        title={dialog?.title ?? ''}
+        message={dialog?.message ?? ''}
+        confirmLabel="מעולה"
+        onClose={() => setDialog(null)}
+      />
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  hero: {
-    minHeight: 184,
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#D5E8EC',
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    ...shadow,
-  },
-  heroRow: {
-    flex: 1,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.lg,
-  },
-  heroText: { flex: 1, alignItems: 'flex-end' },
-  eyebrowRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.xs },
-  eyebrow: { color: colors.primary, fontSize: typography.small, fontWeight: '800', writingDirection: 'rtl' },
-  heroTitle: {
-    color: colors.text,
-    fontSize: 27,
-    fontWeight: '900',
-    writingDirection: 'rtl',
-    marginTop: spacing.sm,
-  },
-  heroSubtitle: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    marginTop: spacing.xs,
-  },
-  ringValue: { color: colors.text, fontSize: typography.h3, fontWeight: '900', marginTop: 2 },
-  inlinePill: {
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
-    borderRadius: radius.pill,
-    backgroundColor: colors.goldSoft,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  inlinePillText: { color: '#946300', fontSize: typography.tiny, fontWeight: '800' },
-  periodRow: {
-    flexDirection: 'row-reverse',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  periodPill: {
-    flex: 1,
-    minHeight: 44,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  periodPillActive: { backgroundColor: colors.teal, borderColor: colors.teal },
-  periodLabel: { color: colors.text, fontSize: typography.small, fontWeight: '800' },
-  periodLabelActive: { color: colors.white },
-  categoryGrid: {
-    flexDirection: 'row-reverse',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  categoryCard: {
-    width: '47%',
-    minHeight: 154,
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  categoryIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  categoryCount: { color: colors.text, fontSize: 23, fontWeight: '900', marginTop: spacing.sm },
-  categoryTitle: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    fontWeight: '700',
-    marginTop: 2,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  categoryAdd: {
-    marginTop: spacing.sm,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: 2,
-  },
-  categoryAddText: { color: colors.teal, fontSize: typography.tiny, fontWeight: '900' },
-  listCard: { padding: spacing.lg, marginBottom: spacing.lg },
-  logRow: {
-    minHeight: 62,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-  },
-  logBorder: { borderBottomWidth: 1, borderBottomColor: colors.divider },
-  logStatus: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  logTime: { color: colors.textMuted, fontSize: typography.small, fontWeight: '700' },
-  logTitleWrap: { flex: 1, flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md },
-  logTexts: { flex: 1, alignItems: 'flex-end' },
-  logTitle: { color: colors.text, fontSize: typography.body, fontWeight: '800', writingDirection: 'rtl' },
-  logCategory: { color: colors.textMuted, fontSize: typography.tiny, marginTop: 2, writingDirection: 'rtl' },
-  logIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyState: { alignItems: 'center', paddingVertical: spacing.xl },
-  emptyTitle: { marginTop: spacing.sm, color: colors.text, fontSize: typography.h3, fontWeight: '900' },
-  emptyText: { marginTop: spacing.xs, color: colors.textMuted, fontSize: typography.small, writingDirection: 'rtl' },
-  motivationCard: {
-    minHeight: 132,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    overflow: 'hidden',
-  },
-  motivationTextWrap: { flex: 1, alignItems: 'flex-end' },
-  motivationTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm },
-  motivationTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  motivationText: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, writingDirection: 'rtl' },
-  progressTrack: {
-    width: '100%',
-    height: 8,
-    borderRadius: radius.pill,
-    backgroundColor: colors.divider,
-    marginTop: spacing.md,
-    overflow: 'hidden',
-  },
-  progressFill: { height: '100%', borderRadius: radius.pill, backgroundColor: colors.teal },
-});

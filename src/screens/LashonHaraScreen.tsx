@@ -1,14 +1,13 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
@@ -30,6 +29,7 @@ function durationParts(ms: number) {
 export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
   const { state, resetSpeech } = useAppStore();
   const [now, setNow] = useState(Date.now());
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -42,23 +42,8 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
   const weeklyDays = Math.min(7, current.days);
   const weeklyProgress = weeklyDays / 7;
 
-  const confirmReset = () => {
-    Alert.alert(
-      'התחלה חדשה',
-      'לעדכן שהייתה מעידה ולהתחיל את הספירה מחדש? הנתון נשמר רק במכשיר שלך.',
-      [
-        { text: 'ביטול', style: 'cancel' },
-        { text: 'התחלה מחדש', style: 'destructive', onPress: resetSpeech },
-      ],
-    );
-  };
-
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
       <FeatureHeader
         title="שמירת הלשון"
@@ -67,45 +52,65 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
         onBack={onBack}
       />
 
-      <LinearGradient colors={['#F8FDFF', '#EAF7F4']} style={styles.hero}>
+      <div className="relative min-h-[194px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-4 bg-gradient-to-b from-[#F8FDFF] to-[#EAF7F4] card-shadow flex items-center">
         <CitySilhouette opacity={0.2} />
-        <View style={styles.heroRow}>
+        <div className="relative z-10 w-full flex flex-row-reverse items-center gap-4">
           <ProgressRing progress={weeklyProgress} size={142} strokeWidth={12}>
             <AppIcon name="shield" size={25} color={colors.teal} />
-            <Text style={styles.timerDays}>{current.days} ימים</Text>
-            <Text style={styles.timerSub}>{current.hours} שעות · {current.minutes} דקות</Text>
+            <span className="text-[#17324D] text-[17px] font-black mt-0.5">{current.days} ימים</span>
+            <span dir="rtl" className="text-[#718397] text-[9px] font-bold mt-0.5">
+              {current.hours} שעות · {current.minutes} דקות
+            </span>
           </ProgressRing>
-          <View style={styles.heroText}>
-            <View style={styles.eyebrowRow}>
-              <Text style={styles.eyebrow}>מהפעם האחרונה</Text>
+          <div className="flex-1 flex flex-col items-end">
+            <div className="flex flex-row-reverse items-center gap-1">
+              <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-extrabold">
+                מהפעם האחרונה
+              </span>
               <AppIcon name="clock" size={18} color={colors.teal} />
-            </View>
-            <Text style={styles.heroTitle}>שמירת הלשון</Text>
-            <Text style={styles.heroSubtitle}>כל רגע של תשומת לב הוא הישג בפני עצמו</Text>
-            <View style={styles.privatePill}>
+            </div>
+            <h2 dir="rtl" className="text-[#17324D] text-[26px] font-black mt-2 leading-tight">
+              שמירת הלשון
+            </h2>
+            <p dir="rtl" className="text-[#718397] text-[13px] leading-5 mt-1 text-right">
+              כל רגע של תשומת לב הוא הישג בפני עצמו
+            </p>
+            <div className="mt-3 px-2.5 py-[5px] rounded-full bg-[#EAF4FB] flex flex-row-reverse items-center gap-1">
               <AppIcon name="lock" size={14} color={colors.primary} />
-              <Text style={styles.privateText}>פרטי ונשמר במכשיר בלבד</Text>
-            </View>
-          </View>
-        </View>
-      </LinearGradient>
+              <span dir="rtl" className="text-[#1B6F8F] text-[10px] font-extrabold">
+                פרטי ונשמר במכשיר בלבד
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Card style={styles.encouragementCard}>
-        <Pressable style={styles.resetButton} onPress={confirmReset}>
+      <Card className="min-h-[96px] p-4 flex flex-row items-center mb-4 !bg-[#E8F8F4]">
+        <button
+          type="button"
+          onClick={() => setConfirmOpen(true)}
+          className="w-[100px] flex flex-col items-center justify-center gap-1 bg-transparent border-0 p-1 rounded-xl hover:bg-white/50 transition-colors shrink-0"
+        >
           <AppIcon name="reset" size={21} color={colors.primary} />
-          <Text style={styles.resetText}>התחלה חדשה</Text>
-        </Pressable>
-        <View style={styles.verticalDivider} />
-        <View style={styles.encouragementText}>
-          <View style={styles.encouragementTitleRow}>
-            <Text style={styles.encouragementTitle}>כל הכבוד!</Text>
+          <span dir="rtl" className="text-[#1B6F8F] text-[11px] font-black">
+            התחלה חדשה
+          </span>
+        </button>
+        <div className="w-px h-14 bg-[#CFE7E1] mx-3 shrink-0" />
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              כל הכבוד!
+            </span>
             <AppIcon name="trophy" size={22} color={colors.gold} />
-          </View>
-          <Text style={styles.encouragementSubtitle}>אתה בדרך לשמירה מודעת על הדיבור</Text>
-        </View>
+          </div>
+          <p dir="rtl" className="text-[#718397] text-[13px] mt-1 text-right">
+            אתה בדרך לשמירה מודעת על הדיבור
+          </p>
+        </div>
       </Card>
 
-      <View style={styles.statsRow}>
+      <div className="flex flex-row-reverse gap-2 mb-4">
         <StatCard
           icon="calendar"
           title="הרצף הנוכחי"
@@ -127,13 +132,15 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
           color={colors.gold}
           background={colors.goldSoft}
         />
-      </View>
+      </div>
 
-      <Card style={styles.tipsCard}>
-        <View style={styles.sectionTitleRow}>
-          <Text style={styles.sectionTitle}>טיפים לשמירת הלשון</Text>
+      <Card className="p-4 mb-4">
+        <div className="flex flex-row-reverse items-center gap-2 mb-2">
+          <h3 dir="rtl" className="text-[#17324D] text-[20px] font-black">
+            טיפים לשמירת הלשון
+          </h3>
           <AppIcon name="lightbulb" size={22} color={colors.gold} />
-        </View>
+        </div>
         <TipRow
           icon="chat"
           color={colors.primary}
@@ -158,21 +165,39 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
         />
       </Card>
 
-      <Card style={styles.challengeCard}>
+      <Card className="min-h-[138px] p-4 flex flex-row items-center gap-3 overflow-hidden">
         <HillDecoration />
-        <View style={styles.challengeTextWrap}>
-          <View style={styles.challengeTitleRow}>
-            <Text style={styles.challengeTitle}>האתגר השבועי</Text>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              האתגר השבועי
+            </span>
             <AppIcon name="target" size={21} color={colors.teal} />
-          </View>
-          <Text style={styles.challengeSubtitle}>7 ימים של תשומת לב לדיבור</Text>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${weeklyProgress * 100}%` }]} />
-          </View>
-          <Text style={styles.progressLabel}>{weeklyDays}/7 ימים</Text>
-        </View>
+          </div>
+          <span dir="rtl" className="text-[#718397] text-[13px] mt-1">
+            7 ימים של תשומת לב לדיבור
+          </span>
+          <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#2AAE9B] transition-all duration-300"
+              style={{ width: `${weeklyProgress * 100}%` }}
+            />
+          </div>
+          <span className="text-[#2AAE9B] text-[11px] font-black mt-1">{weeklyDays}/7 ימים</span>
+        </div>
       </Card>
-    </ScrollView>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="התחלה חדשה"
+        message="לעדכן שהייתה מעידה ולהתחיל את הספירה מחדש? הנתון נשמר רק במכשיר שלך."
+        confirmLabel="התחלה מחדש"
+        cancelLabel="ביטול"
+        destructive
+        onConfirm={resetSpeech}
+        onClose={() => setConfirmOpen(false)}
+      />
+    </div>
   );
 }
 
@@ -190,11 +215,16 @@ function StatCard({
   background: string;
 }) {
   return (
-    <View style={[styles.statCard, { backgroundColor: background }]}> 
+    <div
+      className="flex-1 min-h-[118px] rounded-[22px] flex flex-col items-center justify-center p-2 border border-[#DDE8EE]"
+      style={{ backgroundColor: background }}
+    >
       <AppIcon name={icon} size={22} color={color} />
-      <Text style={styles.statTitle}>{title}</Text>
-      <Text style={styles.statValue}>{value}</Text>
-    </View>
+      <span dir="rtl" className="text-[#718397] text-[10px] font-bold mt-2 text-center">
+        {title}
+      </span>
+      <span className="text-[#17324D] text-[13px] font-black mt-1 text-center">{value}</span>
+    </div>
   );
 }
 
@@ -214,84 +244,25 @@ function TipRow({
   last?: boolean;
 }) {
   return (
-    <View style={[styles.tipRow, !last && styles.tipBorder]}>
-      <View style={styles.tipTextWrap}>
-        <Text style={styles.tipTitle}>{title}</Text>
-        <Text style={styles.tipText}>{text}</Text>
-      </View>
-      <View style={[styles.tipIcon, { backgroundColor: background }]}> 
+    <div
+      className={`min-h-[84px] flex flex-row-reverse items-center gap-3 py-3 ${
+        !last ? 'border-b border-[#EAF0F4]' : ''
+      }`}
+    >
+      <div className="flex-1 flex flex-col items-end">
+        <span dir="rtl" className="text-[#17324D] text-[15px] font-black text-right">
+          {title}
+        </span>
+        <p dir="rtl" className="text-[#718397] text-[13px] leading-5 mt-1 text-right">
+          {text}
+        </p>
+      </div>
+      <div
+        className="w-11 h-11 rounded-[16px] flex items-center justify-center shrink-0"
+        style={{ backgroundColor: background }}
+      >
         <AppIcon name={icon} size={21} color={color} />
-      </View>
-    </View>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  hero: {
-    minHeight: 194,
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#D5E8EC',
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    ...shadow,
-  },
-  heroRow: { flex: 1, flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.lg },
-  heroText: { flex: 1, alignItems: 'flex-end' },
-  eyebrowRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.xs },
-  eyebrow: { color: colors.primary, fontSize: typography.small, fontWeight: '800', writingDirection: 'rtl' },
-  heroTitle: { color: colors.text, fontSize: 26, fontWeight: '900', marginTop: spacing.sm, writingDirection: 'rtl' },
-  heroSubtitle: { color: colors.textMuted, fontSize: typography.small, lineHeight: 20, marginTop: spacing.xs, textAlign: 'right', writingDirection: 'rtl' },
-  timerDays: { color: colors.text, fontSize: typography.h3, fontWeight: '900', marginTop: 2 },
-  timerSub: { color: colors.textMuted, fontSize: 9, fontWeight: '700', marginTop: 2, writingDirection: 'rtl' },
-  privatePill: {
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
-    borderRadius: radius.pill,
-    backgroundColor: colors.blueSoft,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  privateText: { color: colors.primary, fontSize: 10, fontWeight: '800', writingDirection: 'rtl' },
-  encouragementCard: {
-    minHeight: 96,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    backgroundColor: colors.mintSoft,
-  },
-  resetButton: { width: 100, alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
-  resetText: { color: colors.primary, fontSize: typography.tiny, fontWeight: '900', writingDirection: 'rtl' },
-  verticalDivider: { width: 1, height: 56, backgroundColor: '#CFE7E1', marginHorizontal: spacing.md },
-  encouragementText: { flex: 1, alignItems: 'flex-end' },
-  encouragementTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm },
-  encouragementTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  encouragementSubtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, textAlign: 'right', writingDirection: 'rtl' },
-  statsRow: { flexDirection: 'row-reverse', gap: spacing.sm, marginBottom: spacing.lg },
-  statCard: { flex: 1, minHeight: 118, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.sm, borderWidth: 1, borderColor: colors.border },
-  statTitle: { color: colors.textMuted, fontSize: 10, fontWeight: '700', marginTop: spacing.sm, textAlign: 'center', writingDirection: 'rtl' },
-  statValue: { color: colors.text, fontSize: typography.small, fontWeight: '900', marginTop: spacing.xs, textAlign: 'center' },
-  tipsCard: { padding: spacing.lg, marginBottom: spacing.lg },
-  sectionTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
-  sectionTitle: { color: colors.text, fontSize: typography.h2, fontWeight: '900', writingDirection: 'rtl' },
-  tipRow: { minHeight: 84, flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md },
-  tipBorder: { borderBottomWidth: 1, borderBottomColor: colors.divider },
-  tipTextWrap: { flex: 1, alignItems: 'flex-end' },
-  tipTitle: { color: colors.text, fontSize: typography.body, fontWeight: '900', textAlign: 'right', writingDirection: 'rtl' },
-  tipText: { color: colors.textMuted, fontSize: typography.small, lineHeight: 20, marginTop: 3, textAlign: 'right', writingDirection: 'rtl' },
-  tipIcon: { width: 44, height: 44, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  challengeCard: { minHeight: 138, padding: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md, overflow: 'hidden' },
-  challengeTextWrap: { flex: 1, alignItems: 'flex-end' },
-  challengeTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm },
-  challengeTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  challengeSubtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, writingDirection: 'rtl' },
-  progressTrack: { width: '100%', height: 8, borderRadius: radius.pill, backgroundColor: colors.divider, marginTop: spacing.md, overflow: 'hidden' },
-  progressFill: { height: '100%', borderRadius: radius.pill, backgroundColor: colors.teal },
-  progressLabel: { color: colors.teal, fontSize: typography.tiny, fontWeight: '900', marginTop: spacing.xs },
-});

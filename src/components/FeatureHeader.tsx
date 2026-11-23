@@ -1,6 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { IconName } from '../types';
 import { AppIcon } from './AppIcon';
 
@@ -13,68 +12,30 @@ type Props = {
 
 export function FeatureHeader({ title, subtitle, icon, onBack }: Props) {
   return (
-    <View style={styles.row}>
-      <Pressable style={styles.backButton} onPress={onBack} accessibilityLabel="חזרה">
+    <div className="flex flex-row-reverse items-center justify-between mb-4">
+      <button
+        type="button"
+        onClick={onBack}
+        aria-label="חזרה"
+        className="w-[42px] h-[42px] rounded-full flex items-center justify-center bg-white border border-[#DDE8EE] hover:bg-[#EAF4FB] transition-colors shrink-0"
+      >
         <AppIcon name="chevronRight" size={21} color={colors.primary} />
-      </Pressable>
-      <View style={styles.textWrap}>
-        <View style={styles.titleLine}>
-          <View style={styles.iconBox}>
+      </button>
+      <div className="flex-1 mr-3 flex flex-col items-end">
+        <div className="flex flex-row-reverse items-center gap-2">
+          <div className="w-9 h-9 rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
             <AppIcon name={icon} size={20} color={colors.primary} />
-          </View>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-      </View>
-    </View>
+          </div>
+          <h1 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
+            {title}
+          </h1>
+        </div>
+        {subtitle ? (
+          <p dir="rtl" className="mt-1 text-[#718397] text-[13px]">
+            {subtitle}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  backButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  textWrap: {
-    flex: 1,
-    marginRight: spacing.md,
-    alignItems: 'flex-end',
-  },
-  titleLine: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.md,
-    backgroundColor: colors.blueSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    color: colors.text,
-    fontSize: typography.h1,
-    fontWeight: '900',
-    writingDirection: 'rtl',
-  },
-  subtitle: {
-    marginTop: 3,
-    color: colors.textMuted,
-    fontSize: typography.small,
-    writingDirection: 'rtl',
-  },
-});

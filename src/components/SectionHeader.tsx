@@ -1,6 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { IconName } from '../types';
 import { AppIcon } from './AppIcon';
 
@@ -13,50 +12,30 @@ type Props = {
 
 export function SectionHeader({ title, icon, actionLabel, onAction }: Props) {
   return (
-    <View style={styles.row}>
+    <div className="flex flex-row items-center justify-between mb-3">
       {actionLabel ? (
-        <Pressable onPress={onAction} style={styles.action} hitSlop={8}>
-          <AppIcon name="chevronLeft" size={16} color={colors.primary} />
-          <Text style={styles.actionText}>{actionLabel}</Text>
-        </Pressable>
+        <button
+          type="button"
+          onClick={onAction}
+          disabled={!onAction}
+          className={`flex flex-row items-center gap-0.5 bg-transparent border-0 p-0 ${
+            onAction ? 'hover:opacity-80' : 'cursor-default'
+          }`}
+        >
+          {onAction ? <AppIcon name="chevronLeft" size={16} color={colors.primary} /> : null}
+          <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-bold">
+            {actionLabel}
+          </span>
+        </button>
       ) : (
-        <View />
+        <div />
       )}
-      <View style={styles.titleWrap}>
-        <Text style={styles.title}>{title}</Text>
+      <div className="flex flex-row-reverse items-center gap-2">
+        <h2 dir="rtl" className="text-[#17324D] text-[20px] font-black leading-tight">
+          {title}
+        </h2>
         {icon ? <AppIcon name={icon} size={20} color={colors.primary} /> : null}
-      </View>
-    </View>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  titleWrap: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  title: {
-    color: colors.text,
-    fontSize: typography.h2,
-    fontWeight: '900',
-    writingDirection: 'rtl',
-  },
-  action: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  actionText: {
-    color: colors.primary,
-    fontSize: typography.small,
-    fontWeight: '700',
-    writingDirection: 'rtl',
-  },
-});

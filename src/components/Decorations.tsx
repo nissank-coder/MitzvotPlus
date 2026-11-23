@@ -1,133 +1,29 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { colors } from '../theme';
 
 export function CitySilhouette({ opacity = 0.32 }: { opacity?: number }) {
   return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]}>
-      <View style={styles.horizon} />
-      <View style={[styles.building, { left: 18, width: 46, height: 34 }]} />
-      <View style={[styles.building, { left: 60, width: 34, height: 48 }]} />
-      <View style={[styles.building, { left: 92, width: 56, height: 28 }]} />
-      <View style={[styles.tower, { left: 42, bottom: 24 }]} />
-      <View style={[styles.tree, { left: 10, bottom: 20, height: 42 }]} />
-      <View style={[styles.tree, { left: 142, bottom: 20, height: 36 }]} />
-      <View style={[styles.sun, { left: 112, top: 15 }]} />
-    </View>
+    <div className="pointer-events-none absolute inset-0" style={{ opacity }}>
+      <div className="absolute left-0 right-0 bottom-[18px] h-[2px] bg-[#1B6F8F]" />
+      <div className="absolute bottom-[20px] left-[18px] w-[46px] h-[34px] bg-[#1B6F8F] rounded-t-[5px]" />
+      <div className="absolute bottom-[20px] left-[60px] w-[34px] h-[48px] bg-[#1B6F8F] rounded-t-[5px]" />
+      <div className="absolute bottom-[20px] left-[92px] w-[56px] h-[28px] bg-[#1B6F8F] rounded-t-[5px]" />
+      <div className="absolute bottom-[24px] left-[42px] w-[13px] h-[62px] bg-[#1B6F8F] rounded-t-[7px]" />
+      <div className="absolute bottom-[20px] left-[10px] w-[8px] h-[42px] bg-[#2AAE9B] rounded-t-[12px]" />
+      <div className="absolute bottom-[20px] left-[142px] w-[8px] h-[36px] bg-[#2AAE9B] rounded-t-[12px]" />
+      <div className="absolute top-[15px] left-[112px] w-[34px] h-[34px] rounded-full bg-[#F4B942]" />
+    </div>
   );
 }
 
 export function HillDecoration() {
   return (
-    <View pointerEvents="none" style={styles.hillWrap}>
-      <View style={styles.sunGlow} />
-      <View style={styles.backHill} />
-      <View style={styles.frontHill} />
-      <View style={styles.path} />
-      <View style={styles.flagPole} />
-      <View style={styles.flag} />
-    </View>
+    <div className="pointer-events-none relative w-[120px] h-[92px] overflow-hidden shrink-0">
+      <div className="absolute left-[32px] top-[6px] w-[48px] h-[48px] rounded-full bg-[#FFF0B7]" />
+      <div className="absolute w-[120px] h-[70px] rounded-[60px] bg-[#BFE5E0] -bottom-[28px] left-[20px] -rotate-8" />
+      <div className="absolute w-[126px] h-[74px] rounded-[63px] bg-[#7EC6BB] -bottom-[42px] -left-[20px] rotate-8" />
+      <div className="absolute w-[10px] h-[84px] bg-[#F5E7C9] -bottom-[12px] left-[58px] rounded-[12px] rotate-16" />
+      <div className="absolute w-[2px] h-[28px] bg-[#14536C] top-[17px] left-[78px]" />
+      <div className="absolute w-[20px] h-[12px] bg-[#E8796C] top-[17px] left-[80px] rounded-r-[6px]" />
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  horizon: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 18,
-    height: 2,
-    backgroundColor: colors.primary,
-  },
-  building: {
-    position: 'absolute',
-    bottom: 20,
-    backgroundColor: colors.primary,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-  },
-  tower: {
-    position: 'absolute',
-    width: 13,
-    height: 62,
-    backgroundColor: colors.primary,
-    borderTopLeftRadius: 7,
-    borderTopRightRadius: 7,
-  },
-  tree: {
-    position: 'absolute',
-    width: 8,
-    backgroundColor: colors.teal,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  sun: {
-    position: 'absolute',
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: colors.gold,
-  },
-  hillWrap: {
-    width: 120,
-    height: 92,
-    overflow: 'hidden',
-  },
-  sunGlow: {
-    position: 'absolute',
-    left: 32,
-    top: 6,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFF0B7',
-  },
-  backHill: {
-    position: 'absolute',
-    width: 120,
-    height: 70,
-    borderRadius: 60,
-    backgroundColor: '#BFE5E0',
-    bottom: -28,
-    left: 20,
-    transform: [{ rotate: '-8deg' }],
-  },
-  frontHill: {
-    position: 'absolute',
-    width: 126,
-    height: 74,
-    borderRadius: 63,
-    backgroundColor: '#7EC6BB',
-    bottom: -42,
-    left: -20,
-    transform: [{ rotate: '8deg' }],
-  },
-  path: {
-    position: 'absolute',
-    width: 10,
-    height: 84,
-    backgroundColor: '#F5E7C9',
-    bottom: -12,
-    left: 58,
-    borderRadius: 12,
-    transform: [{ rotate: '16deg' }],
-  },
-  flagPole: {
-    position: 'absolute',
-    width: 2,
-    height: 28,
-    backgroundColor: colors.primaryDark,
-    top: 17,
-    left: 78,
-  },
-  flag: {
-    position: 'absolute',
-    width: 20,
-    height: 12,
-    backgroundColor: colors.coral,
-    top: 17,
-    left: 80,
-    borderTopRightRadius: 6,
-    borderBottomRightRadius: 6,
-  },
-});

@@ -1,6 +1,4 @@
-import * as Speech from 'expo-speech';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
@@ -9,7 +7,7 @@ import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { TORAH_TEXT } from '../data';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 
 type Props = {
   onBack: () => void;
@@ -30,49 +28,63 @@ function todayHebrewLabel(): string {
 }
 
 export function TorahScreen({ onBack, onOpenProfile }: Props) {
-  const {
-    state,
-    toggleTorahSaved,
-    completeTorah,
-    setReflection,
-  } = useAppStore();
+  const { state, toggleTorahSaved, completeTorah, setReflection } = useAppStore();
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const dateLabel = useMemo(todayHebrewLabel, []);
   const streakProgress = Math.min(1, state.torahStreak / 30);
 
-  useEffect(() => () => {
-    void Speech.stop();
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
-  const toggleSpeech = async () => {
+  const toggleSpeech = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setShareFeedback('הקראה קולית אינה נתמכת בדפדפן זה');
+      setTimeout(() => setShareFeedback(null), 2500);
+      return;
+    }
+
     if (isSpeaking) {
-      await Speech.stop();
+      window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
     }
-    Speech.speak(TORAH_TEXT, {
-      language: 'he-IL',
-      rate: 0.88,
-      onStart: () => setIsSpeaking(true),
-      onDone: () => setIsSpeaking(false),
-      onStopped: () => setIsSpeaking(false),
-      onError: () => setIsSpeaking(false),
-    });
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(TORAH_TEXT);
+    utterance.lang = 'he-IL';
+    utterance.rate = 0.88;
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
   };
 
   const shareText = async () => {
-    await Share.share({
-      message: `מחשבה יומית ממצוות+\n\n${TORAH_TEXT}\n\nמסכת אבות, פרק ב׳ משנה א׳`,
-    });
+    const text = `מחשבה יומית ממצוות+\n\n${TORAH_TEXT}\n\nמסכת אבות, פרק ב׳ משנה א׳`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'דבר תורה יומי - מצוות+', text });
+        return;
+      }
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        setShareFeedback('הטקסט הועתק ללוח לשיתוף');
+        setTimeout(() => setShareFeedback(null), 2500);
+      }
+    } catch {
+      // User dismissed share sheet
+    }
   };
 
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-    >
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
       <FeatureHeader
         title="דבר תורה"
@@ -81,33 +93,48 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
         onBack={onBack}
       />
 
-      <View style={styles.scenicHeader}>
+      <div className="relative min-h-[126px] rounded-[28px] bg-[#E8F4F7] border border-[#D5E8EC] overflow-hidden flex flex-col justify-center mb-4 card-shadow">
         <CitySilhouette opacity={0.28} />
-        <View style={styles.scenicText}>
-          <Text style={styles.scenicTitle}>דבר תורה יומי</Text>
-          <Text style={styles.scenicSubtitle}>כמה דקות שמאירות את היום</Text>
-        </View>
-      </View>
+        <div className="relative z-10 flex flex-col items-end px-5">
+          <h2 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
+            דבר תורה יומי
+          </h2>
+          <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
+            כמה דקות שמאירות את היום
+          </p>
+        </div>
+      </div>
 
-      <Card style={styles.mainCard}>
-        <View style={styles.dateRow}>
-          <Text style={styles.dateText}>{dateLabel}</Text>
+      <Card className="p-5 mb-4">
+        <div className="flex flex-row-reverse items-center justify-center gap-2">
+          <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+            {dateLabel}
+          </span>
           <AppIcon name="calendar" size={18} color={colors.primary} />
-        </View>
+        </div>
 
-        <View style={styles.dividerLeaf}>
-          <View style={styles.dividerLine} />
+        <div className="flex flex-row items-center gap-2 my-4">
+          <div className="flex-1 h-px bg-[#DDE8EE]" />
           <AppIcon name="leaf" size={20} color={colors.teal} />
-          <View style={styles.dividerLine} />
-        </View>
+          <div className="flex-1 h-px bg-[#DDE8EE]" />
+        </div>
 
-        <Text style={styles.articleTitle}>מחשבה יומית</Text>
-        <Text style={styles.articleText}>{TORAH_TEXT}</Text>
-        <View style={styles.sourcePill}>
-          <Text style={styles.sourceText}>מסכת אבות, פרק ב׳ משנה א׳</Text>
-        </View>
+        <h3 dir="rtl" className="text-[#17324D] text-[25px] font-black text-center">
+          מחשבה יומית
+        </h3>
+        <p dir="rtl" className="text-[#17324D] text-[16px] leading-[28px] text-right mt-4">
+          {TORAH_TEXT}
+        </p>
 
-        <View style={styles.actionsRow}>
+        <div className="flex justify-center mt-4">
+          <div className="px-3 py-2 rounded-full bg-[#F4F8FB]">
+            <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+              מסכת אבות, פרק ב׳ משנה א׳
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-row gap-2 mt-5">
           <ActionButton
             label={isSpeaking ? 'עצור' : 'האזן'}
             icon={isSpeaking ? 'pause' : 'play'}
@@ -121,80 +148,122 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
             active={state.torahSaved}
             onPress={toggleTorahSaved}
           />
-        </View>
+        </div>
 
-        <Pressable
-          style={[styles.completeButton, state.torahCompletedToday && styles.completeButtonDone]}
-          onPress={completeTorah}
+        {shareFeedback ? (
+          <p dir="rtl" className="mt-2.5 text-center text-[12px] font-bold text-[#2AAE9B]">
+            {shareFeedback}
+          </p>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={completeTorah}
           disabled={state.torahCompletedToday}
+          className={`w-full min-h-[50px] rounded-[16px] mt-3 flex flex-row-reverse items-center justify-center gap-2 px-3 transition-colors ${
+            state.torahCompletedToday
+              ? 'bg-[#EAF7EF] border border-[#CFE8D8] cursor-default'
+              : 'bg-[#2AAE9B] hover:bg-[#239988]'
+          }`}
         >
           <AppIcon
             name={state.torahCompletedToday ? 'check' : 'book'}
             size={20}
             color={state.torahCompletedToday ? colors.green : colors.white}
           />
-          <Text style={[styles.completeText, state.torahCompletedToday && styles.completeTextDone]}>
+          <span
+            dir="rtl"
+            className={`text-[13px] font-black ${
+              state.torahCompletedToday ? 'text-[#4DAA78]' : 'text-white'
+            }`}
+          >
             {state.torahCompletedToday ? 'הלימוד נרשם להיום' : 'סיימתי ללמוד - הוסף 20 נקודות'}
-          </Text>
-        </Pressable>
+          </span>
+        </button>
       </Card>
 
-      <Card style={styles.reflectionCard}>
+      <Card className="min-h-[146px] p-4 flex flex-row items-center gap-3 overflow-hidden mb-4">
         <HillDecoration />
-        <View style={styles.reflectionContent}>
-          <View style={styles.reflectionTitleRow}>
-            <Text style={styles.reflectionTitle}>איך זה פוגש אותי היום?</Text>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2 mb-3">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              איך זה פוגש אותי היום?
+            </span>
             <AppIcon name="edit" size={20} color={colors.primary} />
-          </View>
-          <Text style={styles.prompt}>איזו מצווה קטנה אוכל להוסיף היום?</Text>
-          <Text style={styles.prompt}>איך היא יכולה להוסיף אור ומשמעות ליום שלי?</Text>
-        </View>
+          </div>
+          <p dir="rtl" className="text-[#718397] text-[13px] leading-[21px] text-right mt-1">
+            איזו מצווה קטנה אוכל להוסיף היום?
+          </p>
+          <p dir="rtl" className="text-[#718397] text-[13px] leading-[21px] text-right mt-1">
+            איך היא יכולה להוסיף אור ומשמעות ליום שלי?
+          </p>
+        </div>
       </Card>
 
-      <Card style={styles.noteCard}>
-        <View style={styles.noteHeader}>
-          <Text style={styles.noteTitle}>המחשבה שלי</Text>
+      <Card className="p-4 mb-4">
+        <div className="flex flex-row-reverse items-center gap-2 mb-3">
+          <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+            המחשבה שלי
+          </span>
           <AppIcon name="edit" size={19} color={colors.teal} />
-        </View>
-        <TextInput
+        </div>
+        <textarea
           value={state.reflection}
-          onChangeText={setReflection}
-          style={styles.noteInput}
+          onChange={(e) => setReflection(e.target.value)}
+          dir="rtl"
+          rows={4}
           placeholder="אפשר לכתוב כאן תזכורת קצרה לעצמך..."
-          placeholderTextColor={colors.textMuted}
-          multiline
-          textAlign="right"
-          textAlignVertical="top"
+          className="w-full min-h-[100px] rounded-[16px] bg-[#F4F8FB] border border-[#DDE8EE] p-3 text-[#17324D] text-[15px] leading-[22px] text-right placeholder:text-[#718397] focus:outline-none focus:border-[#2AAE9B] resize-y"
         />
       </Card>
 
-      <Card style={styles.streakCard}>
-        <View style={styles.booksDecoration}>
-          <View style={styles.bookOne} />
-          <View style={styles.bookTwo} />
-          <View style={styles.bookThree} />
-        </View>
-        <View style={styles.streakTextWrap}>
-          <View style={styles.streakTitleRow}>
-            <Text style={styles.streakTitle}>רצף לימוד</Text>
+      <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 mb-4">
+        <div className="relative w-[92px] h-[82px] flex justify-end items-center shrink-0">
+          <div className="absolute w-[68px] h-[58px] rounded-[6px] bg-[#244A64] -rotate-7 bottom-[5px] left-[12px]" />
+          <div className="absolute w-[72px] h-[54px] rounded-[6px] bg-[#3F6E86] rotate-6 bottom-[6px] left-[10px]" />
+          <div className="relative z-10 w-[66px] h-[52px] rounded-[6px] bg-[#17324D] border-2 border-[#F4B942] mx-auto mt-auto" />
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              רצף לימוד
+            </span>
             <AppIcon name="flame" size={21} color={colors.coral} />
-          </View>
-          <Text style={styles.streakSubtitle}>דברי תורה יומיים</Text>
-          <View style={styles.streakTrack}>
-            <View style={[styles.streakFill, { width: `${streakProgress * 100}%` }]} />
-          </View>
-        </View>
+          </div>
+          <span dir="rtl" className="text-[#718397] text-[13px] mt-1">
+            דברי תורה יומיים
+          </span>
+          <div className="w-full h-[7px] rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
+            <div
+              className="h-full bg-[#2AAE9B] rounded-full transition-all duration-300"
+              style={{ width: `${streakProgress * 100}%` }}
+            />
+          </div>
+        </div>
         <ProgressRing progress={streakProgress} size={82} strokeWidth={8}>
           <AppIcon name="book" size={18} color={colors.teal} />
-          <Text style={styles.smallRingText}>{state.torahStreak}/30</Text>
+          <span className="text-[#17324D] text-[11px] font-black mt-0.5">{state.torahStreak}/30</span>
         </ProgressRing>
       </Card>
 
-      <View style={styles.relatedRow}>
-        <RelatedCard title="שיעור קצר" subtitle="3-5 דקות" icon="play" color={colors.primary} background={colors.blueSoft} />
-        <RelatedCard title="מחשבה נוספת" subtitle="עוד רעיון להשראה" icon="leaf" color={colors.green} background={colors.greenSoft} />
-      </View>
-    </ScrollView>
+      <div className="flex flex-row gap-3">
+        <RelatedCard
+          title="שיעור קצר"
+          subtitle="3-5 דקות"
+          icon="play"
+          color={colors.primary}
+          background={colors.blueSoft}
+          onPress={toggleSpeech}
+        />
+        <RelatedCard
+          title="מחשבה נוספת"
+          subtitle="עוד רעיון להשראה"
+          icon="leaf"
+          color={colors.green}
+          background={colors.greenSoft}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -210,10 +279,20 @@ function ActionButton({
   onPress: () => void | Promise<void>;
 }) {
   return (
-    <Pressable style={[styles.actionButton, active && styles.actionButtonActive]} onPress={onPress}>
+    <button
+      type="button"
+      onClick={onPress}
+      className={`flex-1 min-h-[46px] rounded-[16px] border flex flex-row-reverse items-center justify-center gap-1 transition-colors ${
+        active
+          ? 'bg-[#E8F8F4] border-[#BDECE3]'
+          : 'bg-[#EAF4FB] border-[#DDE8EE] hover:bg-[#D9EEF7]'
+      }`}
+    >
       <AppIcon name={icon} size={19} color={active ? colors.teal : colors.primary} />
-      <Text style={[styles.actionLabel, active && styles.actionLabelActive]}>{label}</Text>
-    </Pressable>
+      <span className={`text-[13px] font-extrabold ${active ? 'text-[#2AAE9B]' : 'text-[#1B6F8F]'}`}>
+        {label}
+      </span>
+    </button>
   );
 }
 
@@ -223,144 +302,31 @@ function RelatedCard({
   icon,
   color,
   background,
+  onPress,
 }: {
   title: string;
   subtitle: string;
   icon: 'play' | 'leaf';
   color: string;
   background: string;
+  onPress?: () => void;
 }) {
   return (
-    <Pressable style={[styles.relatedCard, { backgroundColor: background }]}> 
-      <View style={styles.relatedIcon}>
+    <button
+      type="button"
+      onClick={onPress}
+      className="flex-1 min-h-[118px] rounded-[22px] p-4 flex flex-col items-end border border-[#DDE8EE] hover:opacity-90 transition-opacity"
+      style={{ backgroundColor: background }}
+    >
+      <div className="w-[38px] h-[38px] rounded-full bg-white flex items-center justify-center mb-2">
         <AppIcon name={icon} size={22} color={color} />
-      </View>
-      <Text style={styles.relatedTitle}>{title}</Text>
-      <Text style={styles.relatedSubtitle}>{subtitle}</Text>
-    </Pressable>
+      </div>
+      <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
+        {title}
+      </span>
+      <span dir="rtl" className="text-[#718397] text-[11px] mt-0.5">
+        {subtitle}
+      </span>
+    </button>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  scenicHeader: {
-    minHeight: 126,
-    borderRadius: radius.xl,
-    backgroundColor: '#E8F4F7',
-    borderWidth: 1,
-    borderColor: '#D5E8EC',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-    ...shadow,
-  },
-  scenicText: { alignItems: 'flex-end', paddingHorizontal: spacing.xl },
-  scenicTitle: { color: colors.text, fontSize: 24, fontWeight: '900', writingDirection: 'rtl' },
-  scenicSubtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, writingDirection: 'rtl' },
-  mainCard: { padding: spacing.xl, marginBottom: spacing.lg },
-  dateRow: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
-  dateText: { color: colors.textMuted, fontSize: typography.small, fontWeight: '700', writingDirection: 'rtl' },
-  dividerLeaf: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginVertical: spacing.lg },
-  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
-  articleTitle: { color: colors.text, fontSize: 25, fontWeight: '900', textAlign: 'center', writingDirection: 'rtl' },
-  articleText: {
-    color: colors.text,
-    fontSize: 16,
-    lineHeight: 28,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    marginTop: spacing.lg,
-  },
-  sourcePill: {
-    alignSelf: 'center',
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.background,
-  },
-  sourceText: { color: colors.textMuted, fontSize: typography.small, fontWeight: '700', writingDirection: 'rtl' },
-  actionsRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xl },
-  actionButton: {
-    flex: 1,
-    minHeight: 46,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.blueSoft,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  actionButtonActive: { backgroundColor: colors.mintSoft, borderColor: colors.mint },
-  actionLabel: { color: colors.primary, fontSize: typography.small, fontWeight: '800' },
-  actionLabelActive: { color: colors.teal },
-  completeButton: {
-    minHeight: 50,
-    borderRadius: radius.md,
-    backgroundColor: colors.teal,
-    marginTop: spacing.md,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  completeButtonDone: { backgroundColor: colors.greenSoft, borderWidth: 1, borderColor: '#CFE8D8' },
-  completeText: { color: colors.white, fontSize: typography.small, fontWeight: '900', writingDirection: 'rtl' },
-  completeTextDone: { color: colors.green },
-  reflectionCard: {
-    minHeight: 146,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    overflow: 'hidden',
-    marginBottom: spacing.lg,
-  },
-  reflectionContent: { flex: 1, alignItems: 'flex-end' },
-  reflectionTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
-  reflectionTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  prompt: { color: colors.textMuted, fontSize: typography.small, lineHeight: 21, textAlign: 'right', writingDirection: 'rtl', marginTop: spacing.xs },
-  noteCard: { padding: spacing.lg, marginBottom: spacing.lg },
-  noteHeader: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
-  noteTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  noteInput: {
-    minHeight: 100,
-    borderRadius: radius.md,
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    color: colors.text,
-    fontSize: typography.body,
-    lineHeight: 22,
-    writingDirection: 'rtl',
-  },
-  streakCard: {
-    minHeight: 132,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  booksDecoration: { width: 92, height: 82, justifyContent: 'flex-end', alignItems: 'center' },
-  bookOne: { position: 'absolute', width: 68, height: 58, borderRadius: 6, backgroundColor: '#244A64', transform: [{ rotate: '-7deg' }], bottom: 5 },
-  bookTwo: { position: 'absolute', width: 72, height: 54, borderRadius: 6, backgroundColor: '#3F6E86', transform: [{ rotate: '6deg' }], bottom: 6 },
-  bookThree: { width: 66, height: 52, borderRadius: 6, backgroundColor: colors.text, borderWidth: 2, borderColor: colors.gold },
-  streakTextWrap: { flex: 1, alignItems: 'flex-end' },
-  streakTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm },
-  streakTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  streakSubtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, writingDirection: 'rtl' },
-  streakTrack: { width: '100%', height: 7, borderRadius: radius.pill, backgroundColor: colors.divider, marginTop: spacing.md, overflow: 'hidden' },
-  streakFill: { height: '100%', backgroundColor: colors.teal, borderRadius: radius.pill },
-  smallRingText: { color: colors.text, fontSize: typography.tiny, fontWeight: '900', marginTop: 1 },
-  relatedRow: { flexDirection: 'row', gap: spacing.md },
-  relatedCard: { flex: 1, minHeight: 118, borderRadius: radius.lg, padding: spacing.lg, alignItems: 'flex-end', borderWidth: 1, borderColor: colors.border },
-  relatedIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-  relatedTitle: { color: colors.text, fontSize: typography.body, fontWeight: '900', writingDirection: 'rtl' },
-  relatedSubtitle: { color: colors.textMuted, fontSize: typography.tiny, marginTop: 2, writingDirection: 'rtl' },
-});

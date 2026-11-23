@@ -1,12 +1,11 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { IconName } from '../types';
 
 type Props = {
@@ -31,38 +30,48 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
   const weeklyProgress = Math.min(1, state.weeklyProgress / state.weeklyGoal);
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
-      <View style={styles.titleRow}>
-        <View style={styles.titleIcon}>
+      <div className="flex flex-row-reverse items-center gap-3 mb-4">
+        <div className="w-12 h-12 rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
           <AppIcon name="target" size={23} color={colors.primary} />
-        </View>
-        <View style={styles.titleTextWrap}>
-          <Text style={styles.title}>התקדמות ויעדים</Text>
-          <Text style={styles.subtitle}>התמונה הגדולה של המסע שלך</Text>
-        </View>
-      </View>
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <h1 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
+            התקדמות ויעדים
+          </h1>
+          <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
+            התמונה הגדולה של המסע שלך
+          </p>
+        </div>
+      </div>
 
-      <Card style={styles.scoreCard}>
-        <View style={styles.scoreDecor}>
+      <Card className="min-h-[160px] p-5 flex flex-row items-center gap-4 mb-4 overflow-hidden">
+        <div className="w-[72px] h-[72px] rounded-full bg-[#FFF5DB] flex items-center justify-center shrink-0">
           <AppIcon name="crown" size={36} color={colors.gold} />
-        </View>
-        <View style={styles.scoreContent}>
-          <Text style={styles.scoreLabel}>הניקוד הכולל</Text>
-          <Text style={styles.scoreValue}>{state.points.toLocaleString('he-IL')}</Text>
-          <Text style={styles.scoreCaption}>עוד 270 נקודות לדרגה הבאה</Text>
-          <View style={styles.levelTrack}>
-            <View style={[styles.levelFill, { width: '73%' }]} />
-          </View>
-        </View>
-        <View style={styles.levelBadge}>
-          <Text style={styles.levelNumber}>7</Text>
-          <Text style={styles.levelText}>דרגה</Text>
-        </View>
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+            הניקוד הכולל
+          </span>
+          <span className="text-[#17324D] text-[34px] font-black mt-0.5 leading-tight">
+            {state.points.toLocaleString('he-IL')}
+          </span>
+          <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
+            עוד 270 נקודות לדרגה הבאה
+          </span>
+          <div className="w-full h-[7px] rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
+            <div className="h-full rounded-full bg-[#2AAE9B]" style={{ width: '73%' }} />
+          </div>
+        </div>
+        <div className="w-[60px] h-[60px] rounded-full bg-[#EAF4FB] flex flex-col items-center justify-center shrink-0">
+          <span className="text-[#1B6F8F] text-[22px] font-black leading-none">7</span>
+          <span className="text-[#1B6F8F] text-[9px] font-extrabold mt-0.5">דרגה</span>
+        </div>
       </Card>
 
-      <View style={styles.summaryRow}>
+      <div className="flex flex-row-reverse gap-2 mb-4">
         <SummaryCard
           title="יעד יומי"
           value={`${state.dailyLogs.length}/${state.dailyGoal}`}
@@ -86,37 +95,49 @@ export function GoalsScreen({ onOpenProfile, onOpenBlessings, onOpenTorah }: Pro
           color={colors.coral}
           onPress={onOpenTorah}
         />
-      </View>
+      </div>
 
-      <Card style={styles.chartCard}>
-        <SectionHeader title="השבוע שלי" icon="chart" actionLabel={`${state.weeklyProgress}/${state.weeklyGoal}`} />
-        <View style={styles.chartArea}>
+      <Card className="p-4 mb-5">
+        <SectionHeader
+          title="השבוע שלי"
+          icon="chart"
+          actionLabel={`${state.weeklyProgress}/${state.weeklyGoal}`}
+        />
+        <div className="h-[180px] flex flex-row-reverse items-end justify-between pt-3">
           {week.map((item) => (
-            <View key={item.day} style={styles.barColumn}>
-              <Text style={styles.barValue}>{item.value}</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { height: `${Math.max(18, (item.value / 12) * 100)}%` }]} />
-              </View>
-              <Text style={styles.dayLabel}>{item.day}</Text>
-            </View>
+            <div key={item.day} className="flex-1 h-full flex flex-col items-center justify-end">
+              <span className="text-[#718397] text-[10px] font-bold mb-1">{item.value}</span>
+              <div className="w-5 h-[125px] rounded-full bg-[#EAF4FB] overflow-hidden flex items-end">
+                <div
+                  className="w-full rounded-full bg-[#2AAE9B]"
+                  style={{ height: `${Math.max(18, (item.value / 12) * 100)}%` }}
+                />
+              </div>
+              <span className="text-[#17324D] text-[13px] font-extrabold mt-2">{item.day}</span>
+            </div>
           ))}
-        </View>
-        <View style={styles.weekProgressRow}>
-          <Text style={styles.weekProgressText}>השלמת {Math.round(weeklyProgress * 100)}% מהיעד השבועי</Text>
-          <View style={styles.weekTrack}>
-            <View style={[styles.weekFill, { width: `${weeklyProgress * 100}%` }]} />
-          </View>
-        </View>
+        </div>
+        <div className="mt-4">
+          <p dir="rtl" className="text-[#718397] text-[13px] text-right">
+            השלמת {Math.round(weeklyProgress * 100)}% מהיעד השבועי
+          </p>
+          <div className="w-full h-2 rounded-full bg-[#EAF0F4] overflow-hidden mt-2">
+            <div
+              className="h-full rounded-full bg-[#1B6F8F] transition-all duration-300"
+              style={{ width: `${weeklyProgress * 100}%` }}
+            />
+          </div>
+        </div>
       </Card>
 
       <SectionHeader title="הישגים" icon="trophy" />
-      <View style={styles.badgesGrid}>
+      <div className="flex flex-col gap-3">
         <Badge title="מתמיד" subtitle="14 ימי לימוד" icon="flame" color={colors.coral} background={colors.coralSoft} />
         <Badge title="לב פתוח" subtitle="20 מעשי חסד" icon="heart" color={colors.green} background={colors.greenSoft} />
         <Badge title="מברך" subtitle="500 ברכות" icon="star" color={colors.gold} background={colors.goldSoft} />
         <Badge title="בן תורה" subtitle="30 דברי תורה" icon="book" color={colors.purple} background={colors.purpleSoft} />
-      </View>
-    </ScrollView>
+      </div>
+    </div>
   );
 }
 
@@ -136,13 +157,22 @@ function SummaryCard({
   onPress?: () => void;
 }) {
   return (
-    <Pressable style={styles.summaryCard} onPress={onPress} disabled={!onPress}>
+    <button
+      type="button"
+      onClick={onPress}
+      disabled={!onPress}
+      className={`flex-1 min-h-[142px] rounded-[22px] bg-white border border-[#DDE8EE] flex flex-col items-center justify-center p-2 card-shadow transition-colors ${
+        onPress ? 'hover:border-[#2AAE9B]' : 'cursor-default'
+      }`}
+    >
       <ProgressRing progress={progress} size={72} strokeWidth={7} color={color}>
         <AppIcon name={icon} size={18} color={color} />
       </ProgressRing>
-      <Text style={styles.summaryValue}>{value}</Text>
-      <Text style={styles.summaryTitle}>{title}</Text>
-    </Pressable>
+      <span className="text-[#17324D] text-[13px] font-black mt-2 text-center">{value}</span>
+      <span dir="rtl" className="text-[#718397] text-[10px] font-bold mt-0.5 text-center">
+        {title}
+      </span>
+    </button>
   );
 }
 
@@ -160,57 +190,22 @@ function Badge({
   background: string;
 }) {
   return (
-    <View style={styles.badgeCard}>
-      <View style={[styles.badgeIcon, { backgroundColor: background }]}> 
+    <div className="min-h-[78px] rounded-[22px] bg-white border border-[#DDE8EE] p-3 flex flex-row-reverse items-center gap-3">
+      <div
+        className="w-[46px] h-[46px] rounded-[16px] flex items-center justify-center shrink-0"
+        style={{ backgroundColor: background }}
+      >
         <AppIcon name={icon} size={25} color={color} />
-      </View>
-      <View style={styles.badgeTextWrap}>
-        <Text style={styles.badgeTitle}>{title}</Text>
-        <Text style={styles.badgeSubtitle}>{subtitle}</Text>
-      </View>
+      </div>
+      <div className="flex-1 flex flex-col items-end">
+        <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
+          {title}
+        </span>
+        <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
+          {subtitle}
+        </span>
+      </div>
       <AppIcon name="check" size={19} color={colors.green} />
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  titleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md, marginBottom: spacing.lg },
-  titleIcon: { width: 48, height: 48, borderRadius: radius.md, backgroundColor: colors.blueSoft, alignItems: 'center', justifyContent: 'center' },
-  titleTextWrap: { flex: 1, alignItems: 'flex-end' },
-  title: { color: colors.text, fontSize: typography.h1, fontWeight: '900', writingDirection: 'rtl' },
-  subtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: 3, writingDirection: 'rtl' },
-  scoreCard: { minHeight: 160, padding: spacing.xl, flexDirection: 'row', alignItems: 'center', gap: spacing.lg, marginBottom: spacing.lg, overflow: 'hidden' },
-  scoreDecor: { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.goldSoft, alignItems: 'center', justifyContent: 'center' },
-  scoreContent: { flex: 1, alignItems: 'flex-end' },
-  scoreLabel: { color: colors.textMuted, fontSize: typography.small, fontWeight: '700', writingDirection: 'rtl' },
-  scoreValue: { color: colors.text, fontSize: 34, fontWeight: '900', marginTop: 2 },
-  scoreCaption: { color: colors.textMuted, fontSize: typography.tiny, marginTop: spacing.xs, writingDirection: 'rtl' },
-  levelTrack: { width: '100%', height: 7, borderRadius: radius.pill, backgroundColor: colors.divider, marginTop: spacing.md, overflow: 'hidden' },
-  levelFill: { height: '100%', borderRadius: radius.pill, backgroundColor: colors.teal },
-  levelBadge: { width: 60, height: 60, borderRadius: 30, backgroundColor: colors.blueSoft, alignItems: 'center', justifyContent: 'center' },
-  levelNumber: { color: colors.primary, fontSize: 22, fontWeight: '900' },
-  levelText: { color: colors.primary, fontSize: 9, fontWeight: '800' },
-  summaryRow: { flexDirection: 'row-reverse', gap: spacing.sm, marginBottom: spacing.lg },
-  summaryCard: { flex: 1, minHeight: 142, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', padding: spacing.sm, ...shadow },
-  summaryValue: { color: colors.text, fontSize: typography.small, fontWeight: '900', marginTop: spacing.sm, textAlign: 'center' },
-  summaryTitle: { color: colors.textMuted, fontSize: 10, fontWeight: '700', marginTop: 2, textAlign: 'center', writingDirection: 'rtl' },
-  chartCard: { padding: spacing.lg, marginBottom: spacing.xl },
-  chartArea: { height: 180, flexDirection: 'row-reverse', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: spacing.md },
-  barColumn: { flex: 1, height: '100%', alignItems: 'center', justifyContent: 'flex-end' },
-  barValue: { color: colors.textMuted, fontSize: 10, fontWeight: '700', marginBottom: spacing.xs },
-  barTrack: { width: 20, height: 125, borderRadius: radius.pill, backgroundColor: colors.blueSoft, overflow: 'hidden', justifyContent: 'flex-end' },
-  barFill: { width: '100%', borderRadius: radius.pill, backgroundColor: colors.teal },
-  dayLabel: { color: colors.text, fontSize: typography.small, fontWeight: '800', marginTop: spacing.sm },
-  weekProgressRow: { marginTop: spacing.lg },
-  weekProgressText: { color: colors.textMuted, fontSize: typography.small, textAlign: 'right', writingDirection: 'rtl' },
-  weekTrack: { width: '100%', height: 8, borderRadius: radius.pill, backgroundColor: colors.divider, overflow: 'hidden', marginTop: spacing.sm },
-  weekFill: { height: '100%', borderRadius: radius.pill, backgroundColor: colors.primary },
-  badgesGrid: { gap: spacing.md },
-  badgeCard: { minHeight: 78, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: spacing.md, flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md },
-  badgeIcon: { width: 46, height: 46, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  badgeTextWrap: { flex: 1, alignItems: 'flex-end' },
-  badgeTitle: { color: colors.text, fontSize: typography.body, fontWeight: '900', writingDirection: 'rtl' },
-  badgeSubtitle: { color: colors.textMuted, fontSize: typography.tiny, marginTop: 3, writingDirection: 'rtl' },
-});

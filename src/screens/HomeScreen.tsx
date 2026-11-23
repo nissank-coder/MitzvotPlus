@@ -1,9 +1,7 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { shortcuts } from '../data';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { FeatureKey } from '../types';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
@@ -37,122 +35,159 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
   };
 
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
-      <LinearGradient colors={['#F7FCFF', '#E7F5F5']} style={styles.hero}>
+      <div className="relative min-h-[178px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-3 bg-gradient-to-b from-[#F7FCFF] to-[#E7F5F5] card-shadow flex items-center">
         <CitySilhouette opacity={0.23} />
-        <View style={styles.heroRow}>
+        <div className="relative z-10 w-full flex flex-row-reverse items-center justify-between gap-4">
           <ProgressRing progress={dailyProgress} size={124} strokeWidth={12}>
             <AppIcon name="scroll" size={25} color={colors.teal} />
-            <Text style={styles.ringValue}>{state.dailyLogs.length}/{state.dailyGoal}</Text>
+            <span className="text-[#17324D] text-[17px] font-black mt-0.5">
+              {state.dailyLogs.length}/{state.dailyGoal}
+            </span>
           </ProgressRing>
-          <View style={styles.heroText}>
-            <View style={styles.eyebrowRow}>
-              <Text style={styles.eyebrow}>היעד היומי</Text>
+          <div className="flex-1 flex flex-col items-end">
+            <div className="flex flex-row-reverse items-center gap-1">
+              <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-extrabold">
+                היעד היומי
+              </span>
               <AppIcon name="target" size={18} color={colors.teal} />
-            </View>
-            <Text style={styles.heroTitle}>{state.dailyLogs.length} מתוך {state.dailyGoal} מצוות</Text>
-            <Text style={styles.heroSubtitle}>
+            </div>
+            <h1 dir="rtl" className="text-[#17324D] text-[23px] leading-[29px] font-black text-right mt-2">
+              {state.dailyLogs.length} מתוך {state.dailyGoal} מצוות
+            </h1>
+            <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
               {state.dailyLogs.length >= state.dailyGoal
                 ? 'היעד הושלם. ממשיכים מתוך שמחה'
                 : `עוד ${state.dailyGoal - state.dailyLogs.length} מצוות להשלמת היעד`}
-            </Text>
-            <View style={styles.heroProgressTrack}>
-              <View style={[styles.heroProgressFill, { width: `${dailyProgress * 100}%` }]} />
-            </View>
-          </View>
-        </View>
-      </LinearGradient>
+            </p>
+            <div className="w-full h-[7px] rounded-full bg-[#D8E8EB] mt-3 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#2AAE9B] transition-all duration-300"
+                style={{ width: `${dailyProgress * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <View style={styles.metricRow}>
+      <div className="flex flex-row-reverse gap-2 mb-5">
         <MetricChip icon="coin" label="ניקוד" value={state.points.toLocaleString('he-IL')} color={colors.gold} />
         <MetricChip icon="flame" label="רצף" value={`${state.torahStreak} ימים`} color={colors.coral} />
         <MetricChip icon="star" label="ברכות" value={`${blessingTotal}/100`} color={colors.teal} />
-      </View>
+      </div>
 
       <SectionHeader title="פעולות מהירות" icon="plus" />
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.shortcutRow}
-      >
+      <div className="flex flex-row gap-3 overflow-x-auto no-scrollbar pb-5">
         {[...shortcuts].reverse().map((item) => (
-          <Pressable key={item.key} style={styles.shortcut} onPress={() => handleShortcut(item.key)}>
-            <View style={[styles.shortcutIcon, { backgroundColor: item.background }]}> 
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => handleShortcut(item.key)}
+            className="w-[92px] min-w-[92px] min-h-[102px] rounded-[22px] bg-white border border-[#DDE8EE] flex flex-col items-center justify-center p-2 hover:border-[#2AAE9B] transition-colors shrink-0"
+          >
+            <div
+              className="w-12 h-12 rounded-[16px] flex items-center justify-center mb-2"
+              style={{ backgroundColor: item.background }}
+            >
               <AppIcon name={item.icon} size={25} color={item.color} />
-            </View>
-            <Text style={styles.shortcutTitle}>{item.title}</Text>
-          </Pressable>
+            </div>
+            <span dir="rtl" className="text-[#17324D] text-[13px] font-extrabold text-center">
+              {item.title}
+            </span>
+          </button>
         ))}
-      </ScrollView>
+      </div>
 
-      <Card style={styles.sectionCard}>
+      <Card className="p-4 mb-4">
         <SectionHeader title="היום שלי" icon="calendar" actionLabel="הוספה" onAction={onQuickAdd} />
         {latestLogs.length === 0 ? (
-          <View style={styles.emptyState}>
+          <div className="flex flex-col items-center py-5">
             <AppIcon name="leaf" size={34} color={colors.teal} />
-            <Text style={styles.emptyTitle}>היום מתחיל עכשיו</Text>
-            <Text style={styles.emptyText}>הוסיפו את המצווה הראשונה שלכם להיום</Text>
-          </View>
+            <span className="mt-2 text-[#17324D] text-[17px] font-black">היום מתחיל עכשיו</span>
+            <span dir="rtl" className="mt-1 text-[#718397] text-[13px] text-center">
+              הוסיפו את המצווה הראשונה שלכם להיום
+            </span>
+          </div>
         ) : (
           latestLogs.map((item, index) => (
-            <View key={item.id} style={[styles.logRow, index < latestLogs.length - 1 && styles.logBorder]}>
-              <View style={styles.logStatus}>
+            <div
+              key={item.id}
+              className={`min-h-[58px] flex flex-row items-center justify-between py-2 ${
+                index < latestLogs.length - 1 ? 'border-b border-[#EAF0F4]' : ''
+              }`}
+            >
+              <div className="flex flex-row items-center gap-2">
                 <AppIcon name="check" size={20} color={colors.green} />
-                <Text style={styles.logTime}>{item.time}</Text>
-              </View>
-              <View style={styles.logTitleWrap}>
-                <Text style={styles.logTitle}>{item.title}</Text>
-                <View style={styles.logIcon}>
+                <span className="text-[#718397] text-[13px] font-bold">{item.time}</span>
+              </div>
+              <div className="flex-1 flex flex-row-reverse items-center justify-start gap-3">
+                <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold text-right">
+                  {item.title}
+                </span>
+                <div className="w-[38px] h-[38px] rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
                   <AppIcon name={item.icon} size={19} color={colors.primary} />
-                </View>
-              </View>
-            </View>
+                </div>
+              </div>
+            </div>
           ))
         )}
       </Card>
 
-      <Pressable onPress={onOpenCommunity}>
-        <Card style={styles.challengeCard}>
+      <button
+        type="button"
+        onClick={onOpenCommunity}
+        className="w-full text-left bg-transparent border-0 p-0 mb-4 block"
+      >
+        <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 overflow-hidden hover:border-[#2AAE9B] transition-colors">
           <HillDecoration />
-          <View style={styles.challengeText}>
-            <View style={styles.challengeTitleRow}>
-              <Text style={styles.challengeTitle}>האתגר השבועי</Text>
+          <div className="flex-1 flex flex-col items-end">
+            <div className="flex flex-row-reverse items-center gap-2">
+              <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+                האתגר השבועי
+              </span>
               <AppIcon name="trophy" size={21} color={colors.gold} />
-            </View>
-            <Text style={styles.challengeValue}>{state.weeklyProgress} מתוך {state.weeklyGoal} מצוות</Text>
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${weeklyProgress * 100}%` }]} />
-            </View>
-            <Text style={styles.challengeCaption}>כל מצווה שלך מקדמת גם את הקהילה</Text>
-          </View>
+            </div>
+            <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-1">
+              {state.weeklyProgress} מתוך {state.weeklyGoal} מצוות
+            </span>
+            <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#2AAE9B] transition-all duration-300"
+                style={{ width: `${weeklyProgress * 100}%` }}
+              />
+            </div>
+            <span dir="rtl" className="text-[#718397] text-[11px] mt-2">
+              כל מצווה שלך מקדמת גם את הקהילה
+            </span>
+          </div>
         </Card>
-      </Pressable>
+      </button>
 
-      <Card style={styles.rewardCard}>
-        <View style={styles.rewardIllustration}>
-          <View style={styles.bookBack} />
-          <View style={styles.bookMiddle} />
-          <View style={styles.bookFront} />
-        </View>
-        <View style={styles.rewardTextWrap}>
-          <View style={styles.rewardTitleRow}>
-            <Text style={styles.rewardTitle}>הטבת השבוע</Text>
+      <Card className="min-h-[148px] p-4 flex flex-row items-center gap-4">
+        <div className="relative w-[112px] h-[92px] flex justify-end items-center shrink-0">
+          <div className="absolute w-[80px] h-[72px] rounded-[6px] bg-[#274C67] -rotate-7 bottom-[2px] left-[12px]" />
+          <div className="absolute w-[86px] h-[68px] rounded-[6px] bg-[#3B6A83] rotate-4 bottom-[4px] left-[17px]" />
+          <div className="relative z-10 w-[78px] h-[64px] rounded-[6px] bg-[#17324D] border-2 border-[#F4B942] mx-auto mt-auto" />
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              הטבת השבוע
+            </span>
             <AppIcon name="gift" size={21} color={colors.teal} />
-          </View>
-          <Text style={styles.rewardText}>ספר מבחר דברי תורה בהנחה מיוחדת לחברי מצוות+</Text>
-          <View style={styles.rewardPrice}>
+          </div>
+          <p dir="rtl" className="mt-2 text-[#718397] text-[13px] leading-5 text-right">
+            ספר מבחר דברי תורה בהנחה מיוחדת לחברי מצוות+
+          </p>
+          <div className="flex flex-row-reverse items-center gap-1 mt-3 px-2 py-[5px] rounded-full bg-[#FFF5DB]">
             <AppIcon name="coin" size={15} color={colors.gold} />
-            <Text style={styles.rewardPriceText}>2,000 נקודות</Text>
-          </View>
-        </View>
+            <span className="text-[#966500] text-[11px] font-black">2,000 נקודות</span>
+          </div>
+        </div>
       </Card>
-    </ScrollView>
+    </div>
   );
 }
 
@@ -168,355 +203,17 @@ function MetricChip({
   color: string;
 }) {
   return (
-    <View style={styles.metricChip}>
-      <View style={[styles.metricIcon, { backgroundColor: `${color}1F` }]}> 
+    <div className="flex-1 min-h-[72px] bg-white rounded-[22px] border border-[#DDE8EE] px-2 py-3 flex flex-row-reverse items-center justify-center gap-2">
+      <div
+        className="w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0"
+        style={{ backgroundColor: `${color}1F` }}
+      >
         <AppIcon name={icon} size={18} color={color} />
-      </View>
-      <View style={styles.metricTextWrap}>
-        <Text style={styles.metricValue}>{value}</Text>
-        <Text style={styles.metricLabel}>{label}</Text>
-      </View>
-    </View>
+      </div>
+      <div className="flex flex-col items-end">
+        <span className="text-[#17324D] text-[13px] font-black leading-tight">{value}</span>
+        <span className="text-[#718397] text-[11px] mt-0.5 leading-tight">{label}</span>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxxl,
-  },
-  hero: {
-    minHeight: 178,
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#D5E8EC',
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    ...shadow,
-  },
-  heroRow: {
-    flex: 1,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.lg,
-  },
-  heroText: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  eyebrowRow: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  eyebrow: {
-    color: colors.primary,
-    fontSize: typography.small,
-    fontWeight: '800',
-    writingDirection: 'rtl',
-  },
-  heroTitle: {
-    color: colors.text,
-    fontSize: 23,
-    lineHeight: 29,
-    fontWeight: '900',
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    marginTop: spacing.sm,
-  },
-  heroSubtitle: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    marginTop: spacing.xs,
-  },
-  heroProgressTrack: {
-    width: '100%',
-    height: 7,
-    borderRadius: radius.pill,
-    backgroundColor: '#D8E8EB',
-    marginTop: spacing.md,
-    overflow: 'hidden',
-  },
-  heroProgressFill: {
-    height: '100%',
-    borderRadius: radius.pill,
-    backgroundColor: colors.teal,
-  },
-  ringValue: {
-    color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '900',
-    marginTop: 2,
-  },
-  metricRow: {
-    flexDirection: 'row-reverse',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  metricChip: {
-    flex: 1,
-    minHeight: 72,
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.md,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  metricIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  metricTextWrap: {
-    alignItems: 'flex-end',
-  },
-  metricValue: {
-    color: colors.text,
-    fontSize: typography.small,
-    fontWeight: '900',
-  },
-  metricLabel: {
-    color: colors.textMuted,
-    fontSize: typography.tiny,
-    marginTop: 2,
-  },
-  shortcutRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  shortcut: {
-    width: 92,
-    minHeight: 102,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.sm,
-  },
-  shortcutIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  shortcutTitle: {
-    color: colors.text,
-    fontSize: typography.small,
-    fontWeight: '800',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  sectionCard: {
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  logRow: {
-    minHeight: 58,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-  },
-  logBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-  },
-  logStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  logTime: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    fontWeight: '700',
-  },
-  logTitleWrap: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
-    justifyContent: 'flex-start',
-  },
-  logTitle: {
-    color: colors.text,
-    fontSize: typography.body,
-    fontWeight: '800',
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  logIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: radius.md,
-    backgroundColor: colors.blueSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  emptyTitle: {
-    marginTop: spacing.sm,
-    color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '900',
-  },
-  emptyText: {
-    marginTop: spacing.xs,
-    color: colors.textMuted,
-    fontSize: typography.small,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  challengeCard: {
-    minHeight: 132,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    overflow: 'hidden',
-  },
-  challengeText: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  challengeTitleRow: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  challengeTitle: {
-    color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '900',
-    writingDirection: 'rtl',
-  },
-  challengeValue: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    fontWeight: '700',
-    marginTop: spacing.xs,
-    writingDirection: 'rtl',
-  },
-  progressTrack: {
-    width: '100%',
-    height: 8,
-    borderRadius: radius.pill,
-    backgroundColor: colors.divider,
-    marginTop: spacing.md,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: radius.pill,
-    backgroundColor: colors.teal,
-  },
-  challengeCaption: {
-    color: colors.textMuted,
-    fontSize: typography.tiny,
-    marginTop: spacing.sm,
-    writingDirection: 'rtl',
-  },
-  rewardCard: {
-    minHeight: 148,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  rewardIllustration: {
-    width: 112,
-    height: 92,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  bookBack: {
-    position: 'absolute',
-    width: 80,
-    height: 72,
-    borderRadius: 6,
-    backgroundColor: '#274C67',
-    transform: [{ rotate: '-7deg' }],
-    bottom: 2,
-    left: 12,
-  },
-  bookMiddle: {
-    position: 'absolute',
-    width: 86,
-    height: 68,
-    borderRadius: 6,
-    backgroundColor: '#3B6A83',
-    transform: [{ rotate: '4deg' }],
-    bottom: 4,
-    left: 17,
-  },
-  bookFront: {
-    width: 78,
-    height: 64,
-    borderRadius: 6,
-    backgroundColor: '#17324D',
-    borderWidth: 2,
-    borderColor: colors.gold,
-  },
-  rewardTextWrap: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  rewardTitleRow: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  rewardTitle: {
-    color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '900',
-    writingDirection: 'rtl',
-  },
-  rewardText: {
-    marginTop: spacing.sm,
-    color: colors.textMuted,
-    fontSize: typography.small,
-    lineHeight: 20,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  rewardPrice: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
-    borderRadius: radius.pill,
-    backgroundColor: colors.goldSoft,
-  },
-  rewardPriceText: {
-    color: '#966500',
-    fontSize: typography.tiny,
-    fontWeight: '900',
-  },
-});

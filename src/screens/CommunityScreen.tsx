@@ -1,5 +1,4 @@
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
@@ -7,177 +6,210 @@ import { HillDecoration } from '../components/Decorations';
 import { SectionHeader } from '../components/SectionHeader';
 import { leaderboard } from '../data';
 import { useAppStore } from '../store/AppStore';
-import { colors, radius, shadow, spacing, typography } from '../theme';
+import { colors } from '../theme';
 
 export function CommunityScreen({ onOpenProfile }: { onOpenProfile: () => void }) {
   const { state } = useAppStore();
+  const [joinedGroups, setJoinedGroups] = useState<Record<string, boolean>>({});
   const communityProgress = 1540 / 2000;
 
+  const toggleGroup = (key: string) => {
+    setJoinedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
-      <View style={styles.titleRow}>
-        <View style={styles.titleIcon}>
+      <div className="flex flex-row-reverse items-center gap-3 mb-4">
+        <div className="w-12 h-12 rounded-[16px] bg-[#EAF4FB] flex items-center justify-center shrink-0">
           <AppIcon name="community" size={24} color={colors.primary} />
-        </View>
-        <View style={styles.titleTextWrap}>
-          <Text style={styles.title}>קהילה ודירוג</Text>
-          <Text style={styles.subtitle}>מתקדמים יחד, בלי תחרותיות מיותרת</Text>
-        </View>
-      </View>
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <h1 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
+            קהילה ודירוג
+          </h1>
+          <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
+            מתקדמים יחד, בלי תחרותיות מיותרת
+          </p>
+        </div>
+      </div>
 
-      <Card style={styles.rankCard}>
-        <View style={styles.rankBadge}>
+      <Card className="min-h-[148px] p-5 flex flex-row items-center gap-4 mb-4 overflow-hidden">
+        <div className="w-[88px] h-[102px] rounded-[22px] bg-[#FFF5DB] flex flex-col items-center justify-center shrink-0">
           <AppIcon name="crown" size={30} color={colors.gold} />
-          <Text style={styles.rankNumber}>3</Text>
-          <Text style={styles.rankLabel}>מקום</Text>
-        </View>
-        <View style={styles.rankTextWrap}>
-          <Text style={styles.rankTitle}>הדירוג השבועי שלך</Text>
-          <Text style={styles.rankPoints}>{state.points.toLocaleString('he-IL')} נקודות</Text>
-          <View style={styles.rankMetaRow}>
-            <View style={styles.rankMetaPill}>
+          <span className="text-[#17324D] text-[28px] font-black mt-0.5 leading-none">3</span>
+          <span className="text-[#718397] text-[11px] font-extrabold mt-1">מקום</span>
+        </div>
+        <div className="flex-1 flex flex-col items-end">
+          <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+            הדירוג השבועי שלך
+          </span>
+          <span dir="rtl" className="text-[#17324D] text-[27px] font-black mt-1 leading-tight">
+            {state.points.toLocaleString('he-IL')} נקודות
+          </span>
+          <div className="flex flex-row-reverse gap-2 mt-3 flex-wrap">
+            <div className="flex flex-row-reverse items-center gap-1 px-2 py-[5px] rounded-full bg-[#F4F8FB]">
               <AppIcon name="flame" size={15} color={colors.coral} />
-              <Text style={styles.rankMetaText}>{state.torahStreak} ימי רצף</Text>
-            </View>
-            <View style={styles.rankMetaPill}>
+              <span dir="rtl" className="text-[#718397] text-[10px] font-bold">
+                {state.torahStreak} ימי רצף
+              </span>
+            </div>
+            <div className="flex flex-row-reverse items-center gap-1 px-2 py-[5px] rounded-full bg-[#F4F8FB]">
               <AppIcon name="chart" size={15} color={colors.primary} />
-              <Text style={styles.rankMetaText}>עלייה של מקום אחד</Text>
-            </View>
-          </View>
-        </View>
+              <span dir="rtl" className="text-[#718397] text-[10px] font-bold">
+                עלייה של מקום אחד
+              </span>
+            </div>
+          </div>
+        </div>
       </Card>
 
-      <Card style={styles.challengeCard}>
+      <Card className="min-h-[138px] p-4 flex flex-row items-center gap-3 mb-4 overflow-hidden">
         <HillDecoration />
-        <View style={styles.challengeTextWrap}>
-          <View style={styles.challengeTitleRow}>
-            <Text style={styles.challengeTitle}>אתגר הקהילה</Text>
+        <div className="flex-1 flex flex-col items-end">
+          <div className="flex flex-row-reverse items-center gap-2">
+            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
+              אתגר הקהילה
+            </span>
             <AppIcon name="target" size={21} color={colors.teal} />
-          </View>
-          <Text style={styles.challengeSubtitle}>יעד קבוצתי: 2,000 מצוות השבוע</Text>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${communityProgress * 100}%` }]} />
-          </View>
-          <Text style={styles.progressText}>1,540 מתוך 2,000</Text>
-        </View>
+          </div>
+          <span dir="rtl" className="text-[#718397] text-[13px] mt-1 text-right">
+            יעד קבוצתי: 2,000 מצוות השבוע
+          </span>
+          <div className="w-full h-2 rounded-full bg-[#EAF0F4] overflow-hidden mt-3">
+            <div
+              className="h-full rounded-full bg-[#2AAE9B]"
+              style={{ width: `${communityProgress * 100}%` }}
+            />
+          </div>
+          <span className="text-[#2AAE9B] text-[11px] font-black mt-1">1,540 מתוך 2,000</span>
+        </div>
       </Card>
 
-      <Card style={styles.leaderboardCard}>
+      <Card className="p-4 mb-5">
         <SectionHeader title="המובילים השבוע" icon="trophy" actionLabel="חברים" />
         {leaderboard.map((person, index) => {
           const isMe = person.id === 'me';
+          const medalColor =
+            index === 0 ? 'bg-[#F6C94A]' : index === 1 ? 'bg-[#CAD3DC]' : 'bg-[#D59A63]';
           return (
-            <View key={person.id} style={[styles.personRow, isMe && styles.personRowMe, index < leaderboard.length - 1 && styles.personBorder]}>
-              <View style={styles.rankPosition}>
+            <div
+              key={person.id}
+              className={`min-h-[70px] flex flex-row items-center px-2 py-2 rounded-[16px] ${
+                isMe ? 'bg-[#EAF4FB]' : ''
+              } ${index < leaderboard.length - 1 ? 'border-b border-[#EAF0F4]' : ''}`}
+            >
+              <div className="w-9 flex items-center justify-center shrink-0">
                 {index < 3 ? (
-                  <View style={[styles.medal, index === 0 ? styles.goldMedal : index === 1 ? styles.silverMedal : styles.bronzeMedal]}>
-                    <Text style={styles.medalText}>{index + 1}</Text>
-                  </View>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${medalColor}`}>
+                    <span className="text-white text-[13px] font-black">{index + 1}</span>
+                  </div>
                 ) : (
-                  <Text style={styles.positionText}>{index + 1}</Text>
+                  <span className="text-[#718397] text-[13px] font-black">{index + 1}</span>
                 )}
-              </View>
-              <View style={styles.personScore}>
-                <Text style={styles.personPoints}>{person.points.toLocaleString('he-IL')}</Text>
-                <Text style={styles.personPointsLabel}>נק׳</Text>
-              </View>
-              <View style={styles.personInfo}>
-                <View style={[styles.avatar, isMe && styles.avatarMe]}>
-                  <Text style={[styles.avatarText, isMe && styles.avatarTextMe]}>{person.initials}</Text>
-                </View>
-                <View style={styles.personTextWrap}>
-                  <Text style={styles.personName}>{person.name}{isMe ? ' (אתה)' : ''}</Text>
-                  <View style={styles.streakRow}>
+              </div>
+              <div className="w-[62px] flex flex-col items-center shrink-0">
+                <span className="text-[#17324D] text-[13px] font-black">
+                  {person.points.toLocaleString('he-IL')}
+                </span>
+                <span className="text-[#718397] text-[9px] mt-0.5">נק׳</span>
+              </div>
+              <div className="flex-1 flex flex-row-reverse items-center gap-3">
+                <div
+                  className={`w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 ${
+                    isMe ? 'bg-[#2AAE9B]' : 'bg-[#F4F8FB]'
+                  }`}
+                >
+                  <span className={`text-[13px] font-black ${isMe ? 'text-white' : 'text-[#1B6F8F]'}`}>
+                    {person.initials}
+                  </span>
+                </div>
+                <div className="flex-1 flex flex-col items-end">
+                  <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
+                    {person.name}
+                    {isMe ? ' (אתה)' : ''}
+                  </span>
+                  <div className="flex flex-row-reverse items-center gap-[3px] mt-0.5">
                     <AppIcon name="flame" size={13} color={colors.coral} />
-                    <Text style={styles.personStreak}>{person.streak} ימים</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
+                    <span className="text-[#718397] text-[11px] font-bold">{person.streak} ימים</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           );
         })}
       </Card>
 
       <SectionHeader title="קבוצות פעילות" icon="community" />
-      <View style={styles.groupsRow}>
-        <GroupCard title="לומדים כל יום" members="286 חברים" icon="book" background={colors.purpleSoft} color={colors.purple} />
-        <GroupCard title="מאה ברכות" members="412 חברים" icon="star" background={colors.mintSoft} color={colors.teal} />
-      </View>
-    </ScrollView>
+      <div className="flex flex-row gap-3">
+        <GroupCard
+          title="לומדים כל יום"
+          members="286 חברים"
+          icon="book"
+          background={colors.purpleSoft}
+          color={colors.purple}
+          joined={Boolean(joinedGroups.torah)}
+          onPress={() => toggleGroup('torah')}
+        />
+        <GroupCard
+          title="מאה ברכות"
+          members="412 חברים"
+          icon="star"
+          background={colors.mintSoft}
+          color={colors.teal}
+          joined={Boolean(joinedGroups.blessings)}
+          onPress={() => toggleGroup('blessings')}
+        />
+      </div>
+    </div>
   );
 }
 
-function GroupCard({ title, members, icon, background, color }: { title: string; members: string; icon: 'book' | 'star'; background: string; color: string }) {
+function GroupCard({
+  title,
+  members,
+  icon,
+  background,
+  color,
+  joined,
+  onPress,
+}: {
+  title: string;
+  members: string;
+  icon: 'book' | 'star';
+  background: string;
+  color: string;
+  joined: boolean;
+  onPress: () => void;
+}) {
   return (
-    <Pressable style={styles.groupCard}>
-      <View style={[styles.groupIcon, { backgroundColor: background }]}> 
+    <button
+      type="button"
+      onClick={onPress}
+      className="flex-1 min-h-[174px] rounded-[22px] bg-white border border-[#DDE8EE] flex flex-col items-center justify-center p-3 card-shadow hover:border-[#2AAE9B] transition-colors"
+    >
+      <div
+        className="w-[50px] h-[50px] rounded-[16px] flex items-center justify-center"
+        style={{ backgroundColor: background }}
+      >
         <AppIcon name={icon} size={25} color={color} />
-      </View>
-      <Text style={styles.groupTitle}>{title}</Text>
-      <Text style={styles.groupMembers}>{members}</Text>
-      <View style={styles.joinPill}>
-        <Text style={styles.joinText}>הצטרפות</Text>
-      </View>
-    </Pressable>
+      </div>
+      <span dir="rtl" className="text-[#17324D] text-[15px] font-black mt-2 text-center">
+        {title}
+      </span>
+      <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
+        {members}
+      </span>
+      <div
+        className={`mt-3 px-3 py-1.5 rounded-full ${
+          joined ? 'bg-[#EAF7EF]' : 'bg-[#EAF4FB]'
+        }`}
+      >
+        <span className={`text-[11px] font-black ${joined ? 'text-[#4DAA78]' : 'text-[#1B6F8F]'}`}>
+          {joined ? 'מחובר' : 'הצטרפות'}
+        </span>
+      </div>
+    </button>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  titleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md, marginBottom: spacing.lg },
-  titleIcon: { width: 48, height: 48, borderRadius: radius.md, backgroundColor: colors.blueSoft, alignItems: 'center', justifyContent: 'center' },
-  titleTextWrap: { flex: 1, alignItems: 'flex-end' },
-  title: { color: colors.text, fontSize: typography.h1, fontWeight: '900', writingDirection: 'rtl' },
-  subtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: 3, writingDirection: 'rtl' },
-  rankCard: { minHeight: 148, padding: spacing.xl, flexDirection: 'row', alignItems: 'center', gap: spacing.lg, marginBottom: spacing.lg, overflow: 'hidden' },
-  rankBadge: { width: 88, height: 102, borderRadius: radius.lg, backgroundColor: colors.goldSoft, alignItems: 'center', justifyContent: 'center' },
-  rankNumber: { color: colors.text, fontSize: 28, fontWeight: '900', marginTop: 2 },
-  rankLabel: { color: colors.textMuted, fontSize: typography.tiny, fontWeight: '800' },
-  rankTextWrap: { flex: 1, alignItems: 'flex-end' },
-  rankTitle: { color: colors.textMuted, fontSize: typography.small, fontWeight: '700', writingDirection: 'rtl' },
-  rankPoints: { color: colors.text, fontSize: 27, fontWeight: '900', marginTop: spacing.xs, writingDirection: 'rtl' },
-  rankMetaRow: { flexDirection: 'row-reverse', gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' },
-  rankMetaPill: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.background },
-  rankMetaText: { color: colors.textMuted, fontSize: 10, fontWeight: '700', writingDirection: 'rtl' },
-  challengeCard: { minHeight: 138, padding: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.lg, overflow: 'hidden' },
-  challengeTextWrap: { flex: 1, alignItems: 'flex-end' },
-  challengeTitleRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.sm },
-  challengeTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '900', writingDirection: 'rtl' },
-  challengeSubtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs, textAlign: 'right', writingDirection: 'rtl' },
-  progressTrack: { width: '100%', height: 8, borderRadius: radius.pill, backgroundColor: colors.divider, overflow: 'hidden', marginTop: spacing.md },
-  progressFill: { height: '100%', borderRadius: radius.pill, backgroundColor: colors.teal },
-  progressText: { color: colors.teal, fontSize: typography.tiny, fontWeight: '900', marginTop: spacing.xs },
-  leaderboardCard: { padding: spacing.lg, marginBottom: spacing.xl },
-  personRow: { minHeight: 70, flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.sm, paddingVertical: spacing.sm, borderRadius: radius.md },
-  personRowMe: { backgroundColor: colors.blueSoft },
-  personBorder: { borderBottomWidth: 1, borderBottomColor: colors.divider },
-  rankPosition: { width: 36, alignItems: 'center' },
-  medal: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  goldMedal: { backgroundColor: '#F6C94A' },
-  silverMedal: { backgroundColor: '#CAD3DC' },
-  bronzeMedal: { backgroundColor: '#D59A63' },
-  medalText: { color: colors.white, fontSize: typography.small, fontWeight: '900' },
-  positionText: { color: colors.textMuted, fontSize: typography.small, fontWeight: '900' },
-  personScore: { width: 62, alignItems: 'center' },
-  personPoints: { color: colors.text, fontSize: typography.small, fontWeight: '900' },
-  personPointsLabel: { color: colors.textMuted, fontSize: 9, marginTop: 1 },
-  personInfo: { flex: 1, flexDirection: 'row-reverse', alignItems: 'center', gap: spacing.md },
-  avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
-  avatarMe: { backgroundColor: colors.teal },
-  avatarText: { color: colors.primary, fontSize: typography.small, fontWeight: '900' },
-  avatarTextMe: { color: colors.white },
-  personTextWrap: { flex: 1, alignItems: 'flex-end' },
-  personName: { color: colors.text, fontSize: typography.body, fontWeight: '900', writingDirection: 'rtl' },
-  streakRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 3, marginTop: 3 },
-  personStreak: { color: colors.textMuted, fontSize: typography.tiny, fontWeight: '700' },
-  groupsRow: { flexDirection: 'row', gap: spacing.md },
-  groupCard: { flex: 1, minHeight: 174, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', padding: spacing.md, ...shadow },
-  groupIcon: { width: 50, height: 50, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  groupTitle: { color: colors.text, fontSize: typography.body, fontWeight: '900', marginTop: spacing.sm, textAlign: 'center', writingDirection: 'rtl' },
-  groupMembers: { color: colors.textMuted, fontSize: typography.tiny, marginTop: 3, writingDirection: 'rtl' },
-  joinPill: { marginTop: spacing.md, paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: colors.blueSoft },
-  joinText: { color: colors.primary, fontSize: typography.tiny, fontWeight: '900' },
-});

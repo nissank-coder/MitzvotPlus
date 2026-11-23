@@ -1,6 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors } from '../theme';
 import { IconName, TabKey } from '../types';
 import { AppIcon } from './AppIcon';
 
@@ -20,75 +19,44 @@ type Props = {
 
 export function BottomNav({ active, onSelect, onAdd }: Props) {
   return (
-    <View style={styles.wrap}>
+    <nav className="sticky bottom-0 z-30 min-h-[74px] flex flex-row items-center justify-around bg-white border-t border-[#DDE8EE] px-2 pt-2 pb-2">
       {items.map((item) => {
         const isAdd = item.key === 'add';
         const isActive = item.key === active;
         return (
-          <Pressable
+          <button
             key={item.key}
-            style={styles.item}
-            onPress={() => (isAdd ? onAdd() : onSelect(item.key as TabKey))}
-            accessibilityRole="button"
-            accessibilityState={{ selected: isActive }}
+            type="button"
+            onClick={() => (isAdd ? onAdd() : onSelect(item.key as TabKey))}
+            aria-current={isActive ? 'page' : undefined}
+            className="flex-1 flex flex-col items-center justify-center gap-1 bg-transparent border-0 p-0"
           >
-            <View style={[styles.iconWrap, isActive && styles.iconWrapActive, isAdd && styles.addButton]}>
+            <div
+              className={`flex items-center justify-center rounded-[16px] transition-colors ${
+                isAdd
+                  ? 'w-[46px] h-[42px] -mt-[14px] bg-[#2AAE9B] shadow-md hover:bg-[#239988]'
+                  : isActive
+                    ? 'w-[42px] h-[34px] bg-[#EAF4FB]'
+                    : 'w-[42px] h-[34px] hover:bg-[#F4F8FB]'
+              }`}
+            >
               <AppIcon
                 name={item.icon}
                 size={isAdd ? 24 : 21}
                 color={isAdd ? colors.white : isActive ? colors.primary : colors.textMuted}
                 strokeWidth={isAdd ? 2.2 : 1.8}
               />
-            </View>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{item.label}</Text>
-          </Pressable>
+            </div>
+            <span
+              className={`text-[11px] font-bold ${
+                isActive ? 'text-[#1B6F8F]' : 'text-[#718397]'
+              }`}
+            >
+              {item.label}
+            </span>
+          </button>
         );
       })}
-    </View>
+    </nav>
   );
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    minHeight: 74,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.sm,
-    paddingTop: spacing.sm,
-  },
-  item: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  iconWrap: {
-    width: 42,
-    height: 34,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrapActive: {
-    backgroundColor: colors.blueSoft,
-  },
-  addButton: {
-    width: 46,
-    height: 42,
-    marginTop: -14,
-    borderRadius: radius.md,
-    backgroundColor: colors.teal,
-  },
-  label: {
-    color: colors.textMuted,
-    fontSize: typography.tiny,
-    fontWeight: '700',
-  },
-  labelActive: {
-    color: colors.primary,
-  },
-});

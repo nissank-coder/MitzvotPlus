@@ -1,6 +1,4 @@
 import React, { PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 import { colors } from '../theme';
 
 type Props = PropsWithChildren<{
@@ -20,25 +18,28 @@ export function ProgressRing({
   children,
 }: Props) {
   const clamped = Math.max(0, Math.min(1, progress));
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
+  const r = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * r;
   const dashOffset = circumference * (1 - clamped);
 
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-        <Circle
+    <div
+      className="relative flex items-center justify-center shrink-0"
+      style={{ width: size, height: size }}
+    >
+      <svg width={size} height={size} className="absolute inset-0">
+        <circle
           cx={size / 2}
           cy={size / 2}
-          r={radius}
+          r={r}
           stroke={trackColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
-        <Circle
+        <circle
           cx={size / 2}
           cy={size / 2}
-          r={radius}
+          r={r}
           stroke={color}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
@@ -46,16 +47,10 @@ export function ProgressRing({
           strokeDashoffset={dashOffset}
           fill="none"
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          className="transition-[stroke-dashoffset] duration-300"
         />
-      </Svg>
-      <View style={styles.center}>{children}</View>
-    </View>
+      </svg>
+      <div className="relative z-10 flex flex-col items-center justify-center">{children}</div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

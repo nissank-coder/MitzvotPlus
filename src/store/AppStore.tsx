@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { AppState, BlessingCategory, IconName } from '../types';
 import { blessingCategoryMeta } from '../data';
@@ -226,28 +225,26 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    let active = true;
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((raw) => {
-        if (!active || !raw) return;
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
         const parsed = JSON.parse(raw) as Partial<AppState>;
         dispatch({ type: 'hydrate', payload: normalizeStoredState(parsed) });
-      })
-      .catch((error) => console.warn('Could not load app data', error))
-      .finally(() => {
-        if (active) setHydrated(true);
-      });
-
-    return () => {
-      active = false;
-    };
+      }
+    } catch (error) {
+      console.warn('Could not load app data', error);
+    } finally {
+      setHydrated(true);
+    }
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((error) =>
-      console.warn('Could not save app data', error),
-    );
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.warn('Could not save app data', error);
+    }
   }, [hydrated, state]);
 
   const value = useMemo<StoreValue>(() => {
