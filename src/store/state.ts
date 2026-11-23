@@ -1,9 +1,10 @@
 import { blessingCategoryMeta } from '../data';
 import { ActionKey } from '../data/actions';
 import { DEFAULT_CITY_ID } from '../data/locations';
-import { DEFAULT_TRACKS } from '../lib/learning';
+import { DEFAULT_TRACKS } from '../data/tracks';
 import { DAY_MS, localDateKey } from '../lib/dates';
 import { ActionInput, buildLog } from '../lib/scoring';
+import { emptyTimer, resetTimer, SpeechTimer, startTimer, undoReset } from '../lib/speechTimer';
 import { ActivityLog, AppSettings, AppState, BlessingCategory, IconName, LogKind, UserProfile } from '../types';
 
 export const STORAGE_KEY = 'mitzvot_plus_state_v1';
@@ -22,9 +23,7 @@ export function createFreshState(now = Date.now()): AppState {
     weeklyGoal: 60,
     blessingGoal: 100,
     logs: [],
-    lashonHaraSince: now,
-    lashonHaraBestMs: 0,
-    lashonHaraResets: 0,
+    speech: emptyTimer(),
     torahSaved: false,
     reflections: {},
     settings: { ...defaultSettings },
@@ -87,16 +86,31 @@ export function createDemoState(now = Date.now()): AppState {
     userName: 'יאיר',
     memberSince: now - 120 * DAY_MS,
     logs: logs.sort((a, b) => b.createdAt - a.createdAt),
-    lashonHaraSince: now - (5 * DAY_MS + 14 * 60 * 60 * 1000),
-    lashonHaraBestMs: 12 * DAY_MS,
-    lashonHaraResets: 2,
+    // Demo only; no preseeded "best" record (spec §3).
+    speech: { ...emptyTimer(), since: now - (5 * DAY_MS + 14 * 60 * 60 * 1000) },
   };
 }
 
 /* ------------------------- Loading & migration ------------------------- */
 
+type LegacySpeechFields = { lashonHaraSince?: number; lashonHaraBestMs?: number; lashonHaraResets?: number };
+
+/** Earlier versions stored three flat fields and started the timer at install. */
+function legacySpeech(old: LegacySpeechFields): SpeechTimer {
+  if (typeof old.lashonHaraSince !== 'number') return emptyTimer();
+  const resets = old.lashonHaraResets ?? 0;
+  return {
+    since: old.lashonHaraSince,
+    bestMs: old.lashonHaraBestMs ?? 0,
+    resets,
+    // The sum of past periods was never stored, so an average cannot be computed honestly.
+    completedMs: resets === 0 ? 0 : null,
+    undo: null,
+  };
+}
+
 type V1Log = { id: string; title: string; icon: IconName; points: number; createdAt: number };
-type V1State = {
+type V1State = LegacySpeechFields & {
   version?: 1;
   todayKey?: string;
   userName?: string;
@@ -106,9 +120,6 @@ type V1State = {
   blessingGoal?: number;
   dailyLogs?: V1Log[];
   blessingLogs?: Array<{ createdAt: number; category: BlessingCategory }>;
-  lashonHaraSince?: number;
-  lashonHaraBestMs?: number;
-  lashonHaraResets?: number;
   torahSaved?: boolean;
   reflection?: string;
 };
@@ -154,9 +165,7 @@ export function migrateV1(old: V1State, now = Date.now()): AppState {
     weeklyGoal: old.weeklyGoal ?? fresh.weeklyGoal,
     blessingGoal: old.blessingGoal ?? fresh.blessingGoal,
     logs,
-    lashonHaraSince: old.lashonHaraSince ?? now,
-    lashonHaraBestMs: old.lashonHaraBestMs ?? 0,
-    lashonHaraResets: old.lashonHaraResets ?? 0,
+    speech: legacySpeech(old),
     torahSaved: Boolean(old.torahSaved),
     reflections: old.reflection && old.todayKey ? { [old.todayKey]: old.reflection } : {},
   };
@@ -168,7 +177,10 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
   if (!parsed || typeof parsed !== 'object') return createFreshState(now);
   if (parsed.version !== 2) return migrateV1(parsed as V1State, now);
   const fresh = createFreshState(now);
-  const value = parsed as Partial<AppState>;
+  const { lashonHaraSince: _a, lashonHaraBestMs: _b, lashonHaraResets: _c, ...value } = parsed as Partial<AppState> &
+    LegacySpeechFields;
+  void _a, void _b, void _c;
+  const legacyFields: LegacySpeechFields = { lashonHaraSince: _a, lashonHaraBestMs: _b, lashonHaraResets: _c };
   return {
     ...fresh,
     ...value,
@@ -180,6 +192,7 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     profile: { ...fresh.profile, ...(value.profile ?? {}) },
     learningTracks: Array.isArray(value.learningTracks) ? value.learningTracks : fresh.learningTracks,
     backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
+    speech: value.speech ?? legacySpeech(legacyFields),
   };
 }
 
@@ -191,7 +204,9 @@ export type Action =
   | { type: 'addAction'; payload: ActionInput }
   | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
+  | { type: 'startSpeech'; now?: number }
   | { type: 'resetSpeech'; now?: number }
+  | { type: 'undoSpeechReset'; now?: number }
   | { type: 'toggleTorahSaved' }
   | { type: 'setReflection'; payload: { dateKey: string; text: string } }
   | { type: 'updateGoals'; payload: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>> }
@@ -246,16 +261,14 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'removeLog':
       return { ...state, logs: state.logs.filter((log) => log.id !== action.payload.id) };
 
-    case 'resetSpeech': {
-      const now = action.now ?? Date.now();
-      const elapsed = Math.max(0, now - state.lashonHaraSince);
-      return {
-        ...state,
-        lashonHaraSince: now,
-        lashonHaraBestMs: Math.max(state.lashonHaraBestMs, elapsed),
-        lashonHaraResets: state.lashonHaraResets + 1,
-      };
-    }
+    case 'startSpeech':
+      return { ...state, speech: startTimer(state.speech, action.now ?? Date.now()) };
+
+    case 'resetSpeech':
+      return { ...state, speech: resetTimer(state.speech, action.now ?? Date.now()) };
+
+    case 'undoSpeechReset':
+      return { ...state, speech: undoReset(state.speech, action.now ?? Date.now()) };
 
     case 'toggleTorahSaved':
       return { ...state, torahSaved: !state.torahSaved };

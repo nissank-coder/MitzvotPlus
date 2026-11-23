@@ -40,13 +40,13 @@ describe('day info', () => {
 
 describe('Shabbat window', () => {
   it('is inactive on a weekday', () => {
-    expect(getRestWindow(il('2026-11-25T12:00:00'), '2026-11-25', jerusalem).active).toBe(false);
+    expect(getRestWindow(il('2026-11-25T12:00:00'), jerusalem).active).toBe(false);
   });
 
   it('starts at candle lighting on Friday', () => {
     const candle = getZmanim('2026-11-27', jerusalem).candleLighting!;
-    expect(getRestWindow(new Date(candle.getTime() - 60_000), '2026-11-27', jerusalem).active).toBe(false);
-    const w = getRestWindow(new Date(candle.getTime() + 60_000), '2026-11-27', jerusalem);
+    expect(getRestWindow(new Date(candle.getTime() - 60_000), jerusalem).active).toBe(false);
+    const w = getRestWindow(new Date(candle.getTime() + 60_000), jerusalem);
     expect(w.active).toBe(true);
     expect(w.dateKeys).toEqual(['2026-11-28']);
     expect(w.title).toBe('שבת');
@@ -54,14 +54,14 @@ describe('Shabbat window', () => {
 
   it('ends at tzeit on Saturday night', () => {
     const tzeit = getZmanim('2026-11-28', jerusalem).tzeit!;
-    expect(getRestWindow(new Date(tzeit.getTime() - 60_000), '2026-11-28', jerusalem).active).toBe(true);
-    expect(getRestWindow(new Date(tzeit.getTime() + 60_000), '2026-11-28', jerusalem).active).toBe(false);
-    expect(recentRestDays(new Date(tzeit.getTime() + 60_000), '2026-11-28', jerusalem)).toEqual(['2026-11-28']);
+    expect(getRestWindow(new Date(tzeit.getTime() - 60_000), jerusalem).active).toBe(true);
+    expect(getRestWindow(new Date(tzeit.getTime() + 60_000), jerusalem).active).toBe(false);
+    expect(recentRestDays(new Date(tzeit.getTime() + 60_000), jerusalem)).toEqual(['2026-11-28']);
   });
 
   it('spans a two-day Yom Tov in the diaspora', () => {
     // Shavuot 2027 in the diaspora: 11–12 June (Fri–Sat).
-    const w = getRestWindow(new Date('2027-06-11T16:00:00Z'), '2027-06-11', ny);
+    const w = getRestWindow(new Date('2027-06-11T16:00:00Z'), ny);
     expect(w.active).toBe(true);
     expect(w.dateKeys).toEqual(['2027-06-11', '2027-06-12']);
   });

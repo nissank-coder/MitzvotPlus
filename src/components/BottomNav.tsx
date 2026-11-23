@@ -2,14 +2,16 @@ import React from 'react';
 import { colors } from '../theme';
 import { IconName, TabKey } from '../types';
 import { AppIcon } from './AppIcon';
+import { COMMUNITY_ENABLED } from '../config/features';
 
-const items: Array<{ key: TabKey | 'add'; label: string; icon: IconName }> = [
+const allItems: Array<{ key: TabKey | 'add'; label: string; icon: IconName }> = [
   { key: 'profile', label: 'פרופיל', icon: 'user' },
   { key: 'community', label: 'קהילה', icon: 'community' },
   { key: 'add', label: 'הוספה', icon: 'plus' },
   { key: 'content', label: 'תוכן', icon: 'book' },
   { key: 'home', label: 'בית', icon: 'home' },
 ];
+const items = allItems.filter((i) => i.key !== 'community' || COMMUNITY_ENABLED);
 
 type Props = {
   active: TabKey;

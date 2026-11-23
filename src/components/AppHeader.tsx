@@ -9,7 +9,11 @@ export function AppHeader({ onProfilePress }: { onProfilePress?: () => void }) {
   return (
     <header className="min-h-[68px] flex flex-row items-center justify-between mb-4">
       <div className="flex-1 flex flex-row items-center">
-        <div className="flex flex-row items-center gap-2 bg-white px-3 py-2 rounded-full border border-[#DDE8EE]">
+        <div
+          role="img"
+          aria-label={`${derived.totalPoints.toLocaleString('he-IL')} נקודות התמדה`}
+          className="flex flex-row items-center gap-2 bg-white px-3 py-2 rounded-full border border-[#DDE8EE]"
+        >
           <AppIcon name="coin" size={18} color={colors.gold} strokeWidth={2} />
           <span className="text-[#17324D] text-[13px] font-extrabold">
             {derived.totalPoints.toLocaleString('he-IL')}

@@ -43,7 +43,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
         </div>
         <div className="flex-1 flex flex-col items-end">
           <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
-            הניקוד הכולל
+            נקודות התמדה – סך הכל
           </span>
           <span className="text-[#17324D] text-[34px] font-black mt-0.5 leading-tight">
             {derived.totalPoints.toLocaleString('he-IL')}

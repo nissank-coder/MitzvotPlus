@@ -3,8 +3,9 @@ import { Capacitor } from '@capacitor/core';
 import { localStorageStorage, StateStorage } from '../storage/persistence';
 import { ActionKey } from '../data/actions';
 import { cityById, CityOption } from '../data/locations';
-import { localDateKey } from '../lib/dates';
 import {
+  calendarContextOf,
+  cityDateKey,
   DayInfo,
   getDayInfo,
   getRestWindow,
@@ -49,7 +50,9 @@ type StoreValue = {
   addBlessing: (category: BlessingCategory, title?: string) => void;
   backfill: (inputs: Array<{ key: ActionKey; dateKey: string; title?: string }>, days: string[]) => void;
   removeLog: (id: string) => void;
+  startSpeech: () => void;
   resetSpeech: () => void;
+  undoSpeechReset: () => void;
   toggleTorahSaved: () => void;
   completeTorah: () => void;
   setReflection: (value: string) => void;
@@ -93,7 +96,9 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   latest.current = state;
   const saveTimer = useRef<number | null>(null);
   const [now, refreshClock] = useNow();
-  const todayKey = localDateKey(now);
+  const city = cityById(state.profile.cityId);
+  // "Today" is the date in the selected city's time zone (policy: CALENDAR_POLICY.dayBoundary).
+  const todayKey = cityDateKey(now, city.tzid);
   const minuteKey = Math.floor(now.getTime() / 60_000);
 
   useEffect(() => {
@@ -140,7 +145,6 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
 
   const derived = useMemo(() => computeDerived(state, todayKey), [state, todayKey]);
 
-  const city = cityById(state.profile.cityId);
   const dayAndZmanim = useMemo(
     () => ({ day: getDayInfo(todayKey, city.il), zmanim: getZmanim(todayKey, city) }),
     [todayKey, city],
@@ -148,10 +152,10 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   const restInfo = useMemo(() => {
     const at = new Date(minuteKey * 60_000);
     return {
-      rest: getRestWindow(at, todayKey, city),
-      recent: recentRestDays(at, todayKey, city),
+      rest: getRestWindow(at, city),
+      recent: recentRestDays(at, city),
     };
-  }, [minuteKey, todayKey, city]);
+  }, [minuteKey, city]);
 
   const calendar = useMemo<CalendarState>(
     () => ({
@@ -172,7 +176,10 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       const onTime =
         options.onTime ??
         (key === 'shacharit' && calendar.zmanim.sofZmanTfilla ? at <= calendar.zmanim.sofZmanTfilla.getTime() : undefined);
-      dispatch({ type: 'addAction', payload: { ...options, key, onTime, now: at } });
+      dispatch({
+        type: 'addAction',
+        payload: { ...options, key, onTime, now: at, dateKey: options.dateKey ?? cityDateKey(new Date(at), city.tzid), context: calendarContextOf(city) },
+      });
     };
     return {
       state,
@@ -190,11 +197,13 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       backfill: (inputs, days) =>
         dispatch({
           type: 'addActions',
-          payload: inputs.map((i) => ({ ...i, backfill: true, now: Date.now() })),
+          payload: inputs.map((i) => ({ ...i, backfill: true, now: Date.now(), context: calendarContextOf(city) })),
           markBackfilled: days,
         }),
       removeLog: (id) => dispatch({ type: 'removeLog', payload: { id } }),
+      startSpeech: () => dispatch({ type: 'startSpeech' }),
       resetSpeech: () => dispatch({ type: 'resetSpeech' }),
+      undoSpeechReset: () => dispatch({ type: 'undoSpeechReset' }),
       toggleTorahSaved: () => dispatch({ type: 'toggleTorahSaved' }),
       completeTorah: () => addAction('dailyTorah'),
       setReflection: (text) => dispatch({ type: 'setReflection', payload: { dateKey: todayKey, text } }),
@@ -206,7 +215,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, derived, hydrated, state, todayKey, storageError, flush, refreshClock]);
+  }, [calendar, city, derived, hydrated, state, todayKey, storageError, flush, refreshClock]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

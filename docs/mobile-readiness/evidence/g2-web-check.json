@@ -1,0 +1,17 @@
+node:internal/fs/promises:639
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open 'fakedate.js'
+    at async open (node:internal/fs/promises:639:25)
+    at async Object.readFile (node:internal/fs/promises:1252:14)
+    at async evaluationScript (/opt/node-tools/node_modules/playwright-core/lib/coreBundle.js:57592:20)
+    at async _Page.addInitScript (/opt/node-tools/node_modules/playwright-core/lib/coreBundle.js:61724:26)
+    at async /tmp/claude-0/-home-user-MitzvotPlus/d3ec22d4-c7d6-59f5-ac46-13d9915919d1/scratchpad/g2web.cjs:8:3 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'fakedate.js'
+}
+
+Node.js v22.23.5

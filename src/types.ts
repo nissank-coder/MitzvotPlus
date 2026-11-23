@@ -89,6 +89,10 @@ export type ActivityLog = {
   backfill?: boolean;
   /** Daily cap reached – recorded without points. */
   capped?: boolean;
+  /** When it was entered in the app (UTC ms); createdAt is the claimed time of the deed. */
+  recordedAt?: number;
+  /** Calendar settings snapshot used to classify the event (policy version, city, zone). */
+  context?: { policyVersion: string; cityId: string; tzid: string; il: boolean; candleMins: number };
 };
 
 export type AppSettings = {
@@ -107,9 +111,8 @@ export type AppState = {
   weeklyGoal: number;
   blessingGoal: number;
   logs: ActivityLog[];
-  lashonHaraSince: number;
-  lashonHaraBestMs: number;
-  lashonHaraResets: number;
+  /** Private speech-guard timer – local only (see src/lib/speechTimer.ts). */
+  speech: import('./lib/speechTimer').SpeechTimer;
   torahSaved: boolean;
   /** Personal reflection per day, keyed by YYYY-MM-DD. */
   reflections: Record<string, string>;

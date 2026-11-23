@@ -1,11 +1,12 @@
 import { FeatureKey, TabKey } from '../types';
+import { COMMUNITY_ENABLED } from '../config/features';
 
 export const URL_SCHEME = 'mitzvotplus';
 
 const FEATURES: Array<Exclude<FeatureKey, null>> = [
   'blessings', 'torah', 'speech', 'goals', 'prayers', 'blessingGuide', 'learning', 'mitzvot', 'holidays',
 ];
-const TABS: TabKey[] = ['home', 'content', 'community', 'profile'];
+const TABS: TabKey[] = COMMUNITY_ENABLED ? ['home', 'content', 'community', 'profile'] : ['home', 'content', 'profile'];
 
 export type DeepLinkTarget = { tab: TabKey; feature: FeatureKey };
 

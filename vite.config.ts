@@ -36,6 +36,18 @@ export default defineConfig({
     allowedHosts: true,
     hmr: false,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Separate vendor chunks: the calendar engine and React change rarely and cache independently.
+        manualChunks: (id) => {
+          if (id.includes('node_modules/@hebcal/core') || id.includes('node_modules/@hebcal/hdate') || id.includes('node_modules/@hebcal/noaa') || id.includes('node_modules/temporal')) return 'calendar';
+          if (id.includes('node_modules/react') || id.includes('node_modules/scheduler')) return 'react';
+          return undefined;
+        },
+      },
+    },
+  },
   preview: {
     host: '0.0.0.0',
     port: 3000,

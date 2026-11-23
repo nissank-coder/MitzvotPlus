@@ -68,7 +68,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
   };
 
   const shareText = async () => {
-    const text = `מחשבה יומית ממצוות+\n\n${TORAH_TEXT}\n\nמסכת אבות, פרק ב׳ משנה א׳`;
+    const text = `מחשבה יומית ממצוות+\n\n${TORAH_TEXT}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: 'דבר תורה יומי - מצוות+', text });
@@ -129,8 +129,9 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
 
         <div className="flex justify-center mt-4">
           <div className="px-3 py-2 rounded-full bg-[#F4F8FB]">
+            {/* Placeholder until an approved, licensed edition is bundled (D08). No source is claimed. */}
             <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
-              מסכת אבות, פרק ב׳ משנה א׳
+              טקסט זמני – ממתין לתוכן מאושר
             </span>
           </div>
         </div>

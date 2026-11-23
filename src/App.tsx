@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
@@ -10,7 +10,6 @@ import { GoalsScreen } from './screens/GoalsScreen';
 import { HolidaysScreen } from './screens/HolidaysScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { LashonHaraScreen } from './screens/LashonHaraScreen';
-import { LearningScreen } from './screens/LearningScreen';
 import { MitzvotScreen } from './screens/MitzvotScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { PrayersScreen } from './screens/PrayersScreen';
@@ -19,6 +18,10 @@ import { ShabbatLockScreen } from './screens/ShabbatLockScreen';
 import { TorahScreen } from './screens/TorahScreen';
 import { FeatureKey, TabKey } from './types';
 import { useNativeShell } from './native/useNativeShell';
+
+// Loaded on demand: the learning schedules are the largest data in the bundle.
+const LearningScreen = lazy(() => import('./screens/LearningScreen').then((m) => ({ default: m.LearningScreen })));
+import { COMMUNITY_ENABLED } from './config/features';
 
 function MitzvotApp() {
   const { hydrated, state, calendar, storageError, flush, refreshClock } = useAppStore();
@@ -87,7 +90,11 @@ function MitzvotApp() {
       case 'blessingGuide':
         return <BlessingGuideScreen {...common} />;
       case 'learning':
-        return <LearningScreen {...common} />;
+        return (
+          <Suspense fallback={<p dir="rtl" className="p-6 text-center text-[#718397]">טוען…</p>}>
+            <LearningScreen {...common} />
+          </Suspense>
+        );
       case 'mitzvot':
         return <MitzvotScreen {...common} />;
       case 'holidays':
@@ -109,6 +116,7 @@ function MitzvotApp() {
       case 'content':
         return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
       case 'community':
+        if (!COMMUNITY_ENABLED) return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
         return <CommunityScreen onOpenProfile={openProfile} />;
       case 'profile':
         return <ProfileScreen />;
@@ -147,12 +155,12 @@ function MitzvotApp() {
     );
   }
 
-  if (!state.onboarded) {
-    return <OnboardingScreen />;
-  }
-
   if (calendar.rest.active) {
     return <ShabbatLockScreen />;
+  }
+
+  if (!state.onboarded) {
+    return <OnboardingScreen />;
   }
 
   return (

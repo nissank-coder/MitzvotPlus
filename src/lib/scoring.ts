@@ -1,5 +1,6 @@
 import { ActionKey, ACTIONS, actionDef, BLESSING_GOAL_BONUS } from '../data/actions';
 import { ActivityLog, BlessingCategory, IconName, LogKind } from '../types';
+import type { CalendarContext } from './jewishCalendar';
 import { localDateKey } from './dates';
 
 export type ActionInput = {
@@ -15,6 +16,8 @@ export type ActionInput = {
   backfill?: boolean;
   /** Override the day (used by Shabbat backfill). */
   dateKey?: string;
+  /** Settings the event was classified with (immutable snapshot). */
+  context?: CalendarContext;
   now: number;
 };
 
@@ -68,6 +71,9 @@ export function buildLog(logs: ActivityLog[], input: ActionInput, blessingGoal: 
     ...(input.minyan ? { minyan: true } : {}),
     ...(input.backfill ? { backfill: true } : {}),
     ...(capped ? { capped: true } : {}),
+    // When the user recorded it; createdAt is the claimed time of the deed (same unless backfilled).
+    recordedAt: input.now,
+    ...(input.context ? { context: input.context } : {}),
   };
 }
 

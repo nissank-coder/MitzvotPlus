@@ -4,6 +4,7 @@ import { Card } from '../components/Card';
 import { ProfileFields } from '../components/ProfileFields';
 import { DEFAULT_CITY_ID } from '../data/locations';
 import { UserProfile } from '../types';
+import { FEATURES } from '../config/features';
 import { CitySilhouette } from '../components/Decorations';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -84,6 +85,7 @@ export function OnboardingScreen() {
         בואו נתחיל
         <AppIcon name="chevronLeft" size={19} color={colors.white} />
       </button>
+{FEATURES.demoContent ? (
       <button
         type="button"
         onClick={loadDemo}
@@ -91,6 +93,7 @@ export function OnboardingScreen() {
       >
         רק להציץ – הצגת נתוני הדגמה
       </button>
+      ) : null}
 
       <p className="text-[#718397] text-[11px] text-center mt-auto pt-6 leading-5">
         הניקוד הוא כלי לעידוד בלבד. ״הוי זהיר במצוה קלה כבחמורה, שאין אתה יודע מתן שכרן של מצוות״ (אבות ב, א)

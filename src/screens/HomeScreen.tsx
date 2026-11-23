@@ -12,6 +12,7 @@ import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { TodayCard } from '../components/TodayCard';
+import { COMMUNITY_ENABLED, FEATURES } from '../config/features';
 import { TodayPlanCard } from '../components/TodayPlanCard';
 import { BackfillSheet } from '../components/BackfillSheet';
 
@@ -98,7 +99,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
       </div>
 
       <div className="flex flex-row-reverse gap-2 mb-5">
-        <MetricChip icon="coin" label="ניקוד" value={derived.totalPoints.toLocaleString('he-IL')} color={colors.gold} />
+        <MetricChip icon="coin" label="נקודות התמדה" value={derived.totalPoints.toLocaleString('he-IL')} color={colors.gold} />
         <MetricChip icon="flame" label="רצף" value={`${derived.activityStreak} ימים`} color={colors.coral} />
         <MetricChip icon="star" label="ברכות" value={`${derived.blessingTotal}/${state.blessingGoal}`} color={colors.teal} />
       </div>
@@ -172,7 +173,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
 
       <button
         type="button"
-        onClick={onOpenCommunity}
+        onClick={COMMUNITY_ENABLED ? onOpenCommunity : () => onOpenFeature('goals')}
         className="w-full text-left bg-transparent border-0 p-0 mb-4 block"
       >
         <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 overflow-hidden hover:border-[#2AAE9B] transition-colors">
@@ -194,12 +195,13 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               />
             </div>
             <span dir="rtl" className="text-[#718397] text-[11px] mt-2">
-              כל מצווה שלך מקדמת גם את הקהילה
+              {COMMUNITY_ENABLED ? 'כל מצווה שלך מקדמת גם את הקהילה' : 'היעד השבועי האישי שלך'}
             </span>
           </div>
         </Card>
       </button>
 
+      {FEATURES.demoContent ? (
       <Card className="min-h-[148px] p-4 flex flex-row items-center gap-4">
         <div className="relative w-[112px] h-[92px] flex justify-end items-center shrink-0">
           <div className="absolute w-[80px] h-[72px] rounded-[6px] bg-[#274C67] -rotate-7 bottom-[2px] left-[12px]" />
@@ -222,6 +224,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
           </div>
         </div>
       </Card>
+      ) : null}
 
       <ConfirmDialog
         open={pendingRemove !== null}

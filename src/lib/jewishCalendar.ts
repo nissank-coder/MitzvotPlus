@@ -182,12 +182,52 @@ export function getDayInfo(dateKey: string, il: boolean): DayInfo {
 
 /* ----------------------------- Shabbat mode ------------------------------ */
 
+/**
+ * Versioned calendar policy. DRAFT: the conventions below are engineering defaults and have NOT been
+ * approved by a rabbinic authority (decisions D05/D06). Every recorded event carries this version so
+ * historical classification can be reproduced after the policy changes.
+ */
+export const CALENDAR_POLICY = {
+  version: 'draft-2026.11.1',
+  status: 'DRAFT_NOT_RABBINICALLY_APPROVED',
+  dayBoundary: 'civil midnight in the selected city time zone',
+  candleLighting: 'sunset minus the city candle-lighting minutes',
+  restEnd: 'tzeit at 8.5 degrees below the horizon, on the last consecutive rest day',
+  israelDiaspora: 'taken from the selected city',
+  unknownTimes:
+    'if a boundary cannot be computed (e.g. extreme latitude), the whole civil rest day is locked and the state is marked uncertain',
+} as const;
+
+/** YYYY-MM-DD of an instant in an IANA time zone (not the device zone). */
+export function cityDateKey(at: Date, tzid: string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: tzid, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(at);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+export type CalendarContext = {
+  policyVersion: string;
+  cityId: string;
+  tzid: string;
+  il: boolean;
+  candleMins: number;
+};
+
+/** Immutable snapshot of the settings an event was classified with (spec §4). */
+export function calendarContextOf(city: CityOption): CalendarContext {
+  return { policyVersion: CALENDAR_POLICY.version, cityId: city.id, tzid: city.tzid, il: city.il, candleMins: city.candleMins };
+}
+
 export type RestWindow = {
   active: boolean;
-  /** Names of the rest days in the current/most recent period, e.g. ["שבת"]. */
+  /** Name of the rest day, e.g. "שבת". */
   title: string;
+  /** When recording opens again; null when it cannot be computed (see uncertain). */
   endsAt: Date | null;
   dateKeys: string[];
+  /** True when a boundary time could not be computed and the conservative rule applied. */
+  uncertain: boolean;
+  policyVersion: string;
 };
 
 function restTitle(dateKey: string, il: boolean): string {
@@ -208,53 +248,67 @@ function restRun(first: string, il: boolean): string[] {
 }
 
 /**
- * Is it now Shabbat / Yom Tov at the user's location?
- * Active from candle lighting on the eve until tzeit (8.5°) of the last rest day.
+ * Is it now Shabbat / Yom Tov at the selected city?
+ * Active from candle lighting on the eve until tzeit of the last rest day, evaluated on the
+ * city's own calendar date (a traveller's device zone does not matter).
  */
-export function getRestWindow(now: Date, todayKey: string, city: CityOption): RestWindow {
+export function getRestWindow(now: Date, city: CityOption): RestWindow {
   const il = city.il;
-  const inactive: RestWindow = { active: false, title: '', endsAt: null, dateKeys: [] };
-  const yesterday = addDays(todayKey, -1);
+  const todayKey = cityDateKey(now, city.tzid);
+  const base = { policyVersion: CALENDAR_POLICY.version };
+  const inactive: RestWindow = { ...base, active: false, title: '', endsAt: null, dateKeys: [], uncertain: false };
   const tomorrow = addDays(todayKey, 1);
 
-  // Started on a previous day and still running (e.g. two-day Yom Tov, or Shabbat day itself).
+  // Started on a previous day and still running (Shabbat day, or a multi-day Yom Tov).
   if (isRestDayKey(todayKey, il)) {
     let first = todayKey;
     while (isRestDayKey(addDays(first, -1), il)) first = addDays(first, -1);
     const run = restRun(first, il);
     const last = run[run.length - 1]!;
     const end = getZmanim(last, city).tzeit;
-    if (end && now < end) {
-      return { active: true, title: restTitle(todayKey, il), endsAt: end, dateKeys: run };
+    if (!end) {
+      // Unknown end: lock for the rest of the civil rest day(s).
+      return { ...base, active: true, title: restTitle(todayKey, il), endsAt: null, dateKeys: run, uncertain: true };
     }
-    // Today's rest day is over; tomorrow is not a rest day (otherwise run would include it).
+    if (now < end) return { ...base, active: true, title: restTitle(todayKey, il), endsAt: end, dateKeys: run, uncertain: false };
     return inactive;
   }
 
   // Eve of Shabbat / Yom Tov after candle lighting.
   if (isRestDayKey(tomorrow, il)) {
     const start = getZmanim(todayKey, city).candleLighting;
+    // Unknown start: the lock begins with the rest day itself (handled above on that date).
     if (start && now >= start) {
       const run = restRun(tomorrow, il);
       const end = getZmanim(run[run.length - 1]!, city).tzeit;
-      return { active: true, title: restTitle(tomorrow, il), endsAt: end, dateKeys: run };
+      return { ...base, active: true, title: restTitle(tomorrow, il), endsAt: end, dateKeys: run, uncertain: !end };
     }
   }
-  void yesterday;
   return inactive;
 }
 
-/** Rest days that ended within the last ~36 hours – candidates for "Shabbat backfill". */
-export function recentRestDays(now: Date, todayKey: string, city: CityOption): string[] {
+/**
+ * Rest days whose whole run (e.g. Yom Tov + Shabbat) ended within the last ~36 hours –
+ * candidates for "Shabbat backfill".
+ */
+export function recentRestDays(now: Date, city: CityOption): string[] {
+  const il = city.il;
+  const todayKey = cityDateKey(now, city.tzid);
+  const running = getRestWindow(now, city).dateKeys;
   const result: string[] = [];
-  for (let i = 0; i <= 2; i += 1) {
+  for (let i = 0; i <= 4; i += 1) {
     const key = addDays(todayKey, -i);
-    if (!isRestDayKey(key, city.il)) continue;
-    const end = getZmanim(key, city).tzeit;
-    if (end && now >= end && now.getTime() - end.getTime() < 36 * 60 * 60 * 1000) result.push(key);
+    if (!isRestDayKey(key, il) || running.includes(key)) continue;
+    let last = key;
+    while (isRestDayKey(addDays(last, 1), il)) last = addDays(last, 1);
+    const end = getZmanim(last, city).tzeit;
+    // Unknown end time: offer backfill once the civil date has moved past the run.
+    const ended = end
+      ? now >= end && now.getTime() - end.getTime() < 36 * 60 * 60 * 1000
+      : last < todayKey && addDays(last, 2) > todayKey;
+    if (ended) result.push(key);
   }
-  // A rest day "ends" only when the whole run ends; drop days whose run is still active.
-  return result.filter((key) => !getRestWindow(now, todayKey, city).dateKeys.includes(key)).sort();
+  return result.sort();
 }
 
 /* --------------------------- Upcoming holidays --------------------------- */

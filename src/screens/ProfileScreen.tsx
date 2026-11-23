@@ -4,6 +4,7 @@ import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ProfileFields } from '../components/ProfileFields';
+import { FEATURES } from '../config/features';
 import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -29,7 +30,7 @@ export function ProfileScreen() {
           חבר במצוות+ מאז {memberYear} · דרגה {derived.level.level} – {derived.level.name}
         </p>
         <div className="w-full flex flex-row-reverse items-center justify-around mt-5 pt-4 border-t border-[#EAF0F4]">
-          <ProfileStat value={derived.totalPoints.toLocaleString('he-IL')} label="נקודות" />
+          <ProfileStat value={derived.totalPoints.toLocaleString('he-IL')} label="נקודות התמדה" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={`${derived.activityStreak}`} label="ימי רצף" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
@@ -84,6 +85,7 @@ export function ProfileScreen() {
         <SettingRow icon="shield" title="פרטיות" subtitle="הנתונים נשמרים במכשיר בלבד">
           <span />
         </SettingRow>
+{FEATURES.demoContent ? (
         <SettingRow
           icon="star"
           title="טעינת נתוני הדגמה"
@@ -92,6 +94,7 @@ export function ProfileScreen() {
         >
           <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
         </SettingRow>
+        ) : null}
         <button
           type="button"
           onClick={() => setConfirmOpen(true)}

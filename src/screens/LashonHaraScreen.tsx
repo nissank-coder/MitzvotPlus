@@ -7,6 +7,7 @@ import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { useAppStore } from '../store/AppStore';
+import { averageMs, bestIncludingCurrent, canUndo, elapsed as timerElapsed } from '../lib/speechTimer';
 import { colors } from '../theme';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -27,7 +28,7 @@ function durationParts(ms: number) {
 }
 
 export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
-  const { state, resetSpeech } = useAppStore();
+  const { state, startSpeech, resetSpeech, undoSpeechReset } = useAppStore();
   const [now, setNow] = useState(Date.now());
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -36,9 +37,14 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
     return () => clearInterval(timer);
   }, []);
 
-  const elapsed = Math.max(0, now - state.lashonHaraSince);
+  const timer = state.speech;
+  const started = timer.since !== null;
+  const { ms: elapsed, clockMovedBack } = timerElapsed(timer, now);
   const current = useMemo(() => durationParts(elapsed), [elapsed]);
-  const best = useMemo(() => durationParts(state.lashonHaraBestMs), [state.lashonHaraBestMs]);
+  const bestMs = bestIncludingCurrent(timer, now);
+  const best = useMemo(() => durationParts(bestMs), [bestMs]);
+  const avg = averageMs(timer);
+  const undoable = canUndo(timer, now);
   const weeklyDays = Math.min(7, current.days);
   const weeklyProgress = weeklyDays / 7;
 
@@ -88,25 +94,39 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
       <Card className="min-h-[96px] p-4 flex flex-row items-center mb-4 !bg-[#E8F8F4]">
         <button
           type="button"
-          onClick={() => setConfirmOpen(true)}
+          onClick={() => (started ? setConfirmOpen(true) : startSpeech())}
           className="w-[100px] flex flex-col items-center justify-center gap-1 bg-transparent border-0 p-1 rounded-xl hover:bg-white/50 transition-colors shrink-0"
         >
-          <AppIcon name="reset" size={21} color={colors.primary} />
+          <AppIcon name={started ? 'reset' : 'play'} size={21} color={colors.primary} />
           <span dir="rtl" className="text-[#1B6F8F] text-[11px] font-black">
-            התחלה חדשה
+            {started ? 'התחלה חדשה' : 'הפעלת הטיימר'}
           </span>
         </button>
         <div className="w-px h-14 bg-[#CFE7E1] mx-3 shrink-0" />
         <div className="flex-1 flex flex-col items-end">
           <div className="flex flex-row-reverse items-center gap-2">
             <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
-              כל הכבוד!
+              {started ? 'כל הכבוד!' : 'מתחילים כשמוכנים'}
             </span>
             <AppIcon name="trophy" size={22} color={colors.gold} />
           </div>
           <p dir="rtl" className="text-[#718397] text-[13px] mt-1 text-right">
-            אתה בדרך לשמירה מודעת על הדיבור
+            {started ? 'אתה בדרך לשמירה מודעת על הדיבור' : 'הטיימר יתחיל רק כשתפעיל אותו'}
           </p>
+          {undoable ? (
+            <button
+              type="button"
+              onClick={undoSpeechReset}
+              className="mt-2 h-8 px-3 rounded-full bg-white text-[#1B6F8F] text-[12px] font-black border border-[#CFE7E1]"
+            >
+              ביטול האיפוס האחרון
+            </button>
+          ) : null}
+          {clockMovedBack ? (
+            <p dir="rtl" role="status" className="text-[#B4544A] text-[11px] mt-2 text-right">
+              שעון המכשיר מוקדם ממועד ההתחלה. הזמן יוצג שוב כשהשעון יתוקן.
+            </p>
+          ) : null}
         </div>
       </Card>
 
@@ -121,7 +141,7 @@ export function LashonHaraScreen({ onBack, onOpenProfile }: Props) {
         <StatCard
           icon="chart"
           title="הממוצע"
-          value="8 ימים"
+          value={avg === null ? '—' : `${durationParts(avg).days} ימים`}
           color={colors.primary}
           background={colors.blueSoft}
         />
