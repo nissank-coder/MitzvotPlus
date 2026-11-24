@@ -1,5 +1,7 @@
 import { TORAH_TEXT } from '../data';
 import { DEMO_CONTENT } from '../config/features';
+import dvarTorahPack from './packs/dvar-torah.json';
+import { partitionContent } from './validate';
 
 /**
  * Bundled content with stable IDs and versions (spec §3, §10, decision D08).
@@ -18,6 +20,10 @@ export type ContentItem = {
   source: { title: string; ref?: string; url?: string } | null;
   license: { id: string; attribution?: string; url?: string };
   approval: 'APPROVED' | 'TEST_ONLY';
+  /** Author as given by the source; omitted when unknown. */
+  author?: string;
+  /** Who approved it and when (required for APPROVED; the reviewer is named by the owner, D08). */
+  review?: { reviewer: string; reviewedAt: string; notes?: string };
 };
 
 const TEST_CONTENT: ContentItem[] = [
@@ -34,8 +40,15 @@ const TEST_CONTENT: ContentItem[] = [
   },
 ];
 
-/** Approved content (none yet – D08). */
-const APPROVED_CONTENT: ContentItem[] = [];
+/**
+ * Approved content from src/content/packs/dvar-torah.json (empty until D08 names a reviewer and
+ * content is approved). Items that fail validation are dropped – fail closed; the content test
+ * fails the build when this happens.
+ */
+const { valid: APPROVED_CONTENT, rejected: REJECTED_CONTENT } = partitionContent(
+  (dvarTorahPack.items as ContentItem[]).filter((c) => c.kind === 'dvar-torah'),
+);
+export { REJECTED_CONTENT };
 
 /**
  * What the app may show. TEST_ONLY items exist only in development/demo builds; a production build

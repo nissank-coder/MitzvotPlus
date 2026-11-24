@@ -1,0 +1,5 @@
+{
+  "schema": 1,
+  "note": "Approved Dvar Torah items only. Each item needs a matching APPROVED row in docs/mobile-readiness/content_license_manifest.csv. See docs/mobile-readiness/dvar-torah-content-workflow.md.",
+  "items": []
+}
