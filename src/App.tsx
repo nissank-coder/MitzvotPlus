@@ -14,7 +14,6 @@ import { MitzvotScreen } from './screens/MitzvotScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { PrayersScreen } from './screens/PrayersScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
-import { ShabbatLockScreen } from './screens/ShabbatLockScreen';
 import { TorahScreen } from './screens/TorahScreen';
 import { FeatureKey, TabKey } from './types';
 import { useNativeShell } from './native/useNativeShell';
@@ -187,10 +186,6 @@ function MitzvotApp() {
         <p className="text-[#718397] text-[14px] mt-2">הנתונים לא נמחקו. סגרו את האפליקציה ופתחו אותה שוב.</p>
       </div>
     );
-  }
-
-  if (calendar.rest.active) {
-    return <ShabbatLockScreen />;
   }
 
   if (!state.onboarded) {

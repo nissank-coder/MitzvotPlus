@@ -37,6 +37,8 @@ export default defineConfig({
     hmr: false,
   },
   build: {
+    // Prayer-text chunks (src/content/packs) are data loaded on demand; up to ~700 KB each is expected.
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         // Separate vendor chunks: the calendar engine and React change rarely and cache independently.

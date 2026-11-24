@@ -86,6 +86,8 @@ export type DayInfo = {
   /** Shabbat or Yom Tov – no app use, no weekday mitzvot. */
   isRestDay: boolean;
   isErevRest: boolean;
+  /** The next civil day is also Shabbat / Yom Tov (e.g. Yom Tov followed by Shabbat). */
+  tomorrowIsRest: boolean;
   isRoshChodesh: boolean;
   isFast: boolean;
   isCholHamoed: boolean;
@@ -139,7 +141,8 @@ export function getDayInfo(dateKey: string, il: boolean): DayInfo {
   const isShabbat = hd.getDay() === 6;
   const isYomTov = events.some((e) => e.getFlags() & flags.CHAG);
   const isRestDay = isShabbat || isYomTov;
-  const isErevRest = !isRestDay && isRestDayKey(addDays(dateKey, 1), il);
+  const tomorrowIsRest = isRestDayKey(addDays(dateKey, 1), il);
+  const isErevRest = !isRestDay && tomorrowIsRest;
 
   // Omer: counted at night, so the day's number is the count said the previous evening.
   let omerDay: number | null = null;
@@ -172,6 +175,7 @@ export function getDayInfo(dateKey: string, il: boolean): DayInfo {
     isYomTov,
     isRestDay,
     isErevRest,
+    tomorrowIsRest,
     isRoshChodesh: events.some((e) => e.getFlags() & flags.ROSH_CHODESH),
     isFast: events.some((e) => e.getFlags() & (flags.MINOR_FAST | flags.MAJOR_FAST)),
     isCholHamoed: events.some((e) => e.getFlags() & flags.CHOL_HAMOED),

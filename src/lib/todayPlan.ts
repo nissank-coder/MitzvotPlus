@@ -35,7 +35,19 @@ export function buildTodayPlan(
   const add = (key: ActionKey, extra: Partial<Omit<PlanItem, 'key' | 'done' | 'count'>> = {}) =>
     items.push({ key, title: extra.title ?? actionDef(key).title, required: extra.required ?? 1, ...extra });
 
-  if (info.isRestDay) return [];
+  // Shabbat / Yom Tov: the app stays active (owner decision D05, 2026-11-24) and shows the day's mitzvot.
+  if (info.isRestDay) {
+    for (const item of backfillChecklist(info, gender)) {
+      if (item.key === 'havdalah') {
+        if (!info.tomorrowIsRest) add('havdalah', { from: z.tzeit, note: 'במוצאי שבת / חג' });
+        continue;
+      }
+      add(item.key, { title: item.title, required: item.times ?? 1 });
+    }
+    if (info.chanukahCandles) add('chanukahCandles', { title: `נר ${info.chanukahCandles} של חנוכה`, note: 'במוצאי שבת, אחרי ההבדלה', from: z.tzeit });
+    if (info.omerDay) add('omer', { title: `ספירת העומר – יום ${info.omerDay}`, from: z.tzeit });
+    return finish(items, todayLogs);
+  }
 
   // Every weekday
   add('birkotHashachar');
@@ -83,10 +95,18 @@ export function buildTodayPlan(
   // Bedikat chametz: the evening before Erev Pesach (13 Nisan evening).
   if (has(info, /Ta'anit Bechorot/) || info.hebrewDate.startsWith('י״ג ניסן')) add('bedikatChametz', { from: z.tzeit });
 
-  return items.map((item) => {
-    const count = todayLogs.filter((l) => l.actionKey === item.key).length;
-    return { ...item, required: item.required ?? 1, count, done: count >= (item.required ?? 1) } as PlanItem;
-  });
+  return finish(items, todayLogs);
+}
+
+function finish(items: Array<Omit<PlanItem, 'done' | 'count'> & { required?: number }>, todayLogs: ActivityLog[]): PlanItem[] {
+  // The same action may appear once per day in the plan (e.g. 'prayer' entries are not repeated).
+  const seen = new Set<string>();
+  return items
+    .filter((i) => (seen.has(i.key + i.title) ? false : (seen.add(i.key + i.title), true)))
+    .map((item) => {
+      const count = todayLogs.filter((l) => l.actionKey === item.key).length;
+      return { ...item, required: item.required ?? 1, count, done: count >= (item.required ?? 1) } as PlanItem;
+    });
 }
 
 /** What should be filled in after a Shabbat / Yom Tov day. */

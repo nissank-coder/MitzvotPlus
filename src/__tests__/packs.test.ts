@@ -1,12 +1,17 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import siddur from '../content/packs/siddur-sefard.json';
+import siddurIndex from '../content/packs/siddur-sefard-index.json';
+import weekday from '../content/packs/siddur-sefard-weekday.json';
+import shabbat from '../content/packs/siddur-sefard-shabbat.json';
+import holiday from '../content/packs/siddur-sefard-holiday.json';
 import tehillim from '../content/packs/tehillim.json';
-import { ALLOWED_LICENSES, MONTHLY_TEHILLIM, SiddurPack, TehillimPack, tehillimForDay } from '../content/packs';
+import { ALLOWED_LICENSES, MONTHLY_TEHILLIM, SiddurIndex, SiddurPack, TehillimPack, tehillimForDay } from '../content/packs';
 import { getDayInfo } from '../lib/jewishCalendar';
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
-const S = siddur as SiddurPack;
+const GROUPS = [weekday, shabbat, holiday] as SiddurPack[];
+const ALL = GROUPS.flatMap((g) => g.prayers);
+const INDEX = siddurIndex as SiddurIndex;
 const T = tehillim as TehillimPack;
 
 describe('Tehillim pack', () => {
@@ -27,7 +32,7 @@ describe('Tehillim pack', () => {
 
 describe('Siddur Sefard pack', () => {
   it('every section has an allowed license, a source and an intact hash', () => {
-    for (const p of S.prayers) {
+    for (const p of ALL) {
       expect(p.sections.length).toBeGreaterThan(0);
       for (const s of p.sections) {
         expect(ALLOWED_LICENSES).toContain(s.license);
@@ -40,10 +45,31 @@ describe('Siddur Sefard pack', () => {
   });
 
   it('contains the weekday prayers and the blessings the app links to', () => {
-    const ids = S.prayers.map((p) => p.id);
+    const ids = ALL.map((p) => p.id);
     for (const id of ['shacharit', 'mincha', 'maariv', 'birkat-hamazon', 'meein-shalosh', 'borei-nefashot', 'bedtime-shema']) expect(ids).toContain(id);
-    const amidah = S.prayers.find((p) => p.id === 'shacharit')!.sections.find((s) => s.heTitle === 'עמידה')!;
+    const amidah = ALL.find((p) => p.id === 'shacharit')!.sections.find((s) => s.heTitle === 'עמידה')!;
     expect(amidah.segments[0]!.text.replace(/[\u0591-\u05C7]/g, '')).toContain('אדני שפתי תפתח');
+  });
+});
+
+describe('Siddur Sefard – Shabbat and holidays', () => {
+  it('the index lists exactly the prayers in the group files, each in its group', () => {
+    expect(INDEX.prayers.map((p) => p.id)).toEqual(ALL.map((p) => p.id));
+    for (const g of GROUPS) for (const p of g.prayers) expect(p.group).toBe((g as SiddurPack & { group: string }).group);
+    expect(new Set(ALL.map((p) => p.id)).size).toBe(ALL.length);
+  });
+
+  it('contains the Shabbat prayers from Kabbalat Shabbat to Havdalah', () => {
+    const ids = (shabbat as SiddurPack).prayers.map((p) => p.id);
+    for (const id of ['shabbat-candles', 'kabbalat-shabbat', 'shabbat-maariv', 'shabbat-night-meal', 'shabbat-shacharit', 'shabbat-musaf', 'shabbat-mincha', 'havdalah']) expect(ids).toContain(id);
+    const kiddush = (shabbat as SiddurPack).prayers.find((p) => p.id === 'shabbat-night-meal')!.sections.find((s) => s.heTitle.includes('קידוש'))!;
+    expect(kiddush.segments.map((x) => x.text).join(' ').replace(/[\u0591-\u05C7]/g, '')).toContain('ויכלו');
+  });
+
+  it('contains Rosh Chodesh, festivals, Chanukah, Purim and the Haggadah', () => {
+    const ids = (holiday as SiddurPack).prayers.map((p) => p.id);
+    for (const id of ['rosh-chodesh', 'yom-tov', 'hoshanot', 'chanukah', 'purim', 'chametz', 'haggadah']) expect(ids).toContain(id);
+    expect((holiday as SiddurPack).prayers.find((p) => p.id === 'haggadah')!.sections).toHaveLength(14);
   });
 });
 

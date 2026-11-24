@@ -121,3 +121,24 @@ describe('unknown boundary times', () => {
     expect(recentRestDays(sunday, tromso)).toEqual(['2027-06-19']);
   });
 });
+
+describe('Shabbat and Yom Tov: the app stays active (D05, 2026-11-24)', async () => {
+  const { buildTodayPlan } = await import('../lib/todayPlan');
+  const { getDayInfo } = await import('../lib/jewishCalendar');
+
+  it('Shabbat shows the day’s mitzvot instead of an empty plan', () => {
+    const info = getDayInfo('2026-11-28', true);
+    const plan = buildTodayPlan(info, getZmanim('2026-11-28', jerusalem), 'male', []);
+    const keys = plan.map((p) => p.key);
+    expect(keys).toEqual(expect.arrayContaining(['kiddush', 'shabbatMeal', 'shacharit', 'musaf', 'mincha', 'havdalah']));
+    expect(plan.find((p) => p.key === 'shabbatMeal')?.required).toBe(3);
+    expect(keys).not.toContain('tefillin');
+  });
+
+  it('Havdalah only on the last day of a run (Pesach Thursday before Shabbat abroad)', () => {
+    const thu = getDayInfo('2027-04-22', false);
+    expect(buildTodayPlan(thu, getZmanim('2027-04-22', ny), 'male', []).map((p) => p.key)).not.toContain('havdalah');
+    const sat = getDayInfo('2027-04-24', false);
+    expect(buildTodayPlan(sat, getZmanim('2027-04-24', ny), 'male', []).map((p) => p.key)).toContain('havdalah');
+  });
+});

@@ -24,8 +24,13 @@ export function TodayCard({ onOpenZmanim }: { onOpenZmanim: () => void }) {
     list.sort((a, b) => a.time.getTime() - b.time.getTime());
   }
   const next = list.find((z) => z.time > now);
+  const rest = calendar.rest;
+  const restChip = rest.active
+    ? `${rest.title === 'שבת' ? 'שבת שלום' : `${rest.title} – חג שמח`}${rest.endsAt ? ` · צאת ${rest.title === 'שבת' ? 'השבת' : 'החג'} ${formatClock(rest.endsAt, city)}` : ''}`
+    : null;
   const chips = [
-    ...day.holidays.map((h) => h.title),
+    ...(restChip ? [restChip] : []),
+    ...day.holidays.filter((h) => !restChip || !restChip.includes(h.title)).map((h) => h.title),
     ...(day.omerDay ? [`ספירת העומר: ${day.omerDay}`] : []),
   ];
 

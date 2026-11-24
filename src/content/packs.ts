@@ -15,7 +15,9 @@ export type SiddurSection = {
   segments: Segment[];
 };
 
-export type SiddurPrayer = { id: string; title: string; sections: SiddurSection[] };
+export type SiddurGroup = 'weekday' | 'shabbat' | 'holiday';
+
+export type SiddurPrayer = { id: string; group: SiddurGroup; title: string; sections: SiddurSection[] };
 
 export type SiddurPack = {
   id: string;
@@ -39,8 +41,28 @@ export type TehillimPack = {
   chapters: Array<{ chapter: number; verses: string[] }>;
 };
 
-export const loadSiddurSefard = async (): Promise<SiddurPack> =>
-  (await import('./packs/siddur-sefard.json')).default as SiddurPack;
+export type SiddurIndex = Omit<SiddurPack, 'prayers' | 'id'> & { id: string; prayers: Array<Pick<SiddurPrayer, 'id' | 'group' | 'title'>> };
+
+export const SIDDUR_GROUP_TITLES: Record<SiddurGroup, string> = {
+  weekday: 'ימות החול',
+  shabbat: 'שבת',
+  holiday: 'ראש חודש, מועדים וחגים',
+};
+
+/** Small list of every prayer (titles and groups only). */
+export const loadSiddurIndex = async (): Promise<SiddurIndex> =>
+  (await import('./packs/siddur-sefard-index.json')).default as SiddurIndex;
+
+/** The texts of one group, loaded only when a prayer of that group is opened. */
+export async function loadSiddurGroup(group: SiddurGroup): Promise<SiddurPack> {
+  const mod =
+    group === 'weekday'
+      ? await import('./packs/siddur-sefard-weekday.json')
+      : group === 'shabbat'
+        ? await import('./packs/siddur-sefard-shabbat.json')
+        : await import('./packs/siddur-sefard-holiday.json');
+  return mod.default as SiddurPack;
+}
 
 export const loadTehillim = async (): Promise<TehillimPack> => (await import('./packs/tehillim.json')).default as TehillimPack;
 

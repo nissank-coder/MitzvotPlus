@@ -164,10 +164,13 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       day: dayAndZmanim.day,
       zmanim: dayAndZmanim.zmanim,
       rest: restInfo.rest,
-      pendingBackfill: restInfo.recent.filter((k) => !state.backfilledRestDays.includes(k)),
+      // Offer after-the-fact logging only for rest days on which nothing was recorded live.
+      pendingBackfill: restInfo.recent.filter(
+        (k) => !state.backfilledRestDays.includes(k) && !state.logs.some((l) => l.dateKey === k),
+      ),
       plan: buildTodayPlan(dayAndZmanim.day, dayAndZmanim.zmanim, state.profile.gender, derived.todayLogs),
     }),
-    [now, city, dayAndZmanim, restInfo, state.backfilledRestDays, state.profile.gender, derived.todayLogs],
+    [now, city, dayAndZmanim, restInfo, state.backfilledRestDays, state.logs, state.profile.gender, derived.todayLogs],
   );
 
   const value = useMemo<StoreValue>(() => {
