@@ -6,6 +6,7 @@ import { FeatureScreen } from '../components/ui';
 import { actionDef } from '../data/actions';
 import { loadTehillim, rangeLabel, TehillimPack, TehillimRange, tehillimForDay } from '../content/packs';
 import { hebrewNumeral } from '../lib/dates';
+import { tehillimRefId } from '../lib/metrics';
 import { useAppStore } from '../store/AppStore';
 
 type Props = { onBack: () => void; onOpenProfile: () => void };
@@ -14,11 +15,10 @@ type View = { kind: 'list' } | { kind: 'read'; ranges: TehillimRange[]; label: s
 const num = (n: number) => hebrewNumeral(n);
 
 export function TehillimScreen({ onBack, onOpenProfile }: Props) {
-  const { calendar, addAction } = useAppStore();
+  const { calendar, derived, addAction } = useAppStore();
   const [pack, setPack] = useState<TehillimPack | null>(null);
   const [failed, setFailed] = useState(false);
   const [view, setView] = useState<View>({ kind: 'list' });
-  const [said, setSaid] = useState<string | null>(null);
 
   useEffect(() => {
     loadTehillim().then(setPack, () => setFailed(true));
@@ -44,9 +44,13 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
     return out;
   }, [pack, view]);
 
+  // Each reading is recorded with the exact chapters (refId), so the same portion is not counted
+  // twice in a day and chapters read can be tracked over time (lib/metrics tehillimCoverage).
+  const viewRef = view.kind === 'read' ? tehillimRefId(view.ranges) : null;
+  const saidToday = viewRef !== null && derived.todayLogs.some((l) => l.actionKey === 'tehillim' && l.refId === viewRef);
   const markSaid = (label: string) => {
-    addAction('tehillim', { title: `תהילים ${label}` });
-    setSaid(label);
+    if (view.kind !== 'read') return;
+    addAction('tehillim', { title: `תהילים ${label}`, refId: tehillimRefId(view.ranges) });
   };
 
   return (
@@ -101,10 +105,10 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
             <button
               type="button"
               onClick={() => markSaid(view.label)}
-              disabled={said === view.label}
-              className={`h-10 px-4 rounded-full text-[13px] font-black ${said === view.label ? 'bg-[#EAF7EF] text-[#4DAA78]' : 'bg-[#2AAE9B] text-white'}`}
+              disabled={saidToday}
+              className={`h-10 px-4 rounded-full text-[13px] font-black ${saidToday ? 'bg-[#EAF7EF] text-[#4DAA78]' : 'bg-[#2AAE9B] text-white'}`}
             >
-              {said === view.label ? 'נרשם ✓' : `אמרתי (+${actionDef('tehillim').points})`}
+              {saidToday ? 'נרשם ✓' : `אמרתי (+${actionDef('tehillim').points})`}
             </button>
           </div>
           <ReviewNotice />

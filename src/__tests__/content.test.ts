@@ -29,11 +29,15 @@ describe('content registry', () => {
     expect(dvarTorahFor('2026-11-24', [])).toBeNull();
   });
 
-  it('completion records the content id and version, still once per day', () => {
+  it('completion records the content id and version; the same item once per day, points once per day', () => {
     const now = Date.UTC(2026, 10, 24, 10);
     let s = reducer(createFreshState(now), { type: 'addAction', payload: { key: 'dailyTorah', now, content: { id: 'a', version: '1' } } });
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: now + 1, content: { id: 'b', version: '1' } } });
+    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: now + 1, content: { id: 'a', version: '1' } } });
     expect(s.logs).toHaveLength(1);
+    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: now + 2, content: { id: 'b', version: '1' } } });
+    expect(s.logs).toHaveLength(2);
+    expect(s.logs.map((l) => l.points)).toEqual([0, 10]);
+    s = { ...s, logs: s.logs.slice(1) };
     expect(s.logs[0]!.content).toEqual({ id: 'a', version: '1' });
     expect(JSON.parse(newCreateItem(s.logs[0]!, 'i', now).payload)).toMatchObject({ contentId: 'a', contentVersion: '1' });
   });

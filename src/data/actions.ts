@@ -18,6 +18,10 @@ export type ActionDef = {
   onTimeBonus?: number;
   /** Shown in the quick-add sheet. */
   quick?: boolean;
+  /** The same refId twice on one day is a duplicate (e.g. the same Tehillim portion). */
+  uniqueRef?: boolean;
+  /** Only completable for a specific content item (id + version). */
+  requiresContent?: boolean;
 };
 
 /**
@@ -34,7 +38,7 @@ export const ACTIONS = {
   shema: { title: 'קריאת שמע בזמנה', icon: 'book', points: 10, dailyCap: 1, oncePerDay: true, category: 'prayer' },
   birkotHashachar: { title: 'ברכות השחר', icon: 'sun', points: 10, dailyCap: 1, oncePerDay: true, category: 'prayer' },
   hallel: { title: 'הלל', icon: 'star', points: 20, dailyCap: 1, oncePerDay: true, category: 'prayer' },
-  tehillim: { title: 'אמירת תהילים', icon: 'book', points: 10, dailyCap: 3, category: 'prayer', quick: true },
+  tehillim: { title: 'אמירת תהילים', icon: 'book', points: 10, dailyCap: 3, category: 'prayer', quick: true, uniqueRef: true },
   prayer: { title: 'תפילה', icon: 'prayer', points: 20, dailyCap: 3, category: 'prayer' },
 
   // Blessings
@@ -43,7 +47,7 @@ export const ACTIONS = {
 
   // Torah
   torahStudy: { title: 'לימוד תורה', icon: 'book', points: 10, dailyCap: 6, category: 'torah', quick: true },
-  dailyTorah: { title: 'דבר תורה יומי', icon: 'book', points: 10, dailyCap: 1, oncePerDay: true, category: 'torah' },
+  dailyTorah: { title: 'דבר תורה יומי', icon: 'book', points: 10, dailyCap: 1, oncePerDay: true, category: 'torah', requiresContent: true },
   learningTrack: { title: 'לימוד יומי', icon: 'bookmark', points: 10, dailyCap: 8, oncePerDay: true, category: 'torah' },
   mitzvahStudy: { title: 'לימוד מצווה מתרי״ג', icon: 'scroll', points: 10, dailyCap: 3, oncePerDay: true, category: 'torah' },
 
@@ -89,7 +93,7 @@ export function isActionKey(key: string): key is ActionKey {
   return key in ACTIONS;
 }
 
-/** Bonus for reaching the daily blessing goal (e.g. 100 blessings). */
+/** Bonus for reaching the daily blessing goal (e.g. 100 blessings): once per day, see src/lib/metrics.ts. */
 export const BLESSING_GOAL_BONUS = 30;
 
 export const categoryStyle: Record<ActionCategory, { color: string; background: string; title: string }> = {

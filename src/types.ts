@@ -97,7 +97,16 @@ export type ActivityLog = {
   context?: { policyVersion: string; cityId: string; tzid: string; il: boolean; candleMins: number };
   /** Content the action refers to (stable id + version). */
   content?: { id: string; version: string };
+  /** Recorded within the proper time (stored so the score can be recomputed). */
+  onTime?: boolean;
+  /** Scoring rules the entry is scored with. Absent = recorded before score-2: points frozen as stored. */
+  rules?: 'score-2';
+  /** Blessings recorded as part of a confirmed bundle for another entry (e.g. a prayer). */
+  bundleOf?: string;
 };
+
+/** Goals in force from a given day on (so changing a goal never rewrites past days). */
+export type GoalSnapshot = { from: string; dailyGoal: number; weeklyGoal: number; blessingGoal: number };
 
 export type AppSettings = {
   notifications: boolean;
@@ -119,7 +128,10 @@ export type AppState = {
   logs: ActivityLog[];
   /** Private speech-guard timer – local only (see src/lib/speechTimer.ts). */
   speech: import('./lib/speechTimer').SpeechTimer;
-  torahSaved: boolean;
+  /** Content items the user saved, as contentRef `id@version` (replaces the global torahSaved flag). */
+  savedContent: string[];
+  /** Goal history; the last entry is the current goal. */
+  goalHistory: GoalSnapshot[];
   /** Personal reflection per day, keyed by YYYY-MM-DD. */
   reflections: Record<string, string>;
   settings: AppSettings;

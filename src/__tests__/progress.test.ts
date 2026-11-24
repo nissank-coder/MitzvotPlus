@@ -71,9 +71,11 @@ describe('week breakdown', () => {
     kind: 'mitzvah',
   });
 
-  it('only counts the current week', () => {
-    const result = weekBreakdown([log('2026-11-21'), log('2026-11-22'), log(MON), log(MON, 5)], MON);
-    expect(result.total).toBe(3);
+  it('only counts the current week, distinct actions per day', () => {
+    const logs = [log('2026-11-21'), log('2026-11-22'), log(MON), { ...log(MON, 5), title: 'other' }, log(MON)];
+    const points = new Map([['2026-11-21', 10], ['2026-11-22', 10], [MON, 15]]);
+    const result = weekBreakdown(logs, MON, points);
+    expect(result.total).toBe(3); // Sunday 1 + Monday 2 distinct (the repeat of 't' is not a new action)
     expect(result.points).toBe(25);
     expect(result.days[1]).toMatchObject({ count: 2, isToday: true });
     expect(result.days[2]?.isFuture).toBe(true);

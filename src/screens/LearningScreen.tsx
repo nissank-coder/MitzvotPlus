@@ -4,7 +4,7 @@ import { Card } from '../components/Card';
 import { SectionHeader } from '../components/SectionHeader';
 import { ActionRow, Chip, ExternalLink, FeatureScreen, Notice } from '../components/ui';
 import { actionDef } from '../data/actions';
-import { addDays } from '../lib/dates';
+import { currentStreak } from '../lib/progress';
 import { fetchSefariaText, TrackItem, trackItem, TRACKS } from '../lib/learning';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -12,7 +12,7 @@ import { colors } from '../theme';
 type Props = { onBack: () => void; onOpenProfile: () => void; onOpenTehillim: () => void };
 
 export function LearningScreen({ onBack, onOpenProfile, onOpenTehillim }: Props) {
-  const { state, derived, calendar, addAction, toggleTrack } = useAppStore();
+  const { state, derived, calendar, addAction, toggleTrack, isRestDay } = useAppStore();
   const [reading, setReading] = useState<TrackItem | null>(null);
   const [editing, setEditing] = useState(false);
   const il = calendar.city.il;
@@ -22,14 +22,11 @@ export function LearningScreen({ onBack, onOpenProfile, onOpenTehillim }: Props)
     .filter((i): i is TrackItem => i !== null);
 
   const doneRefs = new Set(state.logs.filter((l) => l.actionKey === 'learningTrack').map((l) => l.refId));
+  // Same streak rule as everywhere else (rest days bridged), per track.
   const streak = (trackKey: string) => {
-    let n = 0;
-    let key = doneRefs.has(`${trackKey}:${derived.todayKey}`) ? derived.todayKey : addDays(derived.todayKey, -1);
-    while (doneRefs.has(`${trackKey}:${key}`) && n < 999) {
-      n += 1;
-      key = addDays(key, -1);
-    }
-    return n;
+    const days = new Set<string>();
+    for (const ref of doneRefs) if (ref?.startsWith(`${trackKey}:`)) days.add(ref.slice(trackKey.length + 1));
+    return currentStreak(days, derived.todayKey, isRestDay);
   };
 
   return (

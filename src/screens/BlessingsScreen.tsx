@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
@@ -8,6 +8,7 @@ import { FeatureHeader } from '../components/FeatureHeader';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { blessingCategoryMeta } from '../data';
+import { ACTIONS, BLESSING_GOAL_BONUS } from '../data/actions';
 import { formatTime } from '../lib/dates';
 import { UnsavedMark } from '../components/SaveStatusBanner';
 import { useAppStore } from '../store/AppStore';
@@ -37,7 +38,7 @@ const periodItems: Array<{ key: Period; label: string; icon: 'sun' | 'moon' | 'c
 ];
 
 export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
-  const { state, derived, addBlessing, removeLog } = useAppStore();
+  const { state, derived, addBlessing, removeLog, isLogSaved, saveStatus } = useAppStore();
   const blessingTotal = derived.blessingTotal;
   const [period, setPeriod] = useState<Period>('all');
   const [dialog, setDialog] = useState<{ title: string; message: string } | null>(null);
@@ -50,15 +51,24 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
     [derived.todayBlessings, period],
   );
 
+  // The goal message is shown only once the blessing that reached the goal is stored on the device
+  // (never for an entry that failed to save), and once per day.
+  const [celebrate, setCelebrate] = useState(false);
+  const celebratedDay = useRef<string | null>(null);
+  const latestId = derived.todayBlessings[0]?.id;
+  useEffect(() => {
+    if (!celebrate || !latestId || blessingTotal < state.blessingGoal) return;
+    if (celebratedDay.current === derived.todayKey) return;
+    if (!isLogSaved(latestId)) return;
+    celebratedDay.current = derived.todayKey;
+    setCelebrate(false);
+    setDialog({ title: `${state.blessingGoal} ברכות`, message: 'השלמת את היעד היומי. יישר כוח!' });
+  }, [celebrate, latestId, blessingTotal, state.blessingGoal, derived.todayKey, isLogSaved, saveStatus]);
+
   const handleAdd = (category: BlessingCategory) => {
     // No cap at the goal: every additional blessing is still counted.
     addBlessing(category);
-    if (blessingTotal + 1 === state.blessingGoal) {
-      setDialog({
-        title: '100 ברכות',
-        message: 'השלמת את היעד היומי. כל הכבוד!',
-      });
-    }
+    if (blessingTotal + 1 === state.blessingGoal) setCelebrate(true);
   };
 
   return (
@@ -97,7 +107,9 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
             </p>
             <div className="mt-3 px-2.5 py-[5px] rounded-full bg-[#FFF5DB] flex flex-row-reverse items-center gap-1">
               <AppIcon name="coin" size={15} color={colors.gold} />
-              <span className="text-[#946300] text-[11px] font-extrabold">5 נקודות לכל ברכה</span>
+              <span dir="rtl" className="text-[#946300] text-[11px] font-extrabold">
+                {`${ACTIONS.blessing.points} נק׳ לברכה · ${BLESSING_GOAL_BONUS} נק׳ ביעד`}
+              </span>
             </div>
           </div>
         </div>
