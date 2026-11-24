@@ -6,6 +6,7 @@ import { FeatureKey } from '../types';
 import { AppHeader } from '../components/AppHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { formatTime } from '../lib/dates';
+import { UnsavedMark } from '../components/SaveStatusBanner';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
@@ -157,6 +158,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
                 </button>
                 <AppIcon name="check" size={20} color={colors.green} />
                 <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
+                <UnsavedMark logId={item.id} />
               </div>
               <div className="flex-1 flex flex-row-reverse items-center justify-start gap-3">
                 <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold text-right">

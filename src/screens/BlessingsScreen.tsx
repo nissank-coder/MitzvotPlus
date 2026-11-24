@@ -9,6 +9,7 @@ import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { blessingCategoryMeta } from '../data';
 import { formatTime } from '../lib/dates';
+import { UnsavedMark } from '../components/SaveStatusBanner';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { BlessingCategory } from '../types';
@@ -189,6 +190,7 @@ export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
                   </button>
                   <AppIcon name="check" size={20} color={colors.green} />
                   <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
+                  <UnsavedMark logId={item.id} />
                 </div>
                 <div className="flex-1 flex flex-row-reverse items-center gap-3">
                   <div className="flex-1 flex flex-col items-end">

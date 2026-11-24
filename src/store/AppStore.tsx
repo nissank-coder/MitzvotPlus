@@ -1,6 +1,7 @@
 import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { localStorageStorage, StateStorage } from '../storage/persistence';
+import { SaveController, SaveStatus } from '../storage/saveController';
 import { ActionKey } from '../data/actions';
 import { cityById, CityOption } from '../data/locations';
 import {
@@ -41,8 +42,14 @@ type StoreValue = {
   /** Set when stored data could not be read; saving is then disabled so nothing is overwritten. */
   storageError: string | null;
   storageKind: StateStorage['kind'] | null;
+  /** Current save state: an error is always shown to the user and retried. */
+  saveStatus: SaveStatus;
+  /** True when this action is known to be stored on the device. */
+  isLogSaved: (id: string) => boolean;
+  /** Retries a failed save now. */
+  retrySave: () => Promise<boolean>;
   /** Writes pending changes now (called when the app goes to the background). */
-  flush: () => Promise<void>;
+  flush: () => Promise<boolean>;
   /** Re-reads the clock (called when the app returns to the foreground). */
   refreshClock: () => void;
   completeOnboarding: (userName: string, dailyGoal: number, profile: Partial<UserProfile>) => void;
@@ -92,9 +99,8 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   const [hydrated, setHydrated] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const storageRef = useRef<StateStorage | null>(null);
-  const latest = useRef(state);
-  latest.current = state;
-  const saveTimer = useRef<number | null>(null);
+  const saverRef = useRef<SaveController | null>(null);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>({ state: 'idle', error: null, failures: 0, lastSavedAt: null });
   const [now, refreshClock] = useNow();
   const city = cityById(state.profile.cityId);
   // "Today" is the date in the selected city's time zone (policy: CALENDAR_POLICY.dayBoundary).
@@ -109,7 +115,11 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
         const raw = await storage.load();
         if (cancelled) return;
         storageRef.current = storage;
-        dispatch({ type: 'hydrate', payload: loadState(raw) });
+        const loaded = loadState(raw);
+        const saver = new SaveController(storage, setSaveStatus);
+        saver.markLoaded(loaded);
+        saverRef.current = saver;
+        dispatch({ type: 'hydrate', payload: loaded });
       } catch (error) {
         console.warn('Could not load app data', error);
         if (!cancelled) setStorageError(error instanceof Error ? error.message : String(error));
@@ -119,29 +129,20 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     })();
     return () => {
       cancelled = true;
+      saverRef.current?.dispose();
     };
   }, []);
 
-  const flush = useCallback(async () => {
-    if (saveTimer.current !== null) {
-      window.clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-    const storage = storageRef.current;
-    if (!storage) return;
-    try {
-      await storage.save(latest.current);
-    } catch (error) {
-      console.warn('Could not save app data', error);
-    }
-  }, []);
+  const flush = useCallback(async () => (saverRef.current ? saverRef.current.flush() : true), []);
+  const retrySave = useCallback(async () => (saverRef.current ? saverRef.current.retry() : true), []);
+  const isLogSaved = useCallback((id: string) => saverRef.current?.isSaved(id) ?? false, []);
 
-  // Debounced save; a failed load leaves storageRef empty, so stored data is never overwritten.
+  // Every change is handed to the save controller; a failed load leaves it unset, so stored data is
+  // never overwritten.
   useEffect(() => {
-    if (!hydrated || !storageRef.current) return;
-    if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
-    saveTimer.current = window.setTimeout(() => void flush(), 250);
-  }, [hydrated, state, flush]);
+    if (!hydrated) return;
+    saverRef.current?.request(state);
+  }, [hydrated, state]);
 
   const derived = useMemo(() => computeDerived(state, todayKey), [state, todayKey]);
 
@@ -191,6 +192,9 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       hydrated,
       storageError,
       storageKind: storageRef.current?.kind ?? null,
+      saveStatus,
+      isLogSaved,
+      retrySave,
       flush,
       refreshClock,
       completeOnboarding: (userName, dailyGoal, profile) =>
@@ -218,7 +222,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, city, derived, hydrated, state, todayKey, storageError, flush, refreshClock]);
+  }, [calendar, city, derived, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

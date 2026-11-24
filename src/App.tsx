@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
+import { SaveStatusBanner } from './components/SaveStatusBanner';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
 import { BlessingGuideScreen } from './screens/BlessingGuideScreen';
 import { BlessingsScreen } from './screens/BlessingsScreen';
@@ -194,6 +195,7 @@ function MitzvotApp() {
 
   return (
     <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] sm:border-x sm:border-[#DDE8EE] sm:shadow-xl">
+      <SaveStatusBanner />
       <main className="flex-1 flex flex-col">{content}</main>
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
       <QuickAddSheet visible={quickAddVisible} onClose={() => setQuickAddVisible(false)} />
