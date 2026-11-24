@@ -27,6 +27,7 @@ export function createFreshState(now = Date.now()): AppState {
     speech: emptyTimer(),
     savedContent: [],
     goalHistory: [{ from: '0000-00-00', dailyGoal: 12, weeklyGoal: 60, blessingGoal: 100 }],
+    locationHistory: [{ from: '0000-00-00', cityId: DEFAULT_CITY_ID }],
     reflections: {},
     settings: { ...defaultSettings },
     joinedGroups: {},
@@ -206,6 +207,10 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
     speech: value.speech ?? legacySpeech(legacyFields),
     savedContent: Array.isArray(value.savedContent) ? value.savedContent : [],
+    locationHistory:
+      Array.isArray(value.locationHistory) && value.locationHistory.length > 0
+        ? value.locationHistory
+        : [{ from: '0000-00-00', cityId: value.profile?.cityId ?? fresh.profile.cityId }],
     goalHistory:
       Array.isArray(value.goalHistory) && value.goalHistory.length > 0
         ? value.goalHistory
@@ -218,6 +223,13 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
 }
 
 /* ------------------------------- Reducer ------------------------------- */
+
+/**
+ * Entries a blessing bundle may be confirmed for (prayers and Birkat Hamazon). A product
+ * allowlist, not a count table: the number of blessings is always what the user confirms.
+ */
+export const BUNDLE_SOURCES: readonly ActionKey[] = ['birkotHashachar', 'shacharit', 'mincha', 'arvit', 'musaf', 'birkatHamazon'];
+export const MAX_BUNDLE = 30;
 
 export type Action =
   | { type: 'hydrate'; payload: AppState }
@@ -233,7 +245,7 @@ export type Action =
   | { type: 'setReflection'; payload: { dateKey: string; text: string } }
   | { type: 'updateGoals'; payload: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>>; dateKey?: string }
   | { type: 'updateSettings'; payload: Partial<AppSettings> }
-  | { type: 'updateProfile'; payload: Partial<UserProfile> }
+  | { type: 'updateProfile'; payload: Partial<UserProfile>; dateKey?: string }
   | { type: 'toggleTrack'; payload: { key: string } }
   | { type: 'toggleGroup'; payload: { key: string } }
   | { type: 'loadDemo' }
@@ -261,6 +273,7 @@ export function reducer(state: AppState, action: Action): AppState {
         weeklyGoal,
         // The first goals apply from the start; there is no earlier history to keep.
         goalHistory: [{ from: '0000-00-00', dailyGoal, weeklyGoal, blessingGoal: state.blessingGoal }],
+        locationHistory: [{ from: '0000-00-00', cityId: action.payload.profile.cityId ?? state.profile.cityId }],
         memberSince: Date.now(),
         profile: { ...state.profile, ...action.payload.profile },
       };
@@ -293,12 +306,21 @@ export function reducer(state: AppState, action: Action): AppState {
       };
 
     case 'setBlessingBundle': {
-      // Replaces (never adds to) the bundle for this entry, so editing it cannot double-count.
-      const source = state.logs.find((l) => l.id === action.payload.sourceLogId);
-      if (!source) return state;
-      let logs = state.logs.filter((l) => l.bundleOf !== source.id);
-      const count = clampGoal(action.payload.count, 0, 30);
+      // Only for a prayer / composite blessing, only a whole number 0–MAX the user confirmed.
+      // Idempotent: the same number changes nothing; a new number keeps the rows that stay
+      // (stable ids) and adds or removes only the difference. Never stacks on another bundle.
+      const { sourceLogId, count } = action.payload;
+      const source = state.logs.find((l) => l.id === sourceLogId);
+      if (!source || source.bundleOf || !source.actionKey || !BUNDLE_SOURCES.includes(source.actionKey)) return state;
+      if (!Number.isInteger(count) || count < 0 || count > MAX_BUNDLE) return state;
+      const existing = state.logs.filter((l) => l.bundleOf === source.id);
+      const index = (l: ActivityLog) => Number(l.refId?.split(':')[2] ?? -1);
+      const keep = existing.filter((l) => index(l) >= 0 && index(l) < count);
+      if (keep.length === count && existing.length === count) return state;
+      const have = new Set(keep.map(index));
+      let logs = state.logs.filter((l) => l.bundleOf !== source.id || keep.includes(l));
       for (let i = 0; i < count; i += 1) {
+        if (have.has(i)) continue;
         const log = buildLog(logs, {
           key: 'blessing',
           category: 'prayer',
@@ -354,8 +376,19 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'updateSettings':
       return { ...state, settings: { ...state.settings, ...action.payload } };
 
-    case 'updateProfile':
-      return { ...state, profile: { ...state.profile, ...action.payload } };
+    case 'updateProfile': {
+      const cityId = action.payload.cityId;
+      const moved = cityId !== undefined && cityId !== state.profile.cityId;
+      const from = action.dateKey ?? localDateKey(Date.now());
+      return {
+        ...state,
+        profile: { ...state.profile, ...action.payload },
+        // A new city applies from today on; earlier days keep the city they were measured in.
+        locationHistory: moved
+          ? [...state.locationHistory.filter((l) => l.from < from), { from, cityId }]
+          : state.locationHistory,
+      };
+    }
 
     case 'toggleTrack': {
       const has = state.learningTracks.includes(action.payload.key);

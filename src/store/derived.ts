@@ -1,4 +1,4 @@
-import { addDays } from '../lib/dates';
+import { addDays, localDateKey, weekKeys } from '../lib/dates';
 import { goalsOn, measureDays, metricsFor, scoreLogs } from '../lib/metrics';
 import { badges, bestStreak, currentStreak, daysWith, levelInfo, RestRule, shabbatOnly, weekBreakdown } from '../lib/progress';
 import { ActivityLog, AppState, BlessingCategory } from '../types';
@@ -13,7 +13,13 @@ export type Derived = ReturnType<typeof computeDerived>;
  *  - participation points (scoreLogs, rules score-2).
  * `isRestDay` is the calendar's Shabbat / Yom Tov rule for the user's city.
  */
-export function computeDerived(state: AppState, todayKey: string, isRestDay: RestRule = shabbatOnly) {
+export function computeDerived(
+  state: AppState,
+  todayKey: string,
+  isRestDay: RestRule = shabbatOnly,
+  /** The day the user started (memberSince in the city's time zone). */
+  startKey: string = localDateKey(state.memberSince),
+) {
   const logs = state.logs;
   const todayLogs: ActivityLog[] = logs.filter((l) => l.dateKey === todayKey).sort((a, b) => b.createdAt - a.createdAt);
   const todayBlessings = todayLogs.filter((l) => l.kind === 'blessing');
@@ -32,18 +38,34 @@ export function computeDerived(state: AppState, todayKey: string, isRestDay: Res
   const activityStreak = currentStreak(activeDays, todayKey, isRestDay);
   const bestActivityStreak = bestStreak(activeDays, isRestDay);
 
+  // Measuring starts on the day the user started (or the first recorded day, if earlier):
+  // days before that are not "missed" (round 8, A01).
+  let firstLog = todayKey;
+  for (const l of logs) if (l.dateKey < firstLog) firstLog = l.dateKey;
+  const measureFrom = firstLog < startKey ? firstLog : startKey;
+  const goalMet = (key: string) => (measures.get(key)?.distinctActions ?? 0) >= goalsOn(state.goalHistory, key).dailyGoal;
+
   // Consistency over the last 30 days, each day against the goal that applied ON that day.
+  // Today counts only once its goal is met (an open day is neutral, not a failure).
   // A rest day with nothing recorded is not a missed day (D05: no pressure to record on Shabbat).
   let goalDays = 0;
   let eligibleDays = 0;
   for (let i = 0; i < 30; i += 1) {
     const key = addDays(todayKey, -i);
+    if (key < measureFrom) break;
     const m = measures.get(key);
-    if (i === 0 && !m) continue; // today is not over
+    if (i === 0 && !goalMet(key)) continue;
     if (!m && isRestDay(key)) continue;
     eligibleDays += 1;
-    if ((m?.distinctActions ?? 0) >= goalsOn(state.goalHistory, key).dailyGoal) goalDays += 1;
+    if (goalMet(key)) goalDays += 1;
   }
+  // Goal streak (days the personal goal was met) is separate from the logging streak (any entry).
+  const goalDaySet = new Set<string>();
+  for (const key of measures.keys()) if (goalMet(key)) goalDaySet.add(key);
+
+  // The weekly target is the one in force when the week started: a change applies from next week.
+  const weekStart = weekKeys(todayKey)[0] ?? todayKey;
+  const weeklyGoal = goalsOn(state.goalHistory, weekStart).weeklyGoal;
 
   const week = weekBreakdown(logs, todayKey, score.byDay);
 
@@ -70,8 +92,14 @@ export function computeDerived(state: AppState, todayKey: string, isRestDay: Res
     /** Consecutive learning days (any learning entry; rest days bridged). */
     torahStreak: currentStreak(learningDays, todayKey, isRestDay),
     week,
-    consistency: eligibleDays === 0 ? 0 : Math.round((goalDays / eligibleDays) * 100),
+    /** null = no closed day to measure yet (shown as "no baseline yet", not 0%). */
+    consistency: eligibleDays === 0 ? null : Math.round((goalDays / eligibleDays) * 100),
     consistencyDays: { goalDays, eligibleDays },
+    goalStreak: currentStreak(goalDaySet, todayKey, isRestDay),
+    todayGoalMet: goalMet(todayKey),
+    /** Weekly target for this week (snapshot at the start of the week). */
+    weeklyGoal,
+    unknownRules: score.unknownRules.length,
     badges: badges(logs, bestActivityStreak),
     totalCount: logs.length,
   };

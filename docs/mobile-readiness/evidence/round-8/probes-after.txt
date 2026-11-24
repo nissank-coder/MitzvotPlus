@@ -1,0 +1,10 @@
+12 blessings: {"actions":1,"blessings":12,"points":24}
+100 blessings: {"total":230,"bonus":30}
+remove/add: {"total":230,"bonus":30}
+first day fresh user consistency: {"memberSince":1795435200000,"goalDays":0,"eligibleDays":0,"percent":null}
+same prayer different ref: {"logs":1,"points":25}
+two Dvar Torah refs same day: {"logs":2,"points":10}
+bundle on chesed: {"blessings":0,"points":15,"rows":1}
+private action payload: {"actionType":"cleanSpeech","eventId":"<random-id>","installationId":"demo-install","localDate":"2026-11-23","occurredAtUtc":"2026-11-23T12:00:00.000Z","operation":"create","quantity":1,"recordedAtUtc":"2026-11-23T12:00:00.000Z","schemaVersion":1}
+mutate current points table: {"before":15,"after":15,"rules":"score-2"}
+partial today: {"goalDays":0,"eligibleDays":1,"percent":0}

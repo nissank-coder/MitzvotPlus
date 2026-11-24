@@ -32,7 +32,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
   const pending = calendar.pendingBackfill;
   const todayCount = derived.todayCount;
   const dailyProgress = Math.min(1, todayCount / state.dailyGoal);
-  const weeklyProgress = Math.min(1, derived.week.total / state.weeklyGoal);
+  const weeklyProgress = Math.min(1, derived.week.total / derived.weeklyGoal);
   const latestLogs = derived.todayLogs.slice(0, 4);
 
   const handleShortcut = (key: (typeof shortcuts)[number]['key']) => onOpenFeature(key);
@@ -189,7 +189,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               <AppIcon name="trophy" size={21} color={colors.gold} />
             </div>
             <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-1">
-              {derived.week.total} מתוך {state.weeklyGoal} פעולות
+              {derived.week.total} מתוך {derived.weeklyGoal} פעולות
             </span>
             <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
               <div

@@ -36,7 +36,7 @@ export function ProfileScreen() {
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={`${derived.todayCount}`} label="פעולות היום" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
-          <ProfileStat value={`${derived.consistency}%`} label="עקביות (30 יום)" />
+          <ProfileStat value={derived.consistency === null ? "—" : `${derived.consistency}%`} label={derived.consistency === null ? "עקביות: עוד אין בסיס" : "עקביות (30 יום)"} />
         </div>
       </Card>
 
@@ -74,7 +74,7 @@ export function ProfileScreen() {
         <SettingRow
           icon="target"
           title="היעדים שלי"
-          subtitle={`${state.dailyGoal} מצוות ביום, ${state.weeklyGoal} בשבוע ו-${state.blessingGoal} ברכות`}
+          subtitle={`${state.dailyGoal} פעולות ביום, ${state.weeklyGoal} בשבוע (מהשבוע הבא) ו-${state.blessingGoal} ברכות`}
           onPress={() => setGoalsOpen(true)}
           last
         >

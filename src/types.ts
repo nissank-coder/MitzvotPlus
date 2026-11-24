@@ -132,6 +132,8 @@ export type AppState = {
   savedContent: string[];
   /** Goal history; the last entry is the current goal. */
   goalHistory: GoalSnapshot[];
+  /** City in force from a day on: past rest days keep the city they were in (round 8, A06). */
+  locationHistory: Array<{ from: string; cityId: string }>;
   /** Personal reflection per day, keyed by YYYY-MM-DD. */
   reflections: Record<string, string>;
   settings: AppSettings;

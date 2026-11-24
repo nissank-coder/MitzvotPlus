@@ -1,4 +1,5 @@
-import { ACTIONS, ActionCategory, ActionKey, actionDef, BLESSING_GOAL_BONUS } from '../data/actions';
+import { ActionCategory, ActionKey, actionDef } from '../data/actions';
+import { CURRENT_RULES, ruleFor, ruleSet } from './rulesets';
 import { ActivityLog, GoalSnapshot } from '../types';
 
 /**
@@ -9,7 +10,7 @@ import { ActivityLog, GoalSnapshot } from '../types';
  * Entries recorded before score-2 (no `rules` field) keep the points they were stored with:
  * old history is not rewritten silently.
  */
-export const SCORING_RULES_VERSION = 'score-2' as const;
+export const SCORING_RULES_VERSION = CURRENT_RULES;
 
 /* --------------------------- What each action measures --------------------------- */
 
@@ -63,20 +64,21 @@ export type ScoreSheet = {
   dayBonus: Map<string, number>;
   byDay: Map<string, number>;
   total: number;
+  /** Entries whose rules version is unknown to this app (scored 0, never guessed). */
+  unknownRules: string[];
 };
 
 const byTime = (a: ActivityLog, b: ActivityLog) => a.createdAt - b.createdAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
-function basePoints(log: ActivityLog): number {
-  const def = actionDef(log.actionKey ?? 'prayer');
-  let p = def.points;
-  if (log.minyan && def.minyanBonus) p += def.minyanBonus;
-  if (log.onTime && def.onTimeBonus) p += def.onTimeBonus;
-  return p;
+/** Identity of an entry for once-a-day rules: prayers are one per day whatever refId they carry. */
+export function onceKey(rule: { oncePerDay?: boolean; refScoped?: boolean } | null, refId: string | undefined): string | null {
+  if (!rule?.oncePerDay) return null;
+  return rule.refScoped ? (refId ?? '') : '';
 }
 
 /** A legacy blessing entry that already carries the goal bonus (old rules stored it on the entry). */
-const legacyHasBonus = (log: ActivityLog) => !log.rules && log.kind === 'blessing' && log.points >= BLESSING_GOAL_BONUS;
+const LEGACY_BONUS = 30;
+const legacyHasBonus = (log: ActivityLog) => !log.rules && log.kind === 'blessing' && log.points >= LEGACY_BONUS;
 
 export function scoreLogs(logs: ActivityLog[], goals: GoalSnapshot[]): ScoreSheet {
   const byLog = new Map<string, number>();
@@ -90,51 +92,62 @@ export function scoreLogs(logs: ActivityLog[], goals: GoalSnapshot[]): ScoreShee
     else groups.set(g, [l]);
   }
 
+  const unknownRules: string[] = [];
   for (const list of groups.values()) {
     list.sort(byTime);
-    const sample = list[0]!;
-    const known = sample.actionKey && sample.actionKey in ACTIONS;
-    const def = known ? actionDef(sample.actionKey!) : null;
     // Legacy entries count toward the cap with the points they were given.
     let scored = list.filter((l) => !l.rules && l.points > 0).length;
-    const seenRefs = new Set(list.filter((l) => !l.rules).map((l) => l.refId ?? ''));
+    const seen = new Set<string>();
+    for (const l of list) if (!l.rules) seen.add(l.refId ?? '');
     for (const log of list) {
       if (!log.rules) {
         byLog.set(log.id, log.points);
         continue;
       }
-      if (!def) {
+      // Scored with the frozen table of the entry's own rules version, never the live table.
+      const rule = ruleFor(log.rules, log.actionKey);
+      if (!rule) {
+        if (!ruleSet(log.rules)) unknownRules.push(log.id);
         byLog.set(log.id, 0);
         continue;
       }
-      const ref = log.refId ?? '';
-      if (def.oncePerDay && seenRefs.has(ref)) {
-        byLog.set(log.id, 0);
-        continue;
+      const key = onceKey(rule, log.refId);
+      if (key !== null) {
+        if (seen.has(key)) {
+          byLog.set(log.id, 0);
+          continue;
+        }
+        seen.add(key);
       }
-      seenRefs.add(ref);
-      if (scored < def.dailyCap) {
-        byLog.set(log.id, basePoints(log));
+      if (scored < rule.dailyCap) {
+        let p = rule.points;
+        if (log.minyan && rule.minyanBonus) p += rule.minyanBonus;
+        if (log.onTime && rule.onTimeBonus) p += rule.onTimeBonus;
+        byLog.set(log.id, p);
         scored += 1;
       } else byLog.set(log.id, 0);
     }
   }
 
   // Blessing-goal bonus: once per day, decided from the whole day, never stored on an entry.
-  const blessingsPerDay = new Map<string, { count: number; legacyBonus: boolean; hasCurrent: boolean }>();
+  const blessingsPerDay = new Map<string, { count: number; legacyBonus: boolean; hasCurrent: boolean; bonus: number }>();
   for (const l of logs) {
     const units = metricsFor(l.actionKey).blessingUnits || (l.kind === 'blessing' ? 1 : 0);
     if (!units) continue;
-    const d = blessingsPerDay.get(l.dateKey) ?? { count: 0, legacyBonus: false, hasCurrent: false };
+    const d = blessingsPerDay.get(l.dateKey) ?? { count: 0, legacyBonus: false, hasCurrent: false, bonus: 0 };
     d.count += units;
     d.legacyBonus ||= legacyHasBonus(l);
-    d.hasCurrent ||= Boolean(l.rules);
+    const set = ruleSet(l.rules);
+    if (set) {
+      d.hasCurrent = true;
+      d.bonus = Math.max(d.bonus, set.blessingGoalBonus);
+    }
     blessingsPerDay.set(l.dateKey, d);
   }
   for (const [day, d] of blessingsPerDay) {
     // A day recorded only under the old rules stays as it was stored.
     if (!d.hasCurrent || d.legacyBonus) continue;
-    if (d.count >= goalsOn(goals, day).blessingGoal) dayBonus.set(day, BLESSING_GOAL_BONUS);
+    if (d.count >= goalsOn(goals, day).blessingGoal) dayBonus.set(day, d.bonus);
   }
 
   let total = 0;
@@ -147,7 +160,7 @@ export function scoreLogs(logs: ActivityLog[], goals: GoalSnapshot[]): ScoreShee
     byDay.set(day, (byDay.get(day) ?? 0) + b);
     total += b;
   }
-  return { byLog, dayBonus, byDay, total };
+  return { byLog, dayBonus, byDay, total, unknownRules };
 }
 
 /* ------------------------------ Day measurements ------------------------------ */
@@ -191,30 +204,56 @@ export function tehillimRefId(ranges: Array<{ from: number; to: number; verses?:
   return `tehillim:${ranges.map((r) => (r.verses ? `${r.from}:${r.verses[0]}-${r.verses[1]}` : `${r.from}-${r.to}`)).join(',')}`;
 }
 
+/** Longest chapter in Tehillim (119) – a bound for verse numbers. */
+const MAX_VERSE = 176;
+
+export type TehillimSpan = { chapter: number; from: number; to: number | null };
+
+/**
+ * Parses a Tehillim refId. Returns null for anything outside the book (chapters 1–150, verses
+ * 1–176, from ≤ to, at most 150 parts) so a bad refId can neither be recorded nor loop.
+ * `to: null` means the whole chapter.
+ */
+export function parseTehillimRef(refId: string): TehillimSpan[] | null {
+  if (!refId.startsWith('tehillim:')) return null;
+  const parts = refId.slice('tehillim:'.length).split(',');
+  if (parts.length === 0 || parts.length > 150) return null;
+  const out: TehillimSpan[] = [];
+  for (const part of parts) {
+    const split = /^(\d{1,3}):(\d{1,3})-(\d{1,3})$/.exec(part);
+    const whole = /^(\d{1,3})-(\d{1,3})$/.exec(part);
+    if (split) {
+      const [c, a, b] = [Number(split[1]), Number(split[2]), Number(split[3])];
+      if (c < 1 || c > 150 || a < 1 || b < a || b > MAX_VERSE) return null;
+      out.push({ chapter: c, from: a, to: b });
+    } else if (whole) {
+      const [a, b] = [Number(whole[1]), Number(whole[2])];
+      if (a < 1 || b < a || b > 150) return null;
+      for (let c = a; c <= b; c += 1) out.push({ chapter: c, from: 1, to: null });
+    } else return null;
+  }
+  return out;
+}
+
 /**
  * Verses covered per chapter over the whole history (union, so reading the same chapter twice
- * counts once). Entries without a refId (older versions) are not counted: their chapter is unknown.
+ * counts once). Entries without a valid refId (older versions, bad data) are not counted.
  */
 export function tehillimCoverage(logs: ActivityLog[]): Map<number, Array<[number, number]>> {
   const cover = new Map<number, Array<[number, number]>>();
   const addSpan = (ch: number, a: number, b: number) => {
     const spans = [...(cover.get(ch) ?? []), [a, b] as [number, number]].sort((x, y) => x[0] - y[0]);
     const merged: Array<[number, number]> = [];
-    for (const s of spans) {
+    for (const sp of spans) {
       const last = merged[merged.length - 1];
-      if (last && s[0] <= last[1] + 1) last[1] = Math.max(last[1], s[1]);
-      else merged.push([s[0], s[1]]);
+      if (last && sp[0] <= last[1] + 1) last[1] = Math.max(last[1], sp[1]);
+      else merged.push([sp[0], sp[1]]);
     }
     cover.set(ch, merged);
   };
   for (const l of logs) {
-    if (l.actionKey !== 'tehillim' || !l.refId?.startsWith('tehillim:')) continue;
-    for (const part of l.refId.slice('tehillim:'.length).split(',')) {
-      const split = /^(\d+):(\d+)-(\d+)$/.exec(part);
-      const whole = /^(\d+)-(\d+)$/.exec(part);
-      if (split) addSpan(Number(split[1]), Number(split[2]), Number(split[3]));
-      else if (whole) for (let c = Number(whole[1]); c <= Number(whole[2]); c += 1) addSpan(c, 1, Number.MAX_SAFE_INTEGER);
-    }
+    if (l.actionKey !== 'tehillim' || !l.refId) continue;
+    for (const sp of parseTehillimRef(l.refId) ?? []) addSpan(sp.chapter, sp.from, sp.to ?? MAX_VERSE);
   }
   return cover;
 }

@@ -13,6 +13,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ios.yml'
+      - 'scripts/ci/ios-sim-smoke.sh'
   push:
     branches: [main, 'claude/**']
     paths:
@@ -22,6 +23,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ios.yml'
+      - 'scripts/ci/ios-sim-smoke.sh'
 
 permissions:
   contents: read
@@ -60,43 +62,24 @@ jobs:
           npx cap sync ios
 
       - name: Build for simulator (unsigned)
-        run: |
-          mkdir -p reports
-          set -o pipefail
-          xcodebuild \
-            -project ios/App/App.xcodeproj \
-            -scheme App \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/dd \
-            CODE_SIGNING_ALLOWED=NO \
-            build 2>&1 | tee reports/xcodebuild.log | grep -E '^(\*\*|error:|warning: .*deprecated)' || true
-          test -d build/dd/Build/Products/Debug-iphonesimulator/App.app
+        run: scripts/ci/ios-sim-smoke.sh build
 
-      - name: Boot simulator, install, launch, screenshot
+      - name: Boot simulator, install, launch, screenshot, alive check
+        run: scripts/ci/ios-sim-smoke.sh run
+
+      - name: Summary
+        if: always()
         run: |
-          set -euo pipefail
-          UDID=$(xcrun simctl list devices available -j \
-            | jq -r '[.devices | to_entries[] | select(.key | test("iOS")) | .value[] | select(.name | test("^iPhone"))] | last | .udid')
-          echo "Simulator: $UDID"
-          xcrun simctl boot "$UDID"
-          xcrun simctl bootstatus "$UDID" -b
-          xcrun simctl install "$UDID" build/dd/Build/Products/Debug-iphonesimulator/App.app
-          xcrun simctl launch "$UDID" com.mitzvotplus.app | tee reports/launch.txt
-          sleep 20
-          xcrun simctl io "$UDID" screenshot reports/ios-sim-launch.png
-          # still running after 20 s = no crash on start
-          xcrun simctl spawn "$UDID" launchctl list | grep -q 'com.mitzvotplus.app' \
-            && echo "App process alive after 20 s" | tee -a reports/launch.txt "$GITHUB_STEP_SUMMARY"
-          xcrun simctl spawn "$UDID" log show --last 2m --predicate 'process == "App"' --style compact \
-            > reports/sim-app-log.txt 2>&1 || true
-          xcrun simctl list devices "$UDID" | tee -a reports/launch.txt
+          {
+            echo "### iOS simulator – ${GITHUB_SHA::7}"
+            grep -E '^\*\* (BUILD|ARCHIVE) ' reports/xcodebuild.log || echo "no xcodebuild result line"
+            cat reports/launch.txt 2>/dev/null || echo "not launched"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-simulator-reports
+          name: ios-simulator-reports-${{ github.sha }}
           path: reports/
           retention-days: 14
