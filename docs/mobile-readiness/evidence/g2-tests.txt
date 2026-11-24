@@ -1,0 +1,11 @@
+
+ RUN  v5.1.1 /home/user/MitzvotPlus
+
+(node:1675) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  6 passed (6)
+      Tests  63 passed (63)
+   Start at  21:21:24
+   Duration  406ms (tests 48%, import 35%, transform 13%, worker 4%)
+

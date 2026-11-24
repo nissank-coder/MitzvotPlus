@@ -29,6 +29,7 @@ export function buildTodayPlan(
   z: ZmanimForDay,
   gender: Gender,
   todayLogs: ActivityLog[],
+  options: { dvarTorah?: boolean } = {},
 ): PlanItem[] {
   const items: Array<Omit<PlanItem, 'done' | 'count'> & { required?: number }> = [];
   const male = gender === 'male';
@@ -59,7 +60,7 @@ export function buildTodayPlan(
   add('mincha', { deadline: z.sunset, note: 'עד השקיעה' });
   if (male) add('arvit', { from: z.tzeit });
   add('birkatHamazon');
-  add('dailyTorah');
+  if (options.dvarTorah !== false) add('dailyTorah');
   add('charity', info.isErevRest ? { note: 'צדקה לפני שבת' } : {});
 
   // Erev Shabbat / Yom Tov

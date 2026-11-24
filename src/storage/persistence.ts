@@ -13,23 +13,18 @@ export type StateStorage = {
 
 export const LEGACY_STORAGE_KEY = 'mitzvot_plus_state_v1';
 
-/** Browser storage – used on the web and in development. */
-export function localStorageStorage(): StateStorage {
+/**
+ * Browser storage – used on the web and in development.
+ * A failed write (e.g. QuotaExceededError) is thrown to the caller, never swallowed:
+ * the save controller reports it to the user and retries.
+ */
+export function localStorageStorage(store: Pick<Storage, 'getItem' | 'setItem'> = window.localStorage): StateStorage {
   return {
     kind: 'localStorage',
-    load: async () => {
-      try {
-        return window.localStorage.getItem(LEGACY_STORAGE_KEY);
-      } catch {
-        return null;
-      }
-    },
+    // A read failure is also thrown, so the app refuses to start over existing data (see AppStore).
+    load: async () => store.getItem(LEGACY_STORAGE_KEY),
     save: async (state) => {
-      try {
-        window.localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(state));
-      } catch (error) {
-        console.warn('Could not save app data', error);
-      }
+      store.setItem(LEGACY_STORAGE_KEY, JSON.stringify(state));
     },
   };
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { SYNC_ENABLED } from '../config/features';
+import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ProgressRing } from '../components/ProgressRing';
@@ -85,6 +86,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           color={colors.primary}
           onPress={onOpenBlessings}
         />
+        {DVAR_TORAH_AVAILABLE ? (
         <SummaryCard
           title="רצף לימוד"
           value={`${derived.torahStreak} ימים`}
@@ -93,6 +95,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           color={colors.coral}
           onPress={onOpenTorah}
         />
+        ) : null}
       </div>
 
       <Card className="p-4 mb-5">
@@ -136,7 +139,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
 
       <SectionHeader title="הישגים" icon="trophy" />
       <div className="flex flex-col gap-3">
-        {derived.badges.map((badge) => (
+        {derived.badges.filter((b) => b.key !== 'torah' || DVAR_TORAH_AVAILABLE).map((badge) => (
           <Badge
             key={badge.key}
             title={badge.title}

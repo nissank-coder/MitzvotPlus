@@ -2,6 +2,7 @@ import React from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { mitzvahOfDay } from '../data/mitzvot';
+import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { FeatureKey, IconName } from '../types';
@@ -34,7 +35,7 @@ export function ContentScreen({ onOpenFeature, onOpenProfile }: { onOpenFeature:
         <p className="text-[#718397] text-[13px] mt-1">כל מה שצריך כדי להוסיף עוד מצווה</p>
       </div>
       <div dir="rtl" className="grid grid-cols-2 gap-3">
-        {tiles.map((t) => (
+        {tiles.filter((t) => t.key !== 'torah' || DVAR_TORAH_AVAILABLE).map((t) => (
           <button
             key={t.key}
             type="button"

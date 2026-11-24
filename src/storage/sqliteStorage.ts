@@ -64,6 +64,7 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
 
   const init = () => {
     if (!ready) {
+      // A failed initialisation is not cached: the next save/load tries again (transient I/O errors).
       ready = (async () => {
         await runMigrations(db);
         const rows = await db.query<Row>('SELECT id, payload FROM activities;');
@@ -81,7 +82,10 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
           await db.transaction(items.map((i) => ({ sql: OUTBOX_INSERT, values: outboxValues(i) })));
           for (const i of items) outboxState.set(i.eventId, { status: i.status, attempts: 0 });
         }
-      })();
+      })().catch((error: unknown) => {
+        ready = null;
+        throw error;
+      });
     }
     return ready;
   };

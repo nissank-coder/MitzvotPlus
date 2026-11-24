@@ -24,10 +24,10 @@
 
 | בדיקה | פקודה | תוצאה | ראיה |
 |---|---|---|---|
-| התקנה נקייה | `npm ci` (קובץ נעילה קיים) | PASS | `evidence/g0-npm-ci.log` |
-| בדיקת טיפוסים | `npm run lint` (`tsc --noEmit`) | PASS | `evidence/g0-typecheck.log` |
-| בדיקות יחידה | `npx vitest run` | PASS – 3 קבצים, 38 בדיקות | `evidence/g0-tests.log` |
-| בנייה | `npm run build` | PASS, עם אזהרה: חבילת JS של 618KB (מעל 500KB) | `evidence/g0-build.log` |
+| התקנה נקייה | `npm ci` (קובץ נעילה קיים) | PASS | `evidence/g0-npm-ci.txt` |
+| בדיקת טיפוסים | `npm run lint` (`tsc --noEmit`) | PASS | `evidence/g0-typecheck.txt` |
+| בדיקות יחידה | `npx vitest run` | PASS – 3 קבצים, 38 בדיקות | `evidence/g0-tests.txt` |
+| בנייה | `npm run build` | PASS, עם אזהרה: חבילת JS של 618KB (מעל 500KB) | `evidence/g0-build.txt` |
 | ביקורת אבטחה | `npm audit` | FAIL (dev בלבד): 2 ממצאים בינוניים ב-vitest ≤4.1.10 | תוקן ב-G1 (vitest 5.1.1) |
 
 מספר המסכים והבדיקות נבדק בפועל ולא נלקח מהתכנון: 38 בדיקות קיימות ועוברות. 16 קובצי מסך תחת `src/screens`.

@@ -4,7 +4,7 @@ import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ProfileFields } from '../components/ProfileFields';
-import { FEATURES } from '../config/features';
+import { COMMUNITY_ENABLED, DEMO_CONTENT, NOTIFICATIONS_ENABLED } from '../config/features';
 import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -51,6 +51,8 @@ export function ProfileScreen() {
         הגדרות
       </p>
       <Card className="px-4 mb-5">
+        {/* Hidden until reminders exist (D12): a toggle that does nothing would mislead. */}
+        {NOTIFICATIONS_ENABLED ? (
         <SettingRow icon="bell" title="תזכורות יומיות" subtitle="יעדים, לימוד וברכות">
           <ToggleSwitch
             checked={state.settings.notifications}
@@ -58,6 +60,9 @@ export function ProfileScreen() {
             label="תזכורות יומיות"
           />
         </SettingRow>
+        ) : null}
+        {/* Only meaningful with a community (D09). */}
+        {COMMUNITY_ENABLED ? (
         <SettingRow icon="lock" title="פרופיל פרטי" subtitle="הדירוג מוצג בשם פרטי בלבד">
           <ToggleSwitch
             checked={state.settings.privateProfile}
@@ -65,17 +70,17 @@ export function ProfileScreen() {
             label="פרופיל פרטי"
           />
         </SettingRow>
+        ) : null}
         <SettingRow
           icon="target"
           title="היעדים שלי"
           subtitle={`${state.dailyGoal} מצוות ביום, ${state.weeklyGoal} בשבוע ו-${state.blessingGoal} ברכות`}
           onPress={() => setGoalsOpen(true)}
+          last
         >
           <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
         </SettingRow>
-        <SettingRow icon="settings" title="העדפות" subtitle="שפה, תצוגה ונגישות – בקרוב" last>
-          <span />
-        </SettingRow>
+
       </Card>
 
       <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
@@ -85,7 +90,7 @@ export function ProfileScreen() {
         <SettingRow icon="shield" title="פרטיות" subtitle="הנתונים נשמרים במכשיר בלבד">
           <span />
         </SettingRow>
-{FEATURES.demoContent ? (
+{DEMO_CONTENT ? (
         <SettingRow
           icon="star"
           title="טעינת נתוני הדגמה"
@@ -124,6 +129,7 @@ export function ProfileScreen() {
         onClose={() => setConfirmOpen(false)}
       />
 
+      {DEMO_CONTENT ? (
       <ConfirmDialog
         open={demoConfirmOpen}
         title="טעינת נתוני הדגמה"
@@ -134,6 +140,7 @@ export function ProfileScreen() {
         onConfirm={loadDemo}
         onClose={() => setDemoConfirmOpen(false)}
       />
+      ) : null}
 
       {goalsOpen && (
         <GoalsEditor

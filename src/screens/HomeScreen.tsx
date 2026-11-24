@@ -6,13 +6,15 @@ import { FeatureKey } from '../types';
 import { AppHeader } from '../components/AppHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { formatTime } from '../lib/dates';
+import { UnsavedMark } from '../components/SaveStatusBanner';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { CitySilhouette, HillDecoration } from '../components/Decorations';
 import { ProgressRing } from '../components/ProgressRing';
 import { SectionHeader } from '../components/SectionHeader';
 import { TodayCard } from '../components/TodayCard';
-import { COMMUNITY_ENABLED, FEATURES } from '../config/features';
+import { COMMUNITY_ENABLED, DEMO_CONTENT } from '../config/features';
+import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { TodayPlanCard } from '../components/TodayPlanCard';
 import { BackfillSheet } from '../components/BackfillSheet';
 
@@ -108,7 +110,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
 
       <SectionHeader title="קיצורי דרך" icon="plus" />
       <div className="flex flex-row gap-3 overflow-x-auto no-scrollbar pb-5">
-        {[...shortcuts].reverse().map((item) => (
+        {[...shortcuts].filter((item) => item.key !== 'torah' || DVAR_TORAH_AVAILABLE).reverse().map((item) => (
           <button
             key={item.key}
             type="button"
@@ -157,6 +159,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
                 </button>
                 <AppIcon name="check" size={20} color={colors.green} />
                 <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
+                <UnsavedMark logId={item.id} />
               </div>
               <div className="flex-1 flex flex-row-reverse items-center justify-start gap-3">
                 <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold text-right">
@@ -201,7 +204,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
         </Card>
       </button>
 
-      {FEATURES.demoContent ? (
+      {DEMO_CONTENT ? (
       <Card className="min-h-[148px] p-4 flex flex-row items-center gap-4">
         <div className="relative w-[112px] h-[92px] flex justify-end items-center shrink-0">
           <div className="absolute w-[80px] h-[72px] rounded-[6px] bg-[#274C67] -rotate-7 bottom-[2px] left-[12px]" />

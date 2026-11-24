@@ -1,4 +1,5 @@
 import { TORAH_TEXT } from '../data';
+import { DEMO_CONTENT } from '../config/features';
 
 /**
  * Bundled content with stable IDs and versions (spec §3, §10, decision D08).
@@ -19,7 +20,7 @@ export type ContentItem = {
   approval: 'APPROVED' | 'TEST_ONLY';
 };
 
-export const CONTENT: ContentItem[] = [
+const TEST_CONTENT: ContentItem[] = [
   {
     id: 'dvar-torah/test-placeholder-1',
     version: '1',
@@ -32,6 +33,18 @@ export const CONTENT: ContentItem[] = [
     approval: 'TEST_ONLY',
   },
 ];
+
+/** Approved content (none yet – D08). */
+const APPROVED_CONTENT: ContentItem[] = [];
+
+/**
+ * What the app may show. TEST_ONLY items exist only in development/demo builds; a production build
+ * never contains them (the release check fails if it does).
+ */
+export const CONTENT: ContentItem[] = DEMO_CONTENT ? [...APPROVED_CONTENT, ...TEST_CONTENT] : APPROVED_CONTENT;
+
+/** The Dvar Torah feature is offered only when there is something legitimate to show. */
+export const DVAR_TORAH_AVAILABLE: boolean = CONTENT.some((c) => c.kind === 'dvar-torah');
 
 export const contentRef = (c: ContentItem) => `${c.id}@${c.version}`;
 

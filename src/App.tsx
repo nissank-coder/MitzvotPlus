@@ -1,10 +1,10 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
+import { SaveStatusBanner } from './components/SaveStatusBanner';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
 import { BlessingGuideScreen } from './screens/BlessingGuideScreen';
 import { BlessingsScreen } from './screens/BlessingsScreen';
-import { CommunityScreen } from './screens/CommunityScreen';
 import { ContentScreen } from './screens/ContentScreen';
 import { GoalsScreen } from './screens/GoalsScreen';
 import { HolidaysScreen } from './screens/HolidaysScreen';
@@ -20,6 +20,10 @@ import { useNativeShell } from './native/useNativeShell';
 
 // Loaded on demand: the learning schedules are the largest data in the bundle.
 const LearningScreen = lazy(() => import('./screens/LearningScreen').then((m) => ({ default: m.LearningScreen })));
+// Demo-only screen: not even bundled in production (COMMUNITY_ENABLED is a build-time constant).
+const CommunityScreen = COMMUNITY_ENABLED
+  ? lazy(() => import('./screens/CommunityScreen').then((m) => ({ default: m.CommunityScreen })))
+  : null;
 // Prayer and Tehillim texts are large; they load only when opened.
 const SiddurScreen = lazy(() => import('./screens/SiddurScreen').then((m) => ({ default: m.SiddurScreen })));
 const TehillimScreen = lazy(() => import('./screens/TehillimScreen').then((m) => ({ default: m.TehillimScreen })));
@@ -149,8 +153,12 @@ function MitzvotApp() {
       case 'content':
         return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
       case 'community':
-        if (!COMMUNITY_ENABLED) return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
-        return <CommunityScreen onOpenProfile={openProfile} />;
+        if (!CommunityScreen) return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
+        return (
+          <Suspense fallback={null}>
+            <CommunityScreen onOpenProfile={openProfile} />
+          </Suspense>
+        );
       case 'profile':
         return <ProfileScreen />;
       case 'home':
@@ -194,6 +202,7 @@ function MitzvotApp() {
 
   return (
     <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] sm:border-x sm:border-[#DDE8EE] sm:shadow-xl">
+      <SaveStatusBanner />
       <main className="flex-1 flex flex-col">{content}</main>
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
       <QuickAddSheet visible={quickAddVisible} onClose={() => setQuickAddVisible(false)} />
