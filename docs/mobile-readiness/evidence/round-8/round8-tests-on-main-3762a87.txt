@@ -1,0 +1,29 @@
+     × a new user with one action today has no failed days 13ms
+     × today counts once its goal is met 2ms
+     × goal streak and logging streak are separate measures 2ms
+     × changing a value in ACTIONS does not change recorded points 1ms
+     × an unknown rules version scores 0 and is flagged, never guessed 1ms
+     × only for a prayer or Birkat Hamazon, never for other actions or another bundle 9ms
+     × rejects NaN 2ms
+     × rejects Infinity 9ms
+     × rejects 1.5 2ms
+     × rejects -1 2ms
+     × rejects 31 5ms
+     × 0 → 18 → 18 (no change) → 19 → source removed → 0, stable ids, no orphans 8ms
+     × the same prayer with an arbitrary refId is still one entry 2ms
+     × the same Dvar Torah item twice a day = once; two items = two entries, points once; bad id rejected 2ms
+     × a back-filled prayer is never on time, even if asked 1ms
+     × the plan does not let "קריאת שמע בזמנה" be recorded after its time, and shows engine points 9ms
+     × a weekly goal changed mid-week applies from next week 1ms
+     × a city change does not rewrite past rest days 11ms
+     × the learning streak counts any learning and is always shown 11ms
+     × rejects tehillim:0-5 1ms
+     × rejects tehillim:149-151 1ms
+     × rejects tehillim:1-99999999 1ms
+     × rejects tehillim:119:1-500 1ms
+     × rejects tehillim:5-3 1ms
+     × rejects tehillim:x 1ms
+     × no "|| true" after xcodebuild, explicit alive assertion 1ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 26 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed (1)
+      Tests  26 failed | 3 passed (29)

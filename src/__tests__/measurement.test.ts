@@ -145,8 +145,8 @@ describe('PR A – one rest-day rule (Shabbat and Yom Tov)', () => {
     for (const k of ['2026-09-10', '2026-09-11', '2026-09-14']) s = add(s, { key: 'charity', now: NOW, dateKey: k });
     s = { ...s, goalHistory: [{ from: '0000-00-00', dailyGoal: 1, weeklyGoal: 5, blessingGoal: 100 }] };
     const d = computeDerived(s, '2026-09-14', rest);
-    // 30 days (16.8–14.9) minus 5 empty rest days: Shabbat 22.8, 29.8, 5.9 and Rosh Hashana 12–13.9
-    expect(d.consistencyDays.eligibleDays).toBe(25);
+    // Measured from the first recorded day (10.9): 10, 11, 14 – Rosh Hashana 12–13 not missed days.
+    expect(d.consistencyDays.eligibleDays).toBe(3);
     expect(d.consistencyDays.goalDays).toBe(3);
   });
 });

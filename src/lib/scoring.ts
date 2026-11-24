@@ -2,7 +2,8 @@ import { ActionKey, ACTIONS, actionDef } from '../data/actions';
 import { ActivityLog, BlessingCategory, IconName, LogKind } from '../types';
 import type { CalendarContext } from './jewishCalendar';
 import { localDateKey } from './dates';
-import { scoreLogs, SCORING_RULES_VERSION } from './metrics';
+import { onceKey, parseTehillimRef, scoreLogs, SCORING_RULES_VERSION } from './metrics';
+import { CURRENT_RULES, ruleFor } from './rulesets';
 
 export type ActionInput = {
   key: ActionKey;
@@ -32,6 +33,8 @@ function kindFor(key: ActionKey): LogKind {
   return 'mitzvah';
 }
 
+const CONTENT_ID = /^[a-z0-9]+(?:[-/][a-z0-9]+)*$/;
+
 let counter = 0;
 function makeId(): string {
   counter = (counter + 1) % 1_000_000;
@@ -51,13 +54,23 @@ export function buildLog(logs: ActivityLog[], input: ActionInput, _blessingGoal?
   const dateKey = input.dateKey ?? localDateKey(input.now);
   const sameDay = logs.filter((l) => l.dateKey === dateKey && l.actionKey === input.key);
 
-  if (def.requiresContent && !input.content) return null;
-  const refId = input.refId ?? (def.requiresContent && input.content ? `${input.content.id}@${input.content.version}` : undefined);
-  if (def.oncePerDay && sameDay.some((l) => (l.refId ?? '') === (refId ?? ''))) return null;
+  const rule = ruleFor(CURRENT_RULES, input.key);
+  if (def.requiresContent) {
+    // Completing a content item needs a well-formed id + version (an unknown id is never recorded).
+    const c = input.content;
+    if (!c || !CONTENT_ID.test(c.id) || !/^[0-9A-Za-z.-]{1,20}$/.test(c.version)) return null;
+  }
+  const refId = def.requiresContent && input.content ? `${input.content.id}@${input.content.version}` : input.refId;
+  if (input.key === 'tehillim' && refId !== undefined && parseTehillimRef(refId) === null) return null;
+  // Once a day: a prayer is ONE per day whatever refId it carries; per-item actions are per refId.
+  const once = onceKey(rule, refId);
+  if (once !== null && sameDay.some((l) => onceKey(rule, l.refId) === once)) return null;
   if (def.uniqueRef && refId && sameDay.some((l) => l.refId === refId)) return null;
 
   const title = input.title ?? (input.minyan ? `${def.title} במניין` : def.title);
-  const onTime = Boolean(input.onTime && def.onTimeBonus);
+  // "On time" only for actions that have such a bonus, and only for the day being recorded live
+  // (a back-filled entry has no evidence of the time it was done).
+  const onTime = Boolean(input.onTime && rule?.onTimeBonus && !input.backfill);
 
   const log: ActivityLog = {
     id: makeId(),
@@ -69,7 +82,7 @@ export function buildLog(logs: ActivityLog[], input: ActionInput, _blessingGoal?
     kind: kindFor(input.key),
     actionKey: input.key,
     ...(input.category ? { category: input.category } : {}),
-    ...(refId ? { refId } : {}),
+    ...(refId && (rule?.refScoped || def.uniqueRef || !rule?.oncePerDay) ? { refId } : {}),
     ...(input.minyan ? { minyan: true } : {}),
     ...(onTime ? { onTime: true } : {}),
     ...(input.backfill ? { backfill: true } : {}),

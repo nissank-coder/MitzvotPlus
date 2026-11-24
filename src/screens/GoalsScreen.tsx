@@ -17,6 +17,7 @@ type Props = {
   onOpenProfile: () => void;
   onOpenBlessings: () => void;
   onOpenTorah: () => void;
+  onOpenLearning: () => void;
 };
 
 const badgeStyle: Record<BadgeKey, { icon: IconName; color: string; background: string }> = {
@@ -26,11 +27,11 @@ const badgeStyle: Record<BadgeKey, { icon: IconName; color: string; background: 
   torah: { icon: 'book', color: colors.purple, background: colors.purpleSoft },
 };
 
-export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTorah }: Props) {
+export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTorah, onOpenLearning }: Props) {
   const { state, derived } = useAppStore();
   const { level, week, blessingTotal } = derived;
   const dailyProgress = Math.min(1, derived.todayCount / state.dailyGoal);
-  const weeklyProgress = Math.min(1, week.total / state.weeklyGoal);
+  const weeklyProgress = Math.min(1, week.total / derived.weeklyGoal);
   const chartMax = Math.max(state.dailyGoal, ...week.days.map((d) => d.count), 1);
 
   return (
@@ -86,23 +87,22 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           color={colors.primary}
           onPress={onOpenBlessings}
         />
-        {DVAR_TORAH_AVAILABLE ? (
+        {/* Any learning counts (A05) – not only the Dvar Torah, which may not be available yet. */}
         <SummaryCard
-          title="רצף לימוד"
+          title="רצף ימי לימוד"
           value={`${derived.torahStreak} ימים`}
           progress={Math.min(1, derived.torahStreak / 30)}
           icon="flame"
           color={colors.coral}
-          onPress={onOpenTorah}
+          onPress={DVAR_TORAH_AVAILABLE ? onOpenTorah : onOpenLearning}
         />
-        ) : null}
       </div>
 
       <Card className="p-4 mb-5">
         <SectionHeader
           title="השבוע שלי"
           icon="chart"
-          actionLabel={`${week.total}/${state.weeklyGoal}`}
+          actionLabel={`${week.total}/${derived.weeklyGoal}`}
         />
         <div className="h-[180px] flex flex-row-reverse items-end justify-between pt-3">
           {week.days.map((item) => (
@@ -139,7 +139,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
 
       <SectionHeader title="הישגים" icon="trophy" />
       <div className="flex flex-col gap-3">
-        {derived.badges.filter((b) => b.key !== 'torah' || DVAR_TORAH_AVAILABLE).map((badge) => (
+        {derived.badges.map((badge) => (
           <Badge
             key={badge.key}
             title={badge.title}

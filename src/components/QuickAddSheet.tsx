@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActionKey, actionDef, categoryStyle } from '../data/actions';
 import { quickActions } from '../lib/scoring';
 import { useAppStore } from '../store/AppStore';
@@ -11,8 +11,13 @@ type Props = {
 };
 
 export function QuickAddSheet({ visible, onClose }: Props) {
-  const { state, addAction, addBlessing } = useAppStore();
+  const { state, addAction, addBlessing, previewPoints } = useAppStore();
   const [minyan, setMinyan] = useState(false);
+
+  // The minyan choice is per opening of the sheet, never carried over to the next one (A15).
+  useEffect(() => {
+    if (!visible) setMinyan(false);
+  }, [visible]);
 
   if (!visible) return null;
 
@@ -65,7 +70,7 @@ export function QuickAddSheet({ visible, onClose }: Props) {
         <div className="grid grid-cols-3 gap-2 max-h-[55dvh] overflow-y-auto" dir="rtl">
           {items.map((key) => {
             const item = { ...actionDef(key), ...categoryStyle[actionDef(key).category] };
-            const points = item.points + (minyan && item.minyanBonus ? item.minyanBonus : 0);
+            const points = previewPoints(key, { minyan: Boolean(minyan && item.minyanBonus) });
             return (
             <button
               key={key}
@@ -83,7 +88,7 @@ export function QuickAddSheet({ visible, onClose }: Props) {
                 {item.title}
               </span>
               <div className="mt-2 px-2 py-1 rounded-full bg-[#FFF5DB]">
-                <span className="text-[#9A6A00] text-[11px] font-extrabold">+{points} נק׳</span>
+                <span className="text-[#9A6A00] text-[11px] font-extrabold">{points > 0 ? `+${points} נק׳` : 'ללא נקודות'}</span>
               </div>
             </button>
             );

@@ -142,6 +142,7 @@ function MitzvotApp() {
             onBack={back}
             onOpenProfile={openProfile}
             onOpenBlessings={() => openFeature('blessings')}
+            onOpenLearning={() => openFeature('learning')}
             onOpenTorah={() => openFeature('torah')}
           />
         );

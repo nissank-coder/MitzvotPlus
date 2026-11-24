@@ -12,12 +12,12 @@ import {
   getDayInfo,
   getRestWindow,
   getZmanim,
-  isRestDayKey,
   recentRestDays,
   RestWindow,
   ZmanimForDay,
 } from '../lib/jewishCalendar';
-import { ActionInput } from '../lib/scoring';
+import { ActionInput, buildLog } from '../lib/scoring';
+import { restRuleFor } from '../lib/restRule';
 import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
 import { AppSettings, AppState, BlessingCategory, UserProfile } from '../types';
 import { computeDerived, Derived } from './derived';
@@ -64,6 +64,11 @@ type StoreValue = {
   startSpeech: () => void;
   resetSpeech: () => void;
   undoSpeechReset: () => void;
+  /**
+   * Points an action would get if recorded now – from the same engine as the totals, so the
+   * number on a button always matches what is recorded (0 if it would be a duplicate or capped).
+   */
+  previewPoints: (key: ActionKey, options?: ActionOptions) => number;
   /** Saves / unsaves a specific content item (id@version). */
   toggleSavedContent: (ref: string) => void;
   /** Confirms how many blessings were said as part of an entry (replaces any earlier number). */
@@ -152,18 +157,16 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   }, [hydrated, state]);
 
   // One rest-day rule for every streak: Shabbat and Yom Tov for the selected city (cached per day).
-  const isRestDay = useMemo(() => {
-    const cache = new Map<string, boolean>();
-    return (key: string) => {
-      let v = cache.get(key);
-      if (v === undefined) {
-        v = isRestDayKey(key, city.il);
-        cache.set(key, v);
-      }
-      return v;
-    };
-  }, [city.il]);
-  const derived = useMemo(() => computeDerived(state, todayKey, isRestDay), [state, todayKey, isRestDay]);
+  // Each past day uses the city that was in force on it (locationHistory), not today's city.
+  const isRestDay = useMemo(
+    () => restRuleFor(state.locationHistory, state.profile.cityId),
+    [state.locationHistory, state.profile.cityId],
+  );
+  const startKey = cityDateKey(new Date(state.memberSince), city.tzid);
+  const derived = useMemo(
+    () => computeDerived(state, todayKey, isRestDay, startKey),
+    [state, todayKey, isRestDay, startKey],
+  );
 
   const dayAndZmanim = useMemo(
     () => ({ day: getDayInfo(todayKey, city.il), zmanim: getZmanim(todayKey, city) }),
@@ -194,16 +197,16 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   );
 
   const value = useMemo<StoreValue>(() => {
-    const addAction = (key: ActionKey, options: ActionOptions = {}) => {
-      const at = Date.now();
+    const inputFor = (key: ActionKey, options: ActionOptions, at: number): ActionInput => {
+      const live = !options.backfill && (options.dateKey === undefined || options.dateKey === todayKey);
       const onTime =
-        options.onTime ??
-        (key === 'shacharit' && calendar.zmanim.sofZmanTfilla ? at <= calendar.zmanim.sofZmanTfilla.getTime() : undefined);
-      dispatch({
-        type: 'addAction',
-        payload: { ...options, key, onTime, now: at, dateKey: options.dateKey ?? cityDateKey(new Date(at), city.tzid), context: calendarContextOf(city) },
-      });
+        live && key === 'shacharit' && calendar.zmanim.sofZmanTfilla ? at <= calendar.zmanim.sofZmanTfilla.getTime() : undefined;
+      return { ...options, key, onTime, now: at, dateKey: options.dateKey ?? cityDateKey(new Date(at), city.tzid), context: calendarContextOf(city) };
     };
+    const previewPoints = (key: ActionKey, options: ActionOptions = {}) =>
+      buildLog(state.logs, inputFor(key, options, Date.now()))?.points ?? 0;
+    const addAction = (key: ActionKey, options: ActionOptions = {}) =>
+      dispatch({ type: 'addAction', payload: inputFor(key, options, Date.now()) });
     return {
       state,
       derived,
@@ -220,6 +223,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       completeOnboarding: (userName, dailyGoal, profile) =>
         dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile, dateKey: todayKey } }),
       addAction,
+      previewPoints,
       addBlessing: (category, title) => addAction('blessing', { category, title }),
       backfill: (inputs, days) =>
         dispatch({
@@ -237,7 +241,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       setReflection: (text) => dispatch({ type: 'setReflection', payload: { dateKey: todayKey, text } }),
       updateGoals: (goals) => dispatch({ type: 'updateGoals', payload: goals, dateKey: todayKey }),
       updateSettings: (settings) => dispatch({ type: 'updateSettings', payload: settings }),
-      updateProfile: (profile) => dispatch({ type: 'updateProfile', payload: profile }),
+      updateProfile: (profile) => dispatch({ type: 'updateProfile', payload: profile, dateKey: todayKey }),
       toggleTrack: (key) => dispatch({ type: 'toggleTrack', payload: { key } }),
       toggleGroup: (key) => dispatch({ type: 'toggleGroup', payload: { key } }),
       loadDemo: () => dispatch({ type: 'loadDemo' }),

@@ -1,0 +1,5 @@
+build, xcodebuild exit 65            -> exit 65
+build, exit 0 but no App.app          -> exit 1
+build, success                        -> exit 0
+run, app not alive after wait         -> exit 1
+run, app alive                        -> exit 0
