@@ -4,8 +4,9 @@ import { DEFAULT_CITY_ID } from '../data/locations';
 import { DEFAULT_TRACKS } from '../data/tracks';
 import { DAY_MS, localDateKey } from '../lib/dates';
 import { ActionInput, buildLog } from '../lib/scoring';
+import { withGoals } from '../lib/metrics';
 import { emptyTimer, resetTimer, SpeechTimer, startTimer, undoReset } from '../lib/speechTimer';
-import { ActivityLog, AppSettings, AppState, BlessingCategory, IconName, LogKind, UserProfile } from '../types';
+import { ActivityLog, AppSettings, AppState, BlessingCategory, GoalSnapshot, IconName, LogKind, UserProfile } from '../types';
 
 export const STORAGE_KEY = 'mitzvot_plus_state_v1';
 
@@ -24,7 +25,8 @@ export function createFreshState(now = Date.now()): AppState {
     blessingGoal: 100,
     logs: [],
     speech: emptyTimer(),
-    torahSaved: false,
+    savedContent: [],
+    goalHistory: [{ from: '0000-00-00', dailyGoal: 12, weeklyGoal: 60, blessingGoal: 100 }],
     reflections: {},
     settings: { ...defaultSettings },
     joinedGroups: {},
@@ -77,7 +79,7 @@ export function createDemoState(now = Date.now()): AppState {
       const category = blessingCategories[Math.floor(rand() * blessingCategories.length)] ?? 'other';
       add({ key: 'blessing', category, title: blessingCategoryMeta[category].sample }, at(6 + i * 0.6));
     }
-    if (rand() > 0.15) add({ key: 'dailyTorah' }, at(20));
+    if (rand() > 0.15) add({ key: 'torahStudy' }, at(20));
   }
 
   return {
@@ -124,6 +126,11 @@ type V1State = LegacySpeechFields & {
   reflection?: string;
 };
 
+/** Goal history for data saved before goals were versioned: the stored goals applied all along. */
+function initialGoalHistory(g: { dailyGoal: number; weeklyGoal: number; blessingGoal: number }): GoalSnapshot[] {
+  return [{ from: '0000-00-00', dailyGoal: g.dailyGoal, weeklyGoal: g.weeklyGoal, blessingGoal: g.blessingGoal }];
+}
+
 const V1_TITLES: Record<string, ActionKey> = {
   'תפילה': 'prayer',
   'לימוד תורה': 'torahStudy',
@@ -156,17 +163,21 @@ export function migrateV1(old: V1State, now = Date.now()): AppState {
     };
   });
   const loggedPoints = logs.reduce((sum, l) => sum + l.points, 0);
+  const goals = {
+    dailyGoal: old.dailyGoal ?? fresh.dailyGoal,
+    weeklyGoal: old.weeklyGoal ?? fresh.weeklyGoal,
+    blessingGoal: old.blessingGoal ?? fresh.blessingGoal,
+  };
   return {
     ...fresh,
     onboarded: true,
     userName: old.userName || 'משתמש',
     legacyPoints: Math.max(0, (old.points ?? 0) - loggedPoints),
-    dailyGoal: old.dailyGoal ?? fresh.dailyGoal,
-    weeklyGoal: old.weeklyGoal ?? fresh.weeklyGoal,
-    blessingGoal: old.blessingGoal ?? fresh.blessingGoal,
+    ...goals,
+    goalHistory: initialGoalHistory(goals),
     logs,
     speech: legacySpeech(old),
-    torahSaved: Boolean(old.torahSaved),
+    // The old flag was global (not tied to an item) and only test content existed: not carried over.
     reflections: old.reflection && old.todayKey ? { [old.todayKey]: old.reflection } : {},
   };
 }
@@ -177,8 +188,9 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
   if (!parsed || typeof parsed !== 'object') return createFreshState(now);
   if (parsed.version !== 2) return migrateV1(parsed as V1State, now);
   const fresh = createFreshState(now);
-  const { lashonHaraSince: _a, lashonHaraBestMs: _b, lashonHaraResets: _c, ...value } = parsed as Partial<AppState> &
-    LegacySpeechFields;
+  const { lashonHaraSince: _a, lashonHaraBestMs: _b, lashonHaraResets: _c, torahSaved: _t, ...value } = parsed as Partial<AppState> &
+    LegacySpeechFields & { torahSaved?: boolean };
+  void _t;
   void _a, void _b, void _c;
   const legacyFields: LegacySpeechFields = { lashonHaraSince: _a, lashonHaraBestMs: _b, lashonHaraResets: _c };
   return {
@@ -193,6 +205,15 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     learningTracks: Array.isArray(value.learningTracks) ? value.learningTracks : fresh.learningTracks,
     backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
     speech: value.speech ?? legacySpeech(legacyFields),
+    savedContent: Array.isArray(value.savedContent) ? value.savedContent : [],
+    goalHistory:
+      Array.isArray(value.goalHistory) && value.goalHistory.length > 0
+        ? value.goalHistory
+        : initialGoalHistory({
+            dailyGoal: value.dailyGoal ?? fresh.dailyGoal,
+            weeklyGoal: value.weeklyGoal ?? fresh.weeklyGoal,
+            blessingGoal: value.blessingGoal ?? fresh.blessingGoal,
+          }),
   };
 }
 
@@ -200,16 +221,17 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
 
 export type Action =
   | { type: 'hydrate'; payload: AppState }
-  | { type: 'completeOnboarding'; payload: { userName: string; dailyGoal: number; profile: Partial<UserProfile> } }
+  | { type: 'completeOnboarding'; payload: { userName: string; dailyGoal: number; profile: Partial<UserProfile>; dateKey?: string } }
   | { type: 'addAction'; payload: ActionInput }
   | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
+  | { type: 'setBlessingBundle'; payload: { sourceLogId: string; count: number; now: number } }
   | { type: 'startSpeech'; now?: number }
   | { type: 'resetSpeech'; now?: number }
   | { type: 'undoSpeechReset'; now?: number }
-  | { type: 'toggleTorahSaved' }
+  | { type: 'toggleSavedContent'; payload: { ref: string } }
   | { type: 'setReflection'; payload: { dateKey: string; text: string } }
-  | { type: 'updateGoals'; payload: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>> }
+  | { type: 'updateGoals'; payload: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>>; dateKey?: string }
   | { type: 'updateSettings'; payload: Partial<AppSettings> }
   | { type: 'updateProfile'; payload: Partial<UserProfile> }
   | { type: 'toggleTrack'; payload: { key: string } }
@@ -228,16 +250,21 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'hydrate':
       return action.payload;
 
-    case 'completeOnboarding':
+    case 'completeOnboarding': {
+      const dailyGoal = clampGoal(action.payload.dailyGoal, 1, 50);
+      const weeklyGoal = clampGoal(action.payload.dailyGoal * 5, 5, 300);
       return {
         ...state,
         onboarded: true,
         userName: action.payload.userName.trim() || 'משתמש',
-        dailyGoal: clampGoal(action.payload.dailyGoal, 1, 50),
-        weeklyGoal: clampGoal(action.payload.dailyGoal * 5, 5, 300),
+        dailyGoal,
+        weeklyGoal,
+        // The first goals apply from the start; there is no earlier history to keep.
+        goalHistory: [{ from: '0000-00-00', dailyGoal, weeklyGoal, blessingGoal: state.blessingGoal }],
         memberSince: Date.now(),
         profile: { ...state.profile, ...action.payload.profile },
       };
+    }
 
     case 'addAction': {
       const log = buildLog(state.logs, action.payload, state.blessingGoal);
@@ -259,7 +286,32 @@ export function reducer(state: AppState, action: Action): AppState {
     }
 
     case 'removeLog':
-      return { ...state, logs: state.logs.filter((log) => log.id !== action.payload.id) };
+      // Removing an entry also removes the blessing bundle confirmed for it (no orphans).
+      return {
+        ...state,
+        logs: state.logs.filter((log) => log.id !== action.payload.id && log.bundleOf !== action.payload.id),
+      };
+
+    case 'setBlessingBundle': {
+      // Replaces (never adds to) the bundle for this entry, so editing it cannot double-count.
+      const source = state.logs.find((l) => l.id === action.payload.sourceLogId);
+      if (!source) return state;
+      let logs = state.logs.filter((l) => l.bundleOf !== source.id);
+      const count = clampGoal(action.payload.count, 0, 30);
+      for (let i = 0; i < count; i += 1) {
+        const log = buildLog(logs, {
+          key: 'blessing',
+          category: 'prayer',
+          title: `ברכה ב${source.title}`,
+          dateKey: source.dateKey,
+          bundleOf: source.id,
+          refId: `bundle:${source.id}:${i}`,
+          now: action.payload.now,
+        });
+        if (log) logs = [log, ...logs];
+      }
+      return { ...state, logs };
+    }
 
     case 'startSpeech':
       return { ...state, speech: startTimer(state.speech, action.now ?? Date.now()) };
@@ -270,20 +322,32 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'undoSpeechReset':
       return { ...state, speech: undoReset(state.speech, action.now ?? Date.now()) };
 
-    case 'toggleTorahSaved':
-      return { ...state, torahSaved: !state.torahSaved };
+    case 'toggleSavedContent': {
+      const has = state.savedContent.includes(action.payload.ref);
+      return {
+        ...state,
+        savedContent: has ? state.savedContent.filter((r) => r !== action.payload.ref) : [...state.savedContent, action.payload.ref],
+      };
+    }
 
     case 'setReflection':
       return { ...state, reflections: { ...state.reflections, [action.payload.dateKey]: action.payload.text } };
 
     case 'updateGoals': {
       const p = action.payload;
-      return {
-        ...state,
-        userName: p.userName !== undefined ? p.userName.trim() || state.userName : state.userName,
+      const goals = {
         dailyGoal: p.dailyGoal !== undefined ? clampGoal(p.dailyGoal, 1, 50) : state.dailyGoal,
         weeklyGoal: p.weeklyGoal !== undefined ? clampGoal(p.weeklyGoal, 5, 300) : state.weeklyGoal,
         blessingGoal: p.blessingGoal !== undefined ? clampGoal(p.blessingGoal, 10, 300) : state.blessingGoal,
+      };
+      const changed =
+        goals.dailyGoal !== state.dailyGoal || goals.weeklyGoal !== state.weeklyGoal || goals.blessingGoal !== state.blessingGoal;
+      return {
+        ...state,
+        userName: p.userName !== undefined ? p.userName.trim() || state.userName : state.userName,
+        ...goals,
+        // A goal change applies from today on; past days keep the goals they were measured with.
+        goalHistory: changed ? withGoals(state.goalHistory, action.dateKey ?? localDateKey(Date.now()), goals) : state.goalHistory,
       };
     }
 

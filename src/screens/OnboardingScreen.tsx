@@ -50,7 +50,7 @@ export function OnboardingScreen() {
           className="w-full mt-2 min-h-[48px] rounded-[16px] border border-[#DDE8EE] px-4 text-[15px] text-[#17324D] outline-none focus:border-[#2AAE9B]"
         />
 
-        <p className="text-[#17324D] text-[15px] font-black mt-5">יעד מצוות יומי</p>
+        <p className="text-[#17324D] text-[15px] font-black mt-5">יעד יומי: פעולות שונות</p>
         <div className="flex flex-row gap-2 mt-2">
           {goalOptions.map((option) => {
             const active = goal === option.value;

@@ -12,6 +12,7 @@ import {
   getDayInfo,
   getRestWindow,
   getZmanim,
+  isRestDayKey,
   recentRestDays,
   RestWindow,
   ZmanimForDay,
@@ -39,6 +40,8 @@ type StoreValue = {
   state: AppState;
   derived: Derived;
   calendar: CalendarState;
+  /** Shabbat / Yom Tov for the selected city – the one rest-day rule used by every streak. */
+  isRestDay: (dateKey: string) => boolean;
   hydrated: boolean;
   /** Set when stored data could not be read; saving is then disabled so nothing is overwritten. */
   storageError: string | null;
@@ -61,8 +64,10 @@ type StoreValue = {
   startSpeech: () => void;
   resetSpeech: () => void;
   undoSpeechReset: () => void;
-  toggleTorahSaved: () => void;
-  completeTorah: () => void;
+  /** Saves / unsaves a specific content item (id@version). */
+  toggleSavedContent: (ref: string) => void;
+  /** Confirms how many blessings were said as part of an entry (replaces any earlier number). */
+  setBlessingBundle: (sourceLogId: string, count: number) => void;
   setReflection: (value: string) => void;
   updateGoals: (goals: Partial<Pick<AppState, 'dailyGoal' | 'weeklyGoal' | 'blessingGoal' | 'userName'>>) => void;
   updateSettings: (settings: Partial<AppSettings>) => void;
@@ -134,8 +139,9 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     };
   }, []);
 
-  const flush = useCallback(async () => (saverRef.current ? saverRef.current.flush() : true), []);
-  const retrySave = useCallback(async () => (saverRef.current ? saverRef.current.retry() : true), []);
+  // Without an initialised save controller nothing was written: never report success.
+  const flush = useCallback(async () => (saverRef.current ? saverRef.current.flush() : false), []);
+  const retrySave = useCallback(async () => (saverRef.current ? saverRef.current.retry() : false), []);
   const isLogSaved = useCallback((id: string) => saverRef.current?.isSaved(id) ?? false, []);
 
   // Every change is handed to the save controller; a failed load leaves it unset, so stored data is
@@ -145,7 +151,19 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     saverRef.current?.request(state);
   }, [hydrated, state]);
 
-  const derived = useMemo(() => computeDerived(state, todayKey), [state, todayKey]);
+  // One rest-day rule for every streak: Shabbat and Yom Tov for the selected city (cached per day).
+  const isRestDay = useMemo(() => {
+    const cache = new Map<string, boolean>();
+    return (key: string) => {
+      let v = cache.get(key);
+      if (v === undefined) {
+        v = isRestDayKey(key, city.il);
+        cache.set(key, v);
+      }
+      return v;
+    };
+  }, [city.il]);
+  const derived = useMemo(() => computeDerived(state, todayKey, isRestDay), [state, todayKey, isRestDay]);
 
   const dayAndZmanim = useMemo(
     () => ({ day: getDayInfo(todayKey, city.il), zmanim: getZmanim(todayKey, city) }),
@@ -190,6 +208,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       state,
       derived,
       calendar,
+      isRestDay,
       hydrated,
       storageError,
       storageKind: storageRef.current?.kind ?? null,
@@ -199,7 +218,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       flush,
       refreshClock,
       completeOnboarding: (userName, dailyGoal, profile) =>
-        dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile } }),
+        dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile, dateKey: todayKey } }),
       addAction,
       addBlessing: (category, title) => addAction('blessing', { category, title }),
       backfill: (inputs, days) =>
@@ -212,10 +231,11 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       startSpeech: () => dispatch({ type: 'startSpeech' }),
       resetSpeech: () => dispatch({ type: 'resetSpeech' }),
       undoSpeechReset: () => dispatch({ type: 'undoSpeechReset' }),
-      toggleTorahSaved: () => dispatch({ type: 'toggleTorahSaved' }),
-      completeTorah: () => addAction('dailyTorah'),
+      toggleSavedContent: (ref) => dispatch({ type: 'toggleSavedContent', payload: { ref } }),
+      setBlessingBundle: (sourceLogId, count) =>
+        dispatch({ type: 'setBlessingBundle', payload: { sourceLogId, count, now: Date.now() } }),
       setReflection: (text) => dispatch({ type: 'setReflection', payload: { dateKey: todayKey, text } }),
-      updateGoals: (goals) => dispatch({ type: 'updateGoals', payload: goals }),
+      updateGoals: (goals) => dispatch({ type: 'updateGoals', payload: goals, dateKey: todayKey }),
       updateSettings: (settings) => dispatch({ type: 'updateSettings', payload: settings }),
       updateProfile: (profile) => dispatch({ type: 'updateProfile', payload: profile }),
       toggleTrack: (key) => dispatch({ type: 'toggleTrack', payload: { key } }),
@@ -223,7 +243,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, city, derived, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock]);
+  }, [calendar, city, derived, isRestDay, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

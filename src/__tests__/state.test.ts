@@ -28,7 +28,7 @@ describe('reducer', () => {
   });
 
   it('removes a log and its points', () => {
-    let s = reducer(createFreshState(NOW), { type: 'addAction', payload: { key: 'dailyTorah', now: NOW } });
+    let s = reducer(createFreshState(NOW), { type: 'addAction', payload: { key: 'dailyTorah', content: { id: 'dt', version: '1' }, now: NOW } });
     expect(computeDerived(s, today).torahCompletedToday).toBe(true);
     s = reducer(s, { type: 'removeLog', payload: { id: s.logs[0]!.id } });
     const d = computeDerived(s, today);
@@ -38,16 +38,18 @@ describe('reducer', () => {
 
   it('records daily Torah only once per day', () => {
     let s = createFreshState(NOW);
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: NOW } });
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: NOW + 1000 } });
+    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', content: { id: 'dt', version: '1' }, now: NOW } });
+    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', content: { id: 'dt', version: '1' }, now: NOW + 1000 } });
     expect(s.logs).toHaveLength(1);
+    // Without the content it refers to, a Dvar Torah completion is not recorded at all.
+    expect(reducer(createFreshState(NOW), { type: 'addAction', payload: { key: 'dailyTorah', now: NOW } }).logs).toHaveLength(0);
   });
 
   it('torah streak requires consecutive days', () => {
     let s = createFreshState(NOW);
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: NOW - 3 * DAY } }); // Friday
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: NOW - DAY } }); // Sunday (Shabbat skipped)
-    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', now: NOW } });
+    s = reducer(s, { type: 'addAction', payload: { key: 'torahStudy', now: NOW - 3 * DAY } }); // Friday
+    s = reducer(s, { type: 'addAction', payload: { key: 'learningTrack', refId: 'x', now: NOW - DAY } }); // Sunday (Shabbat skipped)
+    s = reducer(s, { type: 'addAction', payload: { key: 'dailyTorah', content: { id: 'dt', version: '1' }, now: NOW } });
     expect(computeDerived(s, today).torahStreak).toBe(3);
     // Five days later without learning → the streak is gone.
     expect(computeDerived(s, localDateKey(NOW + 5 * DAY)).torahStreak).toBe(0);
@@ -92,10 +94,13 @@ describe('scoring', () => {
     expect(s.logs[0]?.capped).toBe(true);
   });
 
-  it('gives a bonus on reaching the blessing goal', () => {
-    let s = { ...createFreshState(NOW), blessingGoal: 3 };
-    for (let i = 0; i < 4; i += 1) s = reducer(s, { type: 'addAction', payload: { key: 'blessing', category: 'other', now: NOW } });
-    expect(s.logs.map((l) => l.points)).toEqual([2, 32, 2, 2]);
+  it('gives one bonus per day on reaching the blessing goal (a day bonus, not stored on an entry)', () => {
+    let s = reducer(createFreshState(NOW), { type: 'updateGoals', payload: { blessingGoal: 10 }, dateKey: today });
+    for (let i = 0; i < 11; i += 1) s = reducer(s, { type: 'addAction', payload: { key: 'blessing', category: 'other', now: NOW + i } });
+    expect(s.logs.every((l) => l.points === 2)).toBe(true);
+    const d = computeDerived(s, today);
+    expect(d.blessingGoalBonusToday).toBe(30);
+    expect(d.todayPoints).toBe(11 * 2 + 30);
   });
 
   it('allows one learning-track entry per track per day', () => {

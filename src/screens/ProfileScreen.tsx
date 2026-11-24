@@ -34,7 +34,7 @@ export function ProfileScreen() {
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={`${derived.activityStreak}`} label="ימי רצף" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
-          <ProfileStat value={`${derived.todayCount}`} label="היום" />
+          <ProfileStat value={`${derived.todayCount}`} label="פעולות היום" />
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={`${derived.consistency}%`} label="עקביות (30 יום)" />
         </div>

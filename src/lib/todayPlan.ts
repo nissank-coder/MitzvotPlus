@@ -60,7 +60,10 @@ export function buildTodayPlan(
   add('mincha', { deadline: z.sunset, note: 'עד השקיעה' });
   if (male) add('arvit', { from: z.tzeit });
   add('birkatHamazon');
-  if (options.dvarTorah !== false) add('dailyTorah');
+  // A self-reported learning session. Completing a specific Dvar Torah item is a separate action
+  // (dailyTorah, bound to the item's id + version) recorded only from the Torah screen.
+  void options;
+  add('torahStudy', { note: 'לימוד תורה (כל לימוד)' });
   add('charity', info.isErevRest ? { note: 'צדקה לפני שבת' } : {});
 
   // Erev Shabbat / Yom Tov

@@ -83,12 +83,12 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               <AppIcon name="target" size={18} color={colors.teal} />
             </div>
             <h1 dir="rtl" className="text-[#17324D] text-[23px] leading-[29px] font-black text-right mt-2">
-              {todayCount} מתוך {state.dailyGoal} מצוות
+              {todayCount} מתוך {state.dailyGoal} פעולות
             </h1>
             <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
               {todayCount >= state.dailyGoal
                 ? 'היעד הושלם. ממשיכים מתוך שמחה'
-                : `עוד ${state.dailyGoal - todayCount} מצוות להשלמת היעד`}
+                : `עוד ${state.dailyGoal - todayCount} להשלמת היעד · הברכות נספרות יחד`}
             </p>
             <div className="w-full h-[7px] rounded-full bg-[#D8E8EB] mt-3 overflow-hidden">
               <div
@@ -189,7 +189,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenCommunity, onQu
               <AppIcon name="trophy" size={21} color={colors.gold} />
             </div>
             <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-1">
-              {derived.week.total} מתוך {state.weeklyGoal} מצוות
+              {derived.week.total} מתוך {state.weeklyGoal} פעולות
             </span>
             <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
               <div

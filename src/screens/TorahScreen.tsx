@@ -29,10 +29,15 @@ function todayHebrewLabel(): string {
 }
 
 export function TorahScreen({ onBack, onOpenProfile }: Props) {
-  const { state, derived, toggleTorahSaved, addAction, setReflection } = useAppStore();
+  const { state, derived, toggleSavedContent, addAction, setReflection } = useAppStore();
   const item = dvarTorahFor(derived.todayKey);
   const text = item?.body ?? '';
   const completeTorah = () => item && addAction('dailyTorah', { content: { id: item.id, version: item.version } });
+  // Saving and completion belong to this specific item (id + version), not to "the Dvar Torah" in general.
+  const saved = item ? state.savedContent.includes(contentRef(item)) : false;
+  const itemDoneToday = item
+    ? derived.todayLogs.some((l) => l.actionKey === 'dailyTorah' && l.content?.id === item.id && l.content.version === item.version)
+    : false;
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const dateLabel = useMemo(todayHebrewLabel, []);
@@ -172,10 +177,10 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
           ) : null}
           {canShare ? <ActionButton label="שתף" icon="share" onPress={shareText} /> : null}
           <ActionButton
-            label={state.torahSaved ? 'נשמר' : 'שמור'}
+            label={saved ? 'נשמר' : 'שמור'}
             icon="bookmark"
-            active={state.torahSaved}
-            onPress={toggleTorahSaved}
+            active={saved}
+            onPress={() => toggleSavedContent(contentRef(item))}
           />
         </div>
 
@@ -188,25 +193,25 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
         <button
           type="button"
           onClick={completeTorah}
-          disabled={derived.torahCompletedToday}
+          disabled={itemDoneToday}
           className={`w-full min-h-[50px] rounded-[16px] mt-3 flex flex-row-reverse items-center justify-center gap-2 px-3 transition-colors ${
-            derived.torahCompletedToday
+            itemDoneToday
               ? 'bg-[#EAF7EF] border border-[#CFE8D8] cursor-default'
               : 'bg-[#2AAE9B] hover:bg-[#239988]'
           }`}
         >
           <AppIcon
-            name={derived.torahCompletedToday ? 'check' : 'book'}
+            name={itemDoneToday ? 'check' : 'book'}
             size={20}
-            color={derived.torahCompletedToday ? colors.green : colors.white}
+            color={itemDoneToday ? colors.green : colors.white}
           />
           <span
             dir="rtl"
             className={`text-[13px] font-black ${
-              derived.torahCompletedToday ? 'text-[#4DAA78]' : 'text-white'
+              itemDoneToday ? 'text-[#4DAA78]' : 'text-white'
             }`}
           >
-            {derived.torahCompletedToday ? 'הלימוד נרשם להיום' : `סיימתי ללמוד - הוסף ${actionDef('dailyTorah').points} נקודות`}
+            {itemDoneToday ? 'הלימוד נרשם להיום' : `סיימתי ללמוד - הוסף ${actionDef('dailyTorah').points} נקודות`}
           </span>
         </button>
       </Card>
