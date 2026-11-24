@@ -194,3 +194,21 @@ describe('data survives a restart (SQLite)', () => {
     expect(loadState(await mem.load(), NOW).speech.since).toBe(NOW);
   });
 });
+
+describe('"delete all data" really removes local data', () => {
+  it('activities, unsent outbox rows and the speech timer are gone from SQLite', async () => {
+    const { db, exec } = flakySqlite();
+    const storage = createSqlStorage(exec);
+    let s = blessing(blessing(createFreshState(NOW), NOW), NOW + 1);
+    s = reducer(s, { type: 'startSpeech', now: NOW });
+    await storage.save(s);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM activities').get()).toEqual({ n: 2 });
+    s = reducer(s, { type: 'resetAll' });
+    await storage.save(s);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM activities').get()).toEqual({ n: 0 });
+    expect(db.prepare('SELECT COUNT(*) AS n FROM outbox').get()).toEqual({ n: 0 });
+    const reloaded = loadState(await createSqlStorage(flakySqlite(db).exec).load(), NOW);
+    expect(reloaded.speech.since).toBeNull();
+    expect(reloaded.onboarded).toBe(false);
+  });
+});
