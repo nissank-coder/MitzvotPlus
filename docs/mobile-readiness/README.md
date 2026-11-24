@@ -15,6 +15,7 @@
 | [decision_log.csv](decision_log.csv) | D01–D14 (כולן PENDING_OWNER) ו-ADR-001 |
 | [content_license_manifest.csv](content_license_manifest.csv) | מלאי רישיונות תוכן (פריט בדיקה בלבד; השאר ממתין ל-D08) |
 | [test_evidence.csv](test_evidence.csv) | תוצאות הבדיקות שהורצו או נחסמו |
+| [phone-test-quickstart.md](phone-test-quickstart.md) | מדריך קצר: התקנה ו-8 בדיקות על הטלפון שלך |
 | [device-test-runbook.md](device-test-runbook.md) | סגירת G1: הרצה ובדיקות על iPhone, Android, סימולטור ואמולטור |
 | [decisions-needed.md](decisions-needed.md) | טבלת החלטות לבעל המוצר |
 | [security-privacy-review.md](security-privacy-review.md) | סקירת אחסון ופרטיות |

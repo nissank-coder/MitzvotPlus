@@ -35,7 +35,7 @@ Capacitor core/cli/android/ios 8.6.2 · app 8.1.2 · keyboard 8.0.6 · status-ba
 | בדיקה | סביבה | תוצאה | ראיה |
 |---|---|---|---|
 | typecheck | Node 22.23.5 | PASS | `npm run lint` |
-| בדיקות יחידה | Vitest 5.1.1 | PASS – 4 קבצים, 44 בדיקות | `evidence/g1-tests.log` |
+| בדיקות יחידה | Vitest 5.1.1 | PASS – 4 קבצים, 44 בדיקות | `evidence/g1-tests.txt` |
 | web build עם CSP | Vite 6 | PASS (אזהרת גודל חבילה 618KB נשארת) | `dist/index.html` |
 | רגרסיה בדפדפן | Chromium 390×844, Asia/Jerusalem | PASS | `evidence/g1-web-check.json`, `evidence/g1-blessings-web.png` |
 | Android debug build | Linux, SDK 36 | PASS | `evidence/g1-android-build.txt` |

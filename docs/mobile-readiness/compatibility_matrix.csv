@@ -1,7 +1,7 @@
 component,exact_version_or_value,required_constraint_or_question,evidence,status
 repository_commit,branch claude/fervent-mccarthy-s8uroc; G0 base 74daad86c5f2a5c5aa68ea5202687ebb186b19b8 (clean); merged origin/main 7f8e0b9 (handoff package),Record actual repository branch commit and dirty status,G0-report.md §1,PASS
 framework,React DOM 19.3.1 + Vite 6 + TypeScript 5.8 + Tailwind 4,Verify React DOM/Vite versus Expo/React Native,package.json; vite.config.ts; src/main.tsx (createRoot),PASS
-package_manager_and_lockfile,npm 10.9.9 with package-lock.json (lockfileVersion 3),Install reproducibly without replacing lockfile arbitrarily,evidence/g0-npm-ci.log (npm ci exit 0),PASS
+package_manager_and_lockfile,npm 10.9.9 with package-lock.json (lockfileVersion 3),Install reproducibly without replacing lockfile arbitrarily,evidence/g0-npm-ci.txt (npm ci exit 0),PASS
 node,22.23.5,Compatible with chosen toolchain,@capacitor/cli engines node>=22.0.0,PASS
 capacitor_core_cli_ios_android,8.6.2 (pinned exact),Pin compatible versions after audit,package.json; npm registry 2026-11-23,PASS
 native_plugins,@capacitor/app 8.1.2; keyboard 8.0.6; status-bar 8.0.4; splash-screen 8.0.2; @capacitor-community/sqlite 8.1.1 (pinned exact),Inventory direct and transitive dependencies,dependency_license_inventory.csv; android/capacitor.settings.gradle; ios/App/CapApp-SPM/Package.swift,PASS

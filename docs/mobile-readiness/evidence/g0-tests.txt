@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 /home/user/MitzvotPlus
+
+ ✓ src/__tests__/progress.test.ts (10 tests) 8ms
+ ✓ src/__tests__/calendar.test.ts (11 tests) 50ms
+ ✓ src/__tests__/state.test.ts (17 tests) 25ms
+
+ Test Files  3 passed (3)
+      Tests  38 passed (38)
+   Start at  20:46:30
+   Duration  456ms (transform 206ms, setup 0ms, collect 480ms, tests 83ms, environment 0ms, prepare 188ms)
+
