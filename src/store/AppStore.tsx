@@ -2,6 +2,7 @@ import React, { createContext, PropsWithChildren, useCallback, useContext, useEf
 import { Capacitor } from '@capacitor/core';
 import { localStorageStorage, StateStorage } from '../storage/persistence';
 import { SaveController, SaveStatus } from '../storage/saveController';
+import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { ActionKey } from '../data/actions';
 import { cityById, CityOption } from '../data/locations';
 import {
@@ -169,7 +170,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       pendingBackfill: restInfo.recent.filter(
         (k) => !state.backfilledRestDays.includes(k) && !state.logs.some((l) => l.dateKey === k),
       ),
-      plan: buildTodayPlan(dayAndZmanim.day, dayAndZmanim.zmanim, state.profile.gender, derived.todayLogs),
+      plan: buildTodayPlan(dayAndZmanim.day, dayAndZmanim.zmanim, state.profile.gender, derived.todayLogs, { dvarTorah: DVAR_TORAH_AVAILABLE }),
     }),
     [now, city, dayAndZmanim, restInfo, state.backfilledRestDays, state.logs, state.profile.gender, derived.todayLogs],
   );

@@ -13,7 +13,11 @@
     "cap:sync": "npm run build && cap sync",
     "android:debug": "npm run cap:sync && cd android && ./gradlew assembleDebug",
     "ios:open": "npm run cap:sync && cap open ios",
-    "android:open": "npm run cap:sync && cap open android"
+    "android:open": "npm run cap:sync && cap open android",
+    "check:release": "node scripts/ci/check-release.mjs",
+    "check:secrets": "node scripts/ci/check-secrets.mjs",
+    "check:licenses": "node scripts/ci/check-licenses.mjs",
+    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.1",

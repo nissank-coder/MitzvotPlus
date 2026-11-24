@@ -4,7 +4,7 @@ import { Card } from '../components/Card';
 import { ProfileFields } from '../components/ProfileFields';
 import { DEFAULT_CITY_ID } from '../data/locations';
 import { UserProfile } from '../types';
-import { FEATURES } from '../config/features';
+import { DEMO_CONTENT } from '../config/features';
 import { CitySilhouette } from '../components/Decorations';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -85,7 +85,7 @@ export function OnboardingScreen() {
         בואו נתחיל
         <AppIcon name="chevronLeft" size={19} color={colors.white} />
       </button>
-{FEATURES.demoContent ? (
+{DEMO_CONTENT ? (
       <button
         type="button"
         onClick={loadDemo}

@@ -46,6 +46,10 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
     };
   }, []);
 
+  // Offer only what works on this device (Android WebView has neither speechSynthesis nor Web Share).
+  const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const canShare = typeof navigator !== 'undefined' && (Boolean(navigator.share) || Boolean(navigator.clipboard));
+
   const toggleSpeech = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       setShareFeedback('הקראה קולית אינה נתמכת בדפדפן זה');
@@ -86,6 +90,22 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
       // User dismissed share sheet
     }
   };
+
+  // No approved content (production without D08 content): say so plainly, no actions.
+  if (!item) {
+    return (
+      <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
+        <AppHeader onProfilePress={onOpenProfile} />
+        <FeatureHeader title="דבר תורה" subtitle="רגע קצר של לימוד ומשמעות" icon="book" onBack={onBack} />
+        <div dir="rtl" role="status" className="rounded-[22px] bg-white border border-[#DDE8EE] p-5 text-right">
+          <p className="text-[#17324D] text-[17px] font-black">דבר תורה יומי יתווסף בקרוב</p>
+          <p className="text-[#718397] text-[13px] mt-2 leading-6">
+            התכנים יופיעו אחרי שיעברו בדיקת מקור, רישיון ואישור. בינתיים אפשר ללמוד בסידור, בתהילים ובלימוד היומי.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
@@ -142,13 +162,15 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
         </div>
 
         <div className="flex flex-row gap-2 mt-5">
-          <ActionButton
-            label={isSpeaking ? 'עצור' : 'האזן'}
-            icon={isSpeaking ? 'pause' : 'play'}
-            active={isSpeaking}
-            onPress={toggleSpeech}
-          />
-          <ActionButton label="שתף" icon="share" onPress={shareText} />
+          {canSpeak ? (
+            <ActionButton
+              label={isSpeaking ? 'עצור' : 'האזן'}
+              icon={isSpeaking ? 'pause' : 'play'}
+              active={isSpeaking}
+              onPress={toggleSpeech}
+            />
+          ) : null}
+          {canShare ? <ActionButton label="שתף" icon="share" onPress={shareText} /> : null}
           <ActionButton
             label={state.torahSaved ? 'נשמר' : 'שמור'}
             icon="bookmark"
