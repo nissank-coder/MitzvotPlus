@@ -19,11 +19,15 @@ import {
 import { ActionInput, buildLog } from '../lib/scoring';
 import { restRuleFor } from '../lib/restRule';
 import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
-import { AppSettings, AppState, BlessingCategory, UserProfile } from '../types';
+import { AppSettings, AppState, BlessingCategory, HabitSelection, UserProfile } from '../types';
+import { SCORING_RULES_VERSION } from '../lib/metrics';
 import { computeDerived, Derived } from './derived';
 import { createFreshState, loadState, reducer } from './state';
 
 export type ActionOptions = Omit<ActionInput, 'key' | 'now'>;
+
+/** Feedback after a SAVED change: an entry, a habit, the daily goal, an achievement, a challenge. */
+export type Celebration = { id: number; kind: 'saved' | 'habit' | 'goal' | 'award' | 'challenge'; title: string; detail?: string };
 
 export type CalendarState = {
   now: Date;
@@ -56,7 +60,14 @@ type StoreValue = {
   flush: () => Promise<boolean>;
   /** Re-reads the clock (called when the app returns to the foreground). */
   refreshClock: () => void;
-  completeOnboarding: (userName: string, dailyGoal: number, profile: Partial<UserProfile>) => void;
+  completeOnboarding: (userName: string, dailyGoal: number, profile: Partial<UserProfile>, habits?: HabitSelection[]) => void;
+  /** Choose / edit habits (applies from today; history keeps the habits it had). */
+  setHabits: (habits: HabitSelection[], habitTarget?: number) => void;
+  joinChallenge: (definitionId: string) => void;
+  leaveChallenge: (instanceId: string) => void;
+  /** Last moment something was confirmed saved and celebrated (feedback). */
+  celebration: Celebration | null;
+  dismissCelebration: () => void;
   addAction: (key: ActionKey, options?: ActionOptions) => void;
   addBlessing: (category: BlessingCategory, title?: string) => void;
   backfill: (inputs: Array<{ key: ActionKey; dateKey: string; title?: string }>, days: string[]) => void;
@@ -168,6 +179,63 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     [state, todayKey, isRestDay, startKey],
   );
 
+  // Feedback and completion only after the change is stored on the device (B08 / C1):
+  // achievements and challenge completions are recorded once the latest entry is saved.
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
+  const seen = useRef<{ logs: number; habits: number; goal: boolean; day: string } | null>(null);
+  useEffect(() => {
+    if (!hydrated) return;
+    const latest = derived.todayLogs[0];
+    const prev = seen.current;
+    const now = { logs: state.logs.length, habits: derived.habitsDoneToday, goal: derived.todayGoalMet, day: todayKey };
+    if (!prev || prev.day !== todayKey) {
+      seen.current = now;
+      return;
+    }
+    const added = state.logs.length > prev.logs;
+    if (!added) {
+      seen.current = { ...now };
+      return;
+    }
+    // Wait until the new entry is durably saved before any feedback.
+    if (!latest || !isLogSaved(latest.id)) return;
+    seen.current = now;
+    let next: Omit<Celebration, 'id'>;
+    if (derived.todayGoalMet && !prev.goal) next = { kind: 'goal', title: 'היעד היומי הושלם', detail: 'יישר כוח' };
+    else if (derived.habitsDoneToday > prev.habits)
+      next = { kind: 'habit', title: 'הרגל הושלם', detail: `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` };
+    else next = { kind: 'saved', title: 'נרשם', detail: derived.hasHabits ? `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים` : undefined };
+    setCelebration({ id: Date.now(), ...next });
+  }, [hydrated, state.logs.length, derived, todayKey, isLogSaved, saveStatus]);
+
+  // The first evaluation after loading records past achievements quietly ("earned before"),
+  // without a celebration (no surprising retroactive rewards).
+  const primed = useRef(false);
+  useEffect(() => {
+    if (!hydrated || saveStatus.state === 'saving' || saveStatus.state === 'error') return;
+    const quiet = !primed.current;
+    primed.current = true;
+    const latest = derived.todayLogs[0];
+    if (latest && !isLogSaved(latest.id)) return;
+    const done = derived.challenges.filter((c) => c.state === 'active' && c.reached);
+    const ready = derived.achievements.filter((a) => a.ready);
+    if (done.length === 0 && ready.length === 0) return;
+    const at = Date.now();
+    if (done.length > 0) dispatch({ type: 'completeChallenges', payload: { instanceIds: done.map((c) => c.enrollment.instanceId), now: at } });
+    if (ready.length > 0)
+      dispatch({
+        type: 'grantAwards',
+        payload: ready.map((a) => ({ achievementId: a.def.id, version: a.def.version, earnedAt: at, rulesVersion: SCORING_RULES_VERSION })),
+      });
+    if (quiet) return;
+    const first = ready[0];
+    setCelebration(
+      first
+        ? { id: at, kind: 'award', title: `הישג חדש: ${first.def.title}`, detail: first.def.explanation }
+        : { id: at, kind: 'challenge', title: `אתגר הושלם: ${done[0]!.def.title}`, detail: 'נשמר בהיסטוריית המסלולים' },
+    );
+  }, [hydrated, derived, saveStatus, isLogSaved]);
+
   const dayAndZmanim = useMemo(
     () => ({ day: getDayInfo(todayKey, city.il), zmanim: getZmanim(todayKey, city) }),
     [todayKey, city],
@@ -220,8 +288,13 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       retrySave,
       flush,
       refreshClock,
-      completeOnboarding: (userName, dailyGoal, profile) =>
-        dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile, dateKey: todayKey } }),
+      completeOnboarding: (userName, dailyGoal, profile, habits) =>
+        dispatch({ type: 'completeOnboarding', payload: { userName, dailyGoal, profile, dateKey: todayKey, habits } }),
+      setHabits: (habits, habitTarget) => dispatch({ type: 'setHabits', payload: { habits, habitTarget }, dateKey: todayKey }),
+      joinChallenge: (definitionId) => dispatch({ type: 'joinChallenge', payload: { definitionId, now: Date.now() }, dateKey: todayKey }),
+      leaveChallenge: (instanceId) => dispatch({ type: 'leaveChallenge', payload: { instanceId, now: Date.now() } }),
+      celebration,
+      dismissCelebration: () => setCelebration(null),
       addAction,
       previewPoints,
       addBlessing: (category, title) => addAction('blessing', { category, title }),
@@ -247,7 +320,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, city, derived, isRestDay, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock]);
+  }, [calendar, city, derived, isRestDay, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock, celebration]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

@@ -36,7 +36,11 @@ jobs:
       - name: Unit tests
         run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=reports/junit.xml
       - name: Production build
+        env:
+          VITE_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run build 2>&1 | tee reports/build.log
+      - name: Build identification (compare with "אודות האפליקציה")
+        run: node scripts/build-info.mjs | tee reports/build-info.json
       - name: Release check (no test content, no demo data, CSP present)
         run: npm run check:release
       - name: Secret scan
@@ -49,6 +53,7 @@ jobs:
           {
             echo "### MitzvotPlus CI – ${GITHUB_SHA::7}"
             echo "- Node: $(node -v)"
+            echo "- Source fingerprint: $(node -p "require('./reports/build-info.json').fingerprint" 2>/dev/null || echo n/a)"
             echo "- Tests: $(grep -o 'tests=\"[0-9]*\"' reports/junit.xml | head -1) $(grep -o 'failures=\"[0-9]*\"' reports/junit.xml | head -1)"
             echo "- Build: $(grep -c 'built in' reports/build.log || true) successful build(s)"
             echo '```'; cat reports/licenses.log || true; echo '```'
@@ -77,6 +82,8 @@ jobs:
           java-version: 21
       - run: npm ci
       - name: Build web + sync Capacitor
+        env:
+          VITE_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run build && npx cap sync android
       - name: Assemble debug APK (unsigned for release)
         working-directory: android

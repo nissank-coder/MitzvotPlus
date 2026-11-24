@@ -52,3 +52,9 @@ body {
   font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'Times New Roman', serif;
   line-height: 1.9;
 }
+
+/* Round 9: quiet feedback after a saved change (no confetti); disabled by reduced motion. */
+@keyframes toast {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

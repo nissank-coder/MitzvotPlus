@@ -7,6 +7,8 @@ import { ProfileFields } from '../components/ProfileFields';
 import { COMMUNITY_ENABLED, DEMO_CONTENT, NOTIFICATIONS_ENABLED } from '../config/features';
 import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
+import { BUILD_INFO } from '../config/buildInfo';
+import { HabitEditorSheet } from '../components/gameplay';
 import { colors } from '../theme';
 import { IconName } from '../types';
 
@@ -15,6 +17,7 @@ export function ProfileScreen() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
+  const [habitsOpen, setHabitsOpen] = useState(false);
   const memberYear = hebrewYear(state.memberSince);
 
   return (
@@ -27,7 +30,7 @@ export function ProfileScreen() {
         </div>
         <h1 className="text-[#17324D] text-[24px] font-black mt-3">{state.userName}</h1>
         <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
-          חבר במצוות+ מאז {memberYear} · דרגה {derived.level.level} – {derived.level.name}
+          חבר במצוות+ מאז {memberYear} · שלב {derived.stage.index}: {derived.stage.name}
         </p>
         <div className="w-full flex flex-row-reverse items-center justify-around mt-5 pt-4 border-t border-[#EAF0F4]">
           <ProfileStat value={derived.totalPoints.toLocaleString('he-IL')} label="נקודות התמדה" />
@@ -38,6 +41,20 @@ export function ProfileScreen() {
           <div className="w-px h-[34px] bg-[#EAF0F4]" />
           <ProfileStat value={derived.consistency === null ? "—" : `${derived.consistency}%`} label={derived.consistency === null ? "עקביות: עוד אין בסיס" : "עקביות (30 יום)"} />
         </div>
+      </Card>
+
+      <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
+        ההרגלים שלי
+      </p>
+      <Card className="px-4 mb-5">
+        <SettingRow
+          icon="target"
+          title={derived.hasHabits ? derived.habitsToday.map((h) => h.title).join(' · ') : 'עוד לא נבחרו הרגלים'}
+          subtitle="שינוי חל מהיום והלאה – ההיסטוריה לא משתנה"
+          onPress={() => setHabitsOpen(true)}
+        >
+          <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
+        </SettingRow>
       </Card>
 
       <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
@@ -114,9 +131,33 @@ export function ProfileScreen() {
         </button>
       </Card>
 
-      <p dir="rtl" className="text-[#718397] text-[11px] text-center mt-2">
-        מצוות+ גרסת אב-טיפוס 0.1.0
+      <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
+        אודות האפליקציה
       </p>
+      <Card className="p-4 mb-5">
+        <dl dir="rtl" className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[13px]" aria-label="אודות האפליקציה">
+          <dt className="text-[#5C6F82] font-bold">גרסה</dt>
+          <dd className="text-[#17324D] font-extrabold">{BUILD_INFO.version}</dd>
+          <dt className="text-[#5C6F82] font-bold">מצב</dt>
+          <dd className="text-[#17324D] font-extrabold">
+            {BUILD_INFO.mode}
+            {BUILD_INFO.mode === 'Development' ? ' (שרת פיתוח)' : BUILD_INFO.mode === 'Demo' ? ' (תצוגה פנימית)' : ''}
+          </dd>
+          <dt className="text-[#5C6F82] font-bold">Commit</dt>
+          <dd className="text-[#17324D] font-mono text-[12px] break-all" data-testid="build-commit">
+            {BUILD_INFO.commit
+              ? `${BUILD_INFO.commit.slice(0, 12)} (${BUILD_INFO.commitSource === 'ci' ? 'CI' : 'git'})${BUILD_INFO.dirty ? ' + שינויים שלא נשמרו ב-commit' : ''}`
+              : 'לא זמין בסביבה הזו'}
+          </dd>
+          <dt className="text-[#5C6F82] font-bold">טביעת קוד</dt>
+          <dd className="text-[#17324D] font-mono text-[12px]" data-testid="build-fingerprint">{BUILD_INFO.fingerprint}</dd>
+          <dt className="text-[#5C6F82] font-bold">{BUILD_INFO.kind === 'build' ? 'נבנה' : 'השרת עלה'}</dt>
+          <dd className="text-[#17324D] text-[12px]">{new Date(BUILD_INFO.builtAt).toLocaleString('he-IL')}</dd>
+        </dl>
+        <p dir="rtl" className="text-[#5C6F82] text-[11px] mt-3 leading-4">
+          טביעת הקוד מחושבת מקבצי הקוד עצמם, ולכן זהה לכל עותק של אותו קוד. אפשר להשוות אותה לטביעה שמופיעה בסיכום ה-CI של כל commit.
+        </p>
+      </Card>
 
       <ConfirmDialog
         open={confirmOpen}
@@ -141,6 +182,8 @@ export function ProfileScreen() {
         onClose={() => setDemoConfirmOpen(false)}
       />
       ) : null}
+
+      {habitsOpen ? <HabitEditorSheet onClose={() => setHabitsOpen(false)} /> : null}
 
       {goalsOpen && (
         <GoalsEditor

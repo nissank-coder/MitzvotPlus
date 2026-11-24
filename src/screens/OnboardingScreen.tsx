@@ -1,103 +1,146 @@
 import React, { useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
-import { ProfileFields } from '../components/ProfileFields';
-import { DEFAULT_CITY_ID } from '../data/locations';
-import { UserProfile } from '../types';
-import { DEMO_CONTENT } from '../config/features';
 import { CitySilhouette } from '../components/Decorations';
+import { HabitPicker } from '../components/gameplay';
+import { ProfileFields } from '../components/ProfileFields';
+import { DEMO_CONTENT } from '../config/features';
+import { DEFAULT_CITY_ID } from '../data/locations';
+import { SUGGESTED_HABITS } from '../lib/habits';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
+import { HabitSelection, UserProfile } from '../types';
 
-const goalOptions = [
-  { value: 6, label: 'מתחיל', subtitle: '6 ביום' },
-  { value: 12, label: 'מתמיד', subtitle: '12 ביום' },
-  { value: 18, label: 'מאתגר', subtitle: '18 ביום' },
-];
-
+/**
+ * Onboarding (round 9, B1): name → 2–3 personal habits (1–5 allowed, frequency per habit) →
+ * details for prayer times (optional). No account, no promise of friends, no fixed number goal.
+ */
 export function OnboardingScreen() {
   const { completeOnboarding, loadDemo } = useAppStore();
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [name, setName] = useState('');
-  const [goal, setGoal] = useState(12);
+  const [habits, setHabits] = useState<HabitSelection[]>([]);
   const [profile, setProfile] = useState<UserProfile>({ gender: 'male', nusach: 'sefard', cityId: DEFAULT_CITY_ID });
-  const canStart = name.trim().length > 0;
+
+  const progress = (
+    <div className="flex flex-row gap-1.5 mb-4" aria-label={`שלב ${step} מתוך 3`}>
+      {[1, 2, 3].map((i) => (
+        <span key={i} className={`flex-1 h-[5px] rounded-full ${i <= step ? 'bg-[#2AAE9B]' : 'bg-[#DDE8EE]'}`} />
+      ))}
+    </div>
+  );
 
   return (
-    <div dir="rtl" className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] px-5 pt-10 pb-8">
-      <div className="relative rounded-[28px] overflow-hidden border border-[#D5E8EC] p-6 mb-6 bg-gradient-to-b from-[#F7FCFF] to-[#E7F5F5] card-shadow">
-        <CitySilhouette opacity={0.2} />
-        <div className="relative z-10 flex flex-col items-start">
-          <div className="text-[#17324D] text-[38px] font-black leading-none">
-            מצוות<span className="text-[#2AAE9B]">+</span>
+    <div dir="rtl" className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] px-5 pt-8 pb-8">
+      {progress}
+
+      {step === 1 ? (
+        <>
+          <div className="relative rounded-[28px] overflow-hidden border border-[#D5E8EC] p-6 mb-5 bg-gradient-to-b from-[#F7FCFF] to-[#E7F5F5] card-shadow">
+            <CitySilhouette opacity={0.2} />
+            <div className="relative z-10 flex flex-col items-start">
+              <div className="text-[#17324D] text-[38px] font-black leading-none">
+                מצוות<span className="text-[#2AAE9B]">+</span>
+              </div>
+              <p className="text-[#17324D] text-[17px] font-extrabold mt-3">להתמיד בהרגלים שחשובים לך</p>
+              <p className="text-[#5C6F82] text-[13px] mt-1 leading-5">
+                בוחרים 2–3 הרגלים, רושמים מה שנעשה, ורואים התקדמות אמיתית – יום אחרי יום.
+              </p>
+            </div>
           </div>
-          <p className="text-[#17324D] text-[17px] font-extrabold mt-3">מוסיפים עוד מצווה, כל יום</p>
-          <p className="text-[#718397] text-[13px] mt-1 leading-5">
-            מעקב אחר מצוות, ברכות ולימוד, עם יעדים אישיים וחברים שמתחזקים יחד.
-          </p>
-        </div>
-      </div>
-
-      <Card className="p-5 mb-4">
-        <label htmlFor="onboarding-name" className="text-[#17324D] text-[15px] font-black">
-          איך לקרוא לך?
-        </label>
-        <input
-          id="onboarding-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={30}
-          placeholder="שם או כינוי"
-          className="w-full mt-2 min-h-[48px] rounded-[16px] border border-[#DDE8EE] px-4 text-[15px] text-[#17324D] outline-none focus:border-[#2AAE9B]"
-        />
-
-        <p className="text-[#17324D] text-[15px] font-black mt-5">יעד יומי: פעולות שונות</p>
-        <div className="flex flex-row gap-2 mt-2">
-          {goalOptions.map((option) => {
-            const active = goal === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setGoal(option.value)}
-                aria-pressed={active}
-                className={`flex-1 min-h-[64px] rounded-[18px] border flex flex-col items-center justify-center transition-colors ${
-                  active ? 'bg-[#2AAE9B] border-[#2AAE9B]' : 'bg-white border-[#DDE8EE] hover:bg-[#EAF4FB]'
-                }`}
-              >
-                <span className={`text-[15px] font-black ${active ? 'text-white' : 'text-[#17324D]'}`}>{option.label}</span>
-                <span className={`text-[11px] mt-0.5 ${active ? 'text-white' : 'text-[#718397]'}`}>{option.subtitle}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div className="mt-5">
-          <ProfileFields value={profile} onChange={(patch) => setProfile((p) => ({ ...p, ...patch }))} />
-        </div>
-        <p className="text-[#718397] text-[11px] mt-3">אפשר לשנות בכל עת בפרופיל.</p>
-      </Card>
-
-      <button
-        type="button"
-        disabled={!canStart}
-        onClick={() => completeOnboarding(name, goal, profile)}
-        className="w-full min-h-[54px] rounded-full bg-[#2AAE9B] text-white text-[16px] font-black flex flex-row items-center justify-center gap-2 disabled:opacity-45 hover:opacity-90 transition-opacity"
-      >
-        בואו נתחיל
-        <AppIcon name="chevronLeft" size={19} color={colors.white} />
-      </button>
-{DEMO_CONTENT ? (
-      <button
-        type="button"
-        onClick={loadDemo}
-        className="w-full min-h-[48px] mt-3 rounded-full bg-transparent text-[#1B6F8F] text-[14px] font-extrabold hover:bg-[#EAF4FB] transition-colors"
-      >
-        רק להציץ – הצגת נתוני הדגמה
-      </button>
+          <Card className="p-5 mb-4">
+            <label htmlFor="onboarding-name" className="text-[#17324D] text-[15px] font-black">
+              איך לקרוא לך?
+            </label>
+            <input
+              id="onboarding-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={30}
+              placeholder="שם או כינוי"
+              className="w-full mt-2 min-h-[48px] rounded-[16px] border border-[#DDE8EE] px-4 text-[15px] text-[#17324D] outline-none focus:border-[#2AAE9B]"
+            />
+            <p className="text-[#5C6F82] text-[12px] mt-2">אין צורך בחשבון. הנתונים נשמרים במכשיר.</p>
+          </Card>
+          <PrimaryButton disabled={name.trim().length === 0} onPress={() => setStep(2)}>
+            המשך
+          </PrimaryButton>
+          {DEMO_CONTENT ? (
+            <button type="button" onClick={loadDemo} className="w-full min-h-[48px] mt-3 rounded-full text-[#1B6F8F] text-[14px] font-extrabold">
+              רק להציץ – הצגת נתוני הדגמה
+            </button>
+          ) : null}
+        </>
       ) : null}
 
-      <p className="text-[#718397] text-[11px] text-center mt-auto pt-6 leading-5">
+      {step === 2 ? (
+        <>
+          <h1 className="text-[24px] font-black text-[#17324D]">במה תרצה להתמיד?</h1>
+          <p className="text-[14px] text-[#5C6F82] mt-1 mb-4">מומלץ 2–3 הרגלים. אפשר להתחיל באחד ולשנות בכל זמן.</p>
+          {habits.length === 0 ? (
+            <button
+              type="button"
+              onClick={() => setHabits(SUGGESTED_HABITS.map((id) => ({ id, perWeek: 7 })))}
+              className="self-start mb-4 min-h-[40px] px-4 rounded-full border border-[#2AAE9B] text-[#1E8C7C] text-[13px] font-black bg-white"
+            >
+              הצעה להתחלה: תפילה, לימוד וחסד
+            </button>
+          ) : null}
+          <HabitPicker value={habits} onChange={setHabits} gender={profile.gender} />
+          <div className="sticky bottom-0 bg-[#F4F8FB] pt-4 flex flex-row gap-2">
+            <SecondaryButton onPress={() => setStep(1)}>חזרה</SecondaryButton>
+            <PrimaryButton disabled={habits.length === 0} onPress={() => setStep(3)}>
+              {habits.length === 0 ? 'בחרו הרגל אחד לפחות' : `המשך (${habits.length} נבחרו)`}
+            </PrimaryButton>
+          </div>
+        </>
+      ) : null}
+
+      {step === 3 ? (
+        <>
+          <h1 className="text-[24px] font-black text-[#17324D]">כמה פרטים, לפי הצורך</h1>
+          <p className="text-[14px] text-[#5C6F82] mt-1 mb-4">העיר והנוסח משמשים לזמני תפילה ולסידור. אפשר לשנות בכל עת.</p>
+          <Card className="p-5 mb-4">
+            <ProfileFields value={profile} onChange={(patch) => setProfile((p) => ({ ...p, ...patch }))} />
+          </Card>
+          <Card className="p-4 mb-4 flex flex-col gap-1">
+            <span className="text-[14px] font-extrabold text-[#17324D]">100 ברכות – אתגר נפרד</span>
+            <span className="text-[12px] text-[#5C6F82]">מונה הברכות זמין תמיד במסך היום, בלי קשר להרגלים שבחרת.</span>
+          </Card>
+          <div className="flex flex-row gap-2">
+            <SecondaryButton onPress={() => setStep(2)}>חזרה</SecondaryButton>
+            <PrimaryButton onPress={() => completeOnboarding(name, 12, profile, habits)}>
+              מתחילים
+              <AppIcon name="chevronLeft" size={19} color={colors.white} />
+            </PrimaryButton>
+          </div>
+        </>
+      ) : null}
+
+      <p className="text-[#5C6F82] text-[11px] text-center mt-auto pt-6 leading-5">
         הניקוד הוא כלי לעידוד בלבד. ״הוי זהיר במצוה קלה כבחמורה, שאין אתה יודע מתן שכרן של מצוות״ (אבות ב, א)
       </p>
     </div>
+  );
+}
+
+function PrimaryButton({ children, onPress, disabled }: { children: React.ReactNode; onPress: () => void; disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onPress}
+      className="flex-[2] w-full min-h-[54px] rounded-full bg-[#2AAE9B] text-white text-[16px] font-black flex flex-row items-center justify-center gap-2 disabled:opacity-45"
+    >
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({ children, onPress }: { children: React.ReactNode; onPress: () => void }) {
+  return (
+    <button type="button" onClick={onPress} className="flex-1 min-h-[54px] rounded-full border border-[#DDE8EE] bg-white text-[#17324D] text-[15px] font-extrabold">
+      {children}
+    </button>
   );
 }

@@ -1,4 +1,5 @@
-export type TabKey = 'home' | 'content' | 'community' | 'profile';
+/** Bottom navigation (round 9): היום | התקדמות | + | מסלולים | אני. 'community' is dev-only. */
+export type TabKey = 'today' | 'progress' | 'tracks' | 'me' | 'community';
 export type FeatureKey =
   | 'blessings'
   | 'torah'

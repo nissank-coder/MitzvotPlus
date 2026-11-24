@@ -4,12 +4,15 @@ import { IconName, TabKey } from '../types';
 import { AppIcon } from './AppIcon';
 import { COMMUNITY_ENABLED } from '../config/features';
 
+// RTL: the first item in the row is on the right. היום | התקדמות | + | מסלולים | אני.
+// The community demo tab exists only in development builds (COMMUNITY_ENABLED).
 const allItems: Array<{ key: TabKey | 'add'; label: string; icon: IconName }> = [
-  { key: 'profile', label: 'פרופיל', icon: 'user' },
+  { key: 'me', label: 'אני', icon: 'user' },
   { key: 'community', label: 'קהילה', icon: 'community' },
+  { key: 'tracks', label: 'מסלולים', icon: 'target' },
   { key: 'add', label: 'הוספה', icon: 'plus' },
-  { key: 'content', label: 'תוכן', icon: 'book' },
-  { key: 'home', label: 'בית', icon: 'home' },
+  { key: 'progress', label: 'התקדמות', icon: 'chart' },
+  { key: 'today', label: 'היום', icon: 'home' },
 ];
 const items = allItems.filter((i) => i.key !== 'community' || COMMUNITY_ENABLED);
 
@@ -31,6 +34,7 @@ export function BottomNav({ active, onSelect, onAdd }: Props) {
             type="button"
             onClick={() => (isAdd ? onAdd() : onSelect(item.key as TabKey))}
             aria-current={isActive ? 'page' : undefined}
+            aria-label={isAdd ? 'הוספת פעולה' : item.label}
             className="flex-1 flex flex-col items-center justify-center gap-1 bg-transparent border-0 p-0"
           >
             <div

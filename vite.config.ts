@@ -1,6 +1,8 @@
 import { defineConfig, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+// @ts-expect-error – plain .mjs helper shared with CI
+import { buildInfo } from './scripts/build-info.mjs';
 
 /**
  * Content-Security-Policy for production builds (the bundle that ships inside the native app).
@@ -28,7 +30,12 @@ function cspPlugin(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // Version, commit (only when known), build time and source fingerprint – shown under
+  // "אודות האפליקציה" so it is clear which code a preview (e.g. AI Studio) runs.
+  define: {
+    __BUILD_INFO__: JSON.stringify({ ...buildInfo(), kind: command === 'serve' ? 'dev-server' : 'build' }),
+  },
   plugins: [react(), tailwindcss(), cspPlugin()],
   server: {
     host: '0.0.0.0',
@@ -54,4 +61,4 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
   },
-});
+}));

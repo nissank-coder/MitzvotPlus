@@ -92,8 +92,12 @@ describe('SQLite state storage', () => {
 describe('deep links', async () => {
   const { parseDeepLink } = await import('../native/deepLinks');
   it('opens known screens only', () => {
-    expect(parseDeepLink('mitzvotplus://open/blessings')).toEqual({ tab: 'content', feature: 'blessings' });
-    expect(parseDeepLink('mitzvotplus://tab/profile')).toEqual({ tab: 'profile', feature: null });
+    expect(parseDeepLink('mitzvotplus://open/blessings')).toEqual({ tab: 'tracks', feature: 'blessings' });
+    expect(parseDeepLink('mitzvotplus://tab/progress')).toEqual({ tab: 'progress', feature: null });
+    expect(parseDeepLink('mitzvotplus://open/goals')).toEqual({ tab: 'progress', feature: null });
+    // Older links still work.
+    expect(parseDeepLink('mitzvotplus://tab/profile')).toEqual({ tab: 'me', feature: null });
+    expect(parseDeepLink('mitzvotplus://tab/home')).toEqual({ tab: 'today', feature: null });
     expect(parseDeepLink('mitzvotplus://open/admin')).toBeNull();
     expect(parseDeepLink('https://evil.example/open/blessings')).toBeNull();
     expect(parseDeepLink('not a url')).toBeNull();
