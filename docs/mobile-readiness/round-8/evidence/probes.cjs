@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path');const ts=require(require.resolve('typescript',{paths:[process.cwd()]}));
+require.extensions['.ts']=(mod,file)=>mod._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,file);
+const root=path.join(process.cwd(),'src');
+const {createFreshState,reducer}=require(root+'/store/state.ts');const {computeDerived}=require(root+'/store/derived.ts');const {scoreLogs}=require(root+'/lib/metrics.ts');const {ACTIONS}=require(root+'/data/actions.ts');const {createEventPayload}=require(root+'/sync/outbox.ts');const {currentStreak}=require(root+'/lib/progress.ts');
+const now=Date.UTC(2026,10,23,12), day='2026-11-23';const fresh=()=>createFreshState(now);const add=(s,key,opts={})=>reducer(s,{type:'addAction',payload:{key,now,dateKey:day,...opts}});const d=s=>computeDerived(s,day);const log=(name,val)=>console.log(name+': '+JSON.stringify(val));
+let s=fresh();for(let i=0;i<12;i++)s=add(s,'blessing',{now:now+i,category:'other'});log('12 blessings',{actions:d(s).todayCount,blessings:d(s).blessingTotal,points:d(s).todayPoints});
+for(let i=12;i<100;i++)s=add(s,'blessing',{now:now+i,category:'other'});log('100 blessings',{total:d(s).todayPoints,bonus:d(s).blessingGoalBonusToday});s=reducer(s,{type:'removeLog',payload:{id:s.logs[0].id}});s=add(s,'blessing',{now:now+101,category:'other'});log('remove/add',{total:d(s).todayPoints,bonus:d(s).blessingGoalBonusToday});
+s=add(fresh(),'chesed');log('first day fresh user consistency',{memberSince:s.memberSince,...d(s).consistencyDays,percent:d(s).consistency});
+s=add(fresh(),'shacharit');s=add(s,'shacharit',{refId:'different'});log('same prayer different ref',{logs:s.logs.length,points:d(s).todayPoints});
+s=add(fresh(),'dailyTorah',{content:{id:'one',version:'1'}});s=add(s,'dailyTorah',{content:{id:'two',version:'1'}});log('two Dvar Torah refs same day',{logs:s.logs.length,points:d(s).todayPoints});
+s=add(fresh(),'chesed');s=reducer(s,{type:'setBlessingBundle',payload:{sourceLogId:s.logs[0].id,count:30,now}});log('bundle on chesed',{blessings:d(s).blessingTotal,points:d(s).todayPoints,rows:s.logs.length});
+s=add(fresh(),'shacharit',{onTime:true,minyan:true});s=reducer(s,{type:'setBlessingBundle',payload:{sourceLogId:s.logs[0].id,count:18,now}});const p=s.logs.find(l=>l.actionKey==='shacharit');const b=s.logs.find(l=>l.bundleOf);log('outbox prayer',{stored:p,payload:JSON.parse(createEventPayload(p,'demo-install'))});log('outbox bundle',{stored:b,payload:JSON.parse(createEventPayload(b,'demo-install'))});
+s=add(fresh(),'cleanSpeech');log('private action payload',JSON.parse(createEventPayload(s.logs[0],'demo-install')));
+s=add(fresh(),'chesed');const before=d(s).todayPoints;ACTIONS.chesed.points+=100;log('mutate current points table',{before,after:d(s).todayPoints,rules:s.logs[0].rules});ACTIONS.chesed.points-=100;
+s=add(fresh(),'chesed',{dateKey:'2026-11-22'});s=add(s,'parents',{dateKey:'2026-11-22'});s=add(s,'charity',{dateKey:'2026-11-22'});s=add(s,'chesed');log('partial today',{...d(s).consistencyDays,percent:d(s).consistency});

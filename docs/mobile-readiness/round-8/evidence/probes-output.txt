@@ -1,0 +1,12 @@
+12 blessings: {"actions":1,"blessings":12,"points":24}
+100 blessings: {"total":230,"bonus":30}
+remove/add: {"total":230,"bonus":30}
+first day fresh user consistency: {"memberSince":1795435200000,"goalDays":0,"eligibleDays":26,"percent":0}
+same prayer different ref: {"logs":2,"points":25}
+two Dvar Torah refs same day: {"logs":2,"points":10}
+bundle on chesed: {"blessings":30,"points":75,"rows":31}
+outbox prayer: {"stored":{"id":"log-mwuuvu3x-3u-60gu","title":"שחרית במניין","icon":"sun","points":40,"createdAt":1795435200000,"dateKey":"2026-11-23","kind":"mitzvah","actionKey":"shacharit","minyan":true,"onTime":true,"recordedAt":1795435200000,"rules":"score-2"},"payload":{"actionType":"shacharit","eventId":"log-mwuuvu3x-3u-60gu","installationId":"demo-install","localDate":"2026-11-23","minyan":true,"occurredAtUtc":"2026-11-23T12:00:00.000Z","operation":"create","quantity":1,"recordedAtUtc":"2026-11-23T12:00:00.000Z","schemaVersion":1}}
+outbox bundle: {"stored":{"id":"log-mwuuvu3x-4c-6hx2","title":"ברכה בשחרית במניין","icon":"cup","points":2,"createdAt":1795435200000,"dateKey":"2026-11-23","kind":"blessing","actionKey":"blessing","category":"prayer","refId":"bundle:log-mwuuvu3x-3u-60gu:17","recordedAt":1795435200000,"bundleOf":"log-mwuuvu3x-3u-60gu","rules":"score-2"},"payload":{"actionType":"blessing","category":"prayer","eventId":"log-mwuuvu3x-4c-6hx2","installationId":"demo-install","localDate":"2026-11-23","occurredAtUtc":"2026-11-23T12:00:00.000Z","operation":"create","quantity":1,"recordedAtUtc":"2026-11-23T12:00:00.000Z","refId":"bundle:log-mwuuvu3x-3u-60gu:17","schemaVersion":1}}
+private action payload: {"actionType":"cleanSpeech","eventId":"log-mwuuvu3y-4d-k38n","installationId":"demo-install","localDate":"2026-11-23","occurredAtUtc":"2026-11-23T12:00:00.000Z","operation":"create","quantity":1,"recordedAtUtc":"2026-11-23T12:00:00.000Z","schemaVersion":1}
+mutate current points table: {"before":15,"after":115,"rules":"score-2"}
+partial today: {"goalDays":0,"eligibleDays":26,"percent":0}
