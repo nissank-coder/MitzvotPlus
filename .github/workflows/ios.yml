@@ -1,0 +1,102 @@
+name: iOS simulator
+
+# iOS Simulator build + launch smoke test on a GitHub-hosted macOS runner.
+# No Apple Developer account, no signing (CODE_SIGNING_ALLOWED=NO), no upload.
+# A simulator run is NOT device evidence: G1 still needs a real iPhone.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'capacitor.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ios.yml'
+  push:
+    branches: [main, 'claude/**']
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'capacitor.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ios.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    name: iOS simulator build + launch
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Select newest installed Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XC=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XC"
+          xcodebuild -version | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Install, build web, sync iOS
+        run: |
+          npm ci
+          npm run build
+          npx cap sync ios
+
+      - name: Build for simulator (unsigned)
+        run: |
+          mkdir -p reports
+          set -o pipefail
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/dd \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tee reports/xcodebuild.log | grep -E '^(\*\*|error:|warning: .*deprecated)' || true
+          test -d build/dd/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Boot simulator, install, launch, screenshot
+        run: |
+          set -euo pipefail
+          UDID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries[] | select(.key | test("iOS")) | .value[] | select(.name | test("^iPhone"))] | last | .udid')
+          echo "Simulator: $UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" build/dd/Build/Products/Debug-iphonesimulator/App.app
+          xcrun simctl launch "$UDID" com.mitzvotplus.app | tee reports/launch.txt
+          sleep 20
+          xcrun simctl io "$UDID" screenshot reports/ios-sim-launch.png
+          # still running after 20 s = no crash on start
+          xcrun simctl spawn "$UDID" launchctl list | grep -q 'com.mitzvotplus.app' \
+            && echo "App process alive after 20 s" | tee -a reports/launch.txt "$GITHUB_STEP_SUMMARY"
+          xcrun simctl spawn "$UDID" log show --last 2m --predicate 'process == "App"' --style compact \
+            > reports/sim-app-log.txt 2>&1 || true
+          xcrun simctl list devices "$UDID" | tee -a reports/launch.txt
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-reports
+          path: reports/
+          retention-days: 14
