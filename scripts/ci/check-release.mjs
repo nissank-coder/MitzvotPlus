@@ -15,6 +15,8 @@ const text = files.filter((f) => /\.(js|html|css|json)$/.test(f)).map((f) => [f,
 
 const forbidden = [
   ['TEST-ONLY-NOT-FOR-DISTRIBUTION', 'TEST_ONLY content license marker'],
+  ['DRAFT-NOT-APPROVED', 'draft practical content (not approved, D08)'],
+  ['להתקשר למישהו שלא דיברת איתו', 'draft practical content text'],
   ['TEST_ONLY', 'TEST_ONLY content item'],
   ['test-placeholder', 'placeholder Dvar Torah id'],
   ['נועם לוי', 'mock community friend'],

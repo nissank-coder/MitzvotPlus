@@ -4,9 +4,11 @@ import { DEFAULT_CITY_ID } from '../data/locations';
 import { DEFAULT_TRACKS } from '../data/tracks';
 import { DAY_MS, localDateKey } from '../lib/dates';
 import { ActionInput, buildLog } from '../lib/scoring';
-import { withGoals } from '../lib/metrics';
+import { goalsOn, withGoals } from '../lib/metrics';
+import { cleanHabits } from '../lib/habits';
+import { challengeById, challengeWindow } from '../lib/challenges';
 import { emptyTimer, resetTimer, SpeechTimer, startTimer, undoReset } from '../lib/speechTimer';
-import { ActivityLog, AppSettings, AppState, BlessingCategory, GoalSnapshot, IconName, LogKind, UserProfile } from '../types';
+import { ActivityLog, AppSettings, AppState, Award, BlessingCategory, GoalSnapshot, HabitSelection, IconName, LogKind, UserProfile } from '../types';
 
 export const STORAGE_KEY = 'mitzvot_plus_state_v1';
 
@@ -28,6 +30,8 @@ export function createFreshState(now = Date.now()): AppState {
     savedContent: [],
     goalHistory: [{ from: '0000-00-00', dailyGoal: 12, weeklyGoal: 60, blessingGoal: 100 }],
     locationHistory: [{ from: '0000-00-00', cityId: DEFAULT_CITY_ID }],
+    challenges: [],
+    awards: [],
     reflections: {},
     settings: { ...defaultSettings },
     joinedGroups: {},
@@ -207,6 +211,9 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
     speech: value.speech ?? legacySpeech(legacyFields),
     savedContent: Array.isArray(value.savedContent) ? value.savedContent : [],
+    // Round 9: existing users keep their history and goals; habits are offered, never forced.
+    challenges: Array.isArray(value.challenges) ? value.challenges : [],
+    awards: Array.isArray(value.awards) ? value.awards : [],
     locationHistory:
       Array.isArray(value.locationHistory) && value.locationHistory.length > 0
         ? value.locationHistory
@@ -233,7 +240,15 @@ export const MAX_BUNDLE = 30;
 
 export type Action =
   | { type: 'hydrate'; payload: AppState }
-  | { type: 'completeOnboarding'; payload: { userName: string; dailyGoal: number; profile: Partial<UserProfile>; dateKey?: string } }
+  | {
+      type: 'completeOnboarding';
+      payload: { userName: string; dailyGoal: number; profile: Partial<UserProfile>; dateKey?: string; habits?: HabitSelection[] };
+    }
+  | { type: 'setHabits'; payload: { habits: HabitSelection[]; habitTarget?: number }; dateKey: string }
+  | { type: 'joinChallenge'; payload: { definitionId: string; now: number }; dateKey: string }
+  | { type: 'leaveChallenge'; payload: { instanceId: string; now: number } }
+  | { type: 'completeChallenges'; payload: { instanceIds: string[]; now: number } }
+  | { type: 'grantAwards'; payload: Award[] }
   | { type: 'addAction'; payload: ActionInput }
   | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
@@ -255,6 +270,12 @@ function prepend(state: AppState, log: ActivityLog): AppState {
   return { ...state, logs: [log, ...state.logs] };
 }
 
+/** Habits of the current goal, carried over when another goal value changes. */
+function carryHabits(state: AppState): Partial<GoalSnapshot> {
+  const last = state.goalHistory[state.goalHistory.length - 1];
+  return last?.habits ? { habits: last.habits, habitTarget: last.habitTarget } : {};
+}
+
 const clampGoal = (value: number, min: number, max: number) => Math.round(Math.min(max, Math.max(min, value)));
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -263,6 +284,7 @@ export function reducer(state: AppState, action: Action): AppState {
       return action.payload;
 
     case 'completeOnboarding': {
+      const habits = cleanHabits(action.payload.habits ?? []);
       const dailyGoal = clampGoal(action.payload.dailyGoal, 1, 50);
       const weeklyGoal = clampGoal(action.payload.dailyGoal * 5, 5, 300);
       return {
@@ -272,7 +294,15 @@ export function reducer(state: AppState, action: Action): AppState {
         dailyGoal,
         weeklyGoal,
         // The first goals apply from the start; there is no earlier history to keep.
-        goalHistory: [{ from: '0000-00-00', dailyGoal, weeklyGoal, blessingGoal: state.blessingGoal }],
+        goalHistory: [
+          {
+            from: '0000-00-00',
+            dailyGoal,
+            weeklyGoal,
+            blessingGoal: state.blessingGoal,
+            ...(habits.length > 0 ? { habits, habitTarget: habits.length } : {}),
+          },
+        ],
         locationHistory: [{ from: '0000-00-00', cityId: action.payload.profile.cityId ?? state.profile.cityId }],
         memberSince: Date.now(),
         profile: { ...state.profile, ...action.payload.profile },
@@ -369,8 +399,79 @@ export function reducer(state: AppState, action: Action): AppState {
         userName: p.userName !== undefined ? p.userName.trim() || state.userName : state.userName,
         ...goals,
         // A goal change applies from today on; past days keep the goals they were measured with.
-        goalHistory: changed ? withGoals(state.goalHistory, action.dateKey ?? localDateKey(Date.now()), goals) : state.goalHistory,
+        goalHistory: changed
+          ? withGoals(state.goalHistory, action.dateKey ?? localDateKey(Date.now()), { ...carryHabits(state), ...goals })
+          : state.goalHistory,
       };
+    }
+
+    case 'setHabits': {
+      // A habit change applies from today on; earlier days keep the habits they were measured with.
+      const habits = cleanHabits(action.payload.habits);
+      if (habits.length === 0) return state;
+      const target = Math.min(habits.length, Math.max(1, Math.round(action.payload.habitTarget ?? habits.length)));
+      const current = goalsOn(state.goalHistory, action.dateKey);
+      return {
+        ...state,
+        goalHistory: withGoals(state.goalHistory, action.dateKey, {
+          dailyGoal: current.dailyGoal,
+          weeklyGoal: current.weeklyGoal,
+          blessingGoal: current.blessingGoal,
+          habits,
+          habitTarget: target,
+        }),
+      };
+    }
+
+    case 'joinChallenge': {
+      const def = challengeById(action.payload.definitionId);
+      if (!def || def.scope !== 'personal') return state;
+      const busy = state.challenges.some(
+        (c) => c.definitionId === def.id && !c.completedAt && !c.leftAt && action.dateKey < c.end,
+      );
+      if (busy) return state;
+      const { start, end } = challengeWindow(def, action.dateKey);
+      return {
+        ...state,
+        challenges: [
+          ...state.challenges,
+          {
+            instanceId: `ch-${def.id}-${action.payload.now.toString(36)}`,
+            definitionId: def.id,
+            definitionVersion: def.version,
+            joinedAt: action.payload.now,
+            start,
+            end,
+            target: def.target,
+          },
+        ],
+      };
+    }
+
+    case 'leaveChallenge':
+      return {
+        ...state,
+        challenges: state.challenges.map((c) =>
+          c.instanceId === action.payload.instanceId && !c.completedAt && !c.leftAt ? { ...c, leftAt: action.payload.now } : c,
+        ),
+      };
+
+    case 'completeChallenges': {
+      const ids = new Set(action.payload.instanceIds);
+      if (!state.challenges.some((c) => ids.has(c.instanceId) && !c.completedAt && !c.leftAt)) return state;
+      return {
+        ...state,
+        challenges: state.challenges.map((c) =>
+          ids.has(c.instanceId) && !c.completedAt && !c.leftAt ? { ...c, completedAt: action.payload.now } : c,
+        ),
+      };
+    }
+
+    case 'grantAwards': {
+      const fresh = action.payload.filter(
+        (a) => !state.awards.some((x) => x.achievementId === a.achievementId && x.version === a.version),
+      );
+      return fresh.length === 0 ? state : { ...state, awards: [...state.awards, ...fresh] };
     }
 
     case 'updateSettings':
