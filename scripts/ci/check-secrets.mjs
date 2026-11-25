@@ -7,7 +7,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, statSync } from 'node:fs';
 
 const files = execSync('git ls-files', { encoding: 'utf8' }).split('\n').filter(Boolean);
-const forbiddenFiles = [/\.jks$/, /\.keystore$/, /\.p12$/, /\.p8$/, /\.mobileprovision$/, /(^|\/)google-services\.json$/, /(^|\/)GoogleService-Info\.plist$/, /(^|\/)\.env(\..+)?$/];
+const forbiddenFiles = [/\.jks$/, /\.keystore$/, /\.p12$/, /\.p8$/, /\.mobileprovision$/, /(^|\/)google-services\.json$/, /(^|\/)GoogleService-Info\.plist$/, /(^|\/)\.env(?!\.example$)(\..+)?$/];
 const patterns = [
   [/-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/, 'private key'],
   [/AKIA[0-9A-Z]{16}/, 'AWS access key'],
