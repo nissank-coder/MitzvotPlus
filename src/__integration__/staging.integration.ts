@@ -203,7 +203,7 @@ describe('staging rehearsal: two phones, one account', () => {
     one.state = reducer(one.state, { type: 'updateGoals', payload: { blessingGoal: 20 }, dateKey: '2099-01-01' });
     await one.storage.save(one.state);
     await one.sync();
-    const rows = await gw.query('select from_date::text, blessing_goal from public.blessing_goal_history where user_id = $1 order by from_date', [one.userId]);
+    const rows = await gw.query('select g.from_date::text as from_text, g.blessing_goal from public.blessing_goal_history g where g.user_id = $1 order by g.from_date', [one.userId]);
     expect(rows.map((r: { blessing_goal: number }) => r.blessing_goal)).toEqual([100, 20]);
   });
 
