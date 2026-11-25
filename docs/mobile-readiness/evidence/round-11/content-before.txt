@@ -1,0 +1,5 @@
+     × adding items does not change the item of a day that already has one 10ms
+     × a day without its own entry shows the latest scheduled item before it (within 7 days), else nothing 2ms
+     × a schedule entry for an unknown or unapproved item shows nothing (never a draft) 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed (3)

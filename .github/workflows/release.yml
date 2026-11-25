@@ -1,0 +1,65 @@
+name: Store build (gated)
+
+# Manual only. Builds a store candidate ONLY after the distribution gate passes for this commit.
+# Internal / debug builds are made by ci.yml and are never blocked by this gate.
+# No signing secrets exist in this repository; nothing is uploaded to App Store or Google Play.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'beta (TestFlight / Play testing) or release (store)'
+        required: true
+        default: beta
+        type: choice
+        options: [beta, release]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  gate:
+    name: Distribution gate (mandatory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Distribution gate – fails while any blocker is open
+        run: node scripts/ci/check-distribution.mjs --kind "${{ inputs.kind }}" --commit "${{ github.sha }}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  android-bundle:
+    name: Android App Bundle (unsigned)
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - run: npm ci
+      - name: Verify
+        run: npm run verify
+      - name: Build web + sync
+        env:
+          VITE_BUILD_COMMIT: ${{ github.sha }}
+        run: npm run build && npx cap sync android
+      - name: Bundle (release build type, unsigned – signing happens outside this repository)
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: cd android && ./gradlew --no-daemon bundleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ inputs.kind }}-aab-${{ github.sha }}
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30

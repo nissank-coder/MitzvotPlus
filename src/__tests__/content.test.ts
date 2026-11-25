@@ -16,12 +16,13 @@ describe('content registry', () => {
     }
   });
 
-  it('prefers approved items and is stable for a date', () => {
+  it('uses the schedule: approved items by date, stable', () => {
     const items = [...CONTENT, approved('a'), approved('b')];
-    const pick = dvarTorahFor('2026-11-24', items)!;
+    const schedule = { '2026-11-24': items[items.length - 2]!.id, '2026-11-25': items[items.length - 1]!.id };
+    const pick = dvarTorahFor('2026-11-24', items, schedule)!;
     expect(pick.approval).toBe('APPROVED');
-    expect(dvarTorahFor('2026-11-24', items)).toBe(pick);
-    expect(dvarTorahFor('2026-11-25', items)!.id).not.toBe(pick.id);
+    expect(dvarTorahFor('2026-11-24', items, schedule)).toBe(pick);
+    expect(dvarTorahFor('2026-11-25', items, schedule)!.id).not.toBe(pick.id);
   });
 
   it('falls back to test items only when nothing is approved', () => {

@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   /** "true" to show demo / mock content in a build (never in a store build). */
   readonly VITE_DEMO_CONTENT?: string;
+  /** "true" turns on the encrypted database (D11; off by default). */
+  readonly VITE_DB_ENCRYPTION?: string;
 }
 
 /** Injected by vite.config.ts (scripts/build-info.mjs). */

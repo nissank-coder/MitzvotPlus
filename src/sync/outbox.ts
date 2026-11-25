@@ -5,7 +5,12 @@
  */
 import { ActivityLog } from '../types';
 
-export const EVENT_SCHEMA_VERSION = 1;
+/**
+ * v2 (round 11): minimal calendar context (no city, no candle-lighting minutes) and the facts
+ * needed to rebuild a score (onTime, rulesVersion, bundleOf). Payloads already frozen in the queue
+ * keep the version they were written with.
+ */
+export const EVENT_SCHEMA_VERSION = 2;
 
 export type Operation = 'create' | 'void';
 
@@ -71,27 +76,46 @@ export function canonicalJson(value: unknown): string {
 }
 
 /**
- * Sync privacy policy (round 10, S10-02; round-8/privacy-sync-plan.md). Default-deny: only the
- * actions listed here may ever be queued for a future cloud sync – and only after the user's
- * consent (sync is off: SYNC_ENABLED=false). Everything else stays on the device: speech awareness
- * and the speech-guard day, charity, visiting the sick, and any action this table does not know.
- * The speech timer, resets and personal reflections are not activities and never reach the queue.
+ * Privacy policy per action (round 10 S10-02, round 11 §3; round-8/privacy-sync-plan.md).
+ * Default-deny, two separate decisions:
+ *  - cloudBackup: may be queued for a future backup to the user's own account – only with active
+ *    consent, and sync is off (SYNC_ENABLED=false);
+ *  - social: may ever appear (as a participation unit) to friends. Always opt-in per item later.
+ * Not listed = local only: speech awareness and the speech-guard day, charity and matanot
+ * la-evyonim, visiting the sick, a personal habit (its label is the user's own text), and any
+ * action this table does not know. The speech timer, resets and reflections are not activities.
  */
-const SYNCABLE_ACTIONS: ReadonlySet<string> = new Set([
-  'shacharit', 'mincha', 'arvit', 'musaf', 'tefillin', 'shema', 'birkotHashachar', 'hallel', 'tehillim', 'prayer',
-  'blessing', 'birkatHamazon',
-  'torahStudy', 'dailyTorah', 'learningTrack', 'mitzvahStudy',
-  'chesed', 'parents', 'guests',
-  'candleLighting', 'challah', 'shnayimMikra', 'kiddush', 'shabbatMeal', 'havdalah', 'fullShabbat',
-  'omer', 'chanukahCandles', 'megillah', 'mishloachManot', 'matanotLaevyonim', 'purimSeuda', 'shofar', 'sukkah', 'lulav',
-  'bedikatChametz', 'seder', 'fastDay',
-  'gratitude', 'personalHabit',
-]);
+type Privacy = { cloudBackup: boolean; social: boolean };
+const SOCIAL = { cloudBackup: true, social: true } as const;
+const BACKUP_ONLY = { cloudBackup: true, social: false } as const;
+const PRIVACY: Readonly<Record<string, Privacy>> = Object.freeze({
+  // prayer
+  shacharit: SOCIAL, mincha: SOCIAL, arvit: SOCIAL, musaf: SOCIAL, tefillin: SOCIAL, shema: SOCIAL,
+  birkotHashachar: SOCIAL, hallel: SOCIAL, tehillim: SOCIAL, prayer: SOCIAL,
+  // blessings
+  blessing: SOCIAL, birkatHamazon: SOCIAL,
+  // learning
+  torahStudy: SOCIAL, dailyTorah: SOCIAL, learningTrack: SOCIAL, mitzvahStudy: SOCIAL,
+  // between people – backed up for the user, never shown to others
+  chesed: BACKUP_ONLY, parents: BACKUP_ONLY, guests: BACKUP_ONLY, gratitude: BACKUP_ONLY,
+  // Shabbat and holidays
+  candleLighting: SOCIAL, challah: SOCIAL, shnayimMikra: SOCIAL, kiddush: SOCIAL, shabbatMeal: SOCIAL,
+  havdalah: SOCIAL, fullShabbat: SOCIAL, omer: SOCIAL, chanukahCandles: SOCIAL, megillah: SOCIAL,
+  mishloachManot: SOCIAL, purimSeuda: SOCIAL, shofar: SOCIAL, sukkah: SOCIAL, lulav: SOCIAL,
+  bedikatChametz: SOCIAL, seder: SOCIAL,
+  // fasting is health-related: never social
+  fastDay: BACKUP_ONLY,
+});
+const LOCAL: Privacy = { cloudBackup: false, social: false };
+
+export function privacyFor(actionKey: string | undefined): Privacy {
+  return (actionKey && PRIVACY[actionKey]) || LOCAL;
+}
 
 export type SyncPolicy = 'local-only' | 'sync-with-consent';
 
 export function syncPolicy(log: Pick<ActivityLog, 'actionKey'>): SyncPolicy {
-  return log.actionKey && SYNCABLE_ACTIONS.has(log.actionKey) ? 'sync-with-consent' : 'local-only';
+  return privacyFor(log.actionKey).cloudBackup ? 'sync-with-consent' : 'local-only';
 }
 
 /**
@@ -113,9 +137,14 @@ export function createEventPayload(log: ActivityLog, installationId: string): st
     recordedAtUtc: new Date(log.recordedAt ?? log.createdAt).toISOString(),
     localDate: log.dateKey,
     backfill: log.backfill,
-    calendarContext: log.context,
+    // Minimal context: the policy, the time zone and Israel/diaspora – no city, no coordinates.
+    calendarContext: log.context ? { policyVersion: log.context.policyVersion, tzid: log.context.tzid, il: log.context.il } : undefined,
     contentId: log.content?.id,
     contentVersion: log.content?.version,
+    // Facts a server needs to recompute the score itself (it never trusts client points).
+    onTime: log.onTime,
+    rulesVersion: log.rules,
+    bundleOf: log.bundleOf,
   });
 }
 
@@ -209,13 +238,33 @@ export function applyTransportFailure(item: OutboxItem, now: number, random?: ()
  * One sync pass: send due items, apply receipts. Items without a receipt in a successful
  * response are treated as a temporary failure (retried), never dropped.
  */
+/** Conditions checked at the moment of sending (round 11 §3): sync on AND active consent. */
+export type SyncGate = { enabled: boolean; consent: { cloudBackup: boolean } };
+
+const payloadAction = (item: OutboxItem): string | undefined => {
+  try {
+    return (JSON.parse(item.payload) as { actionType?: string }).actionType;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * Sends due items. The send point itself is guarded: nothing leaves the device unless sync is
+ * enabled AND the user's consent is active, and a create event of a local-only action is never
+ * sent even if it is in the queue (e.g. written by an older version).
+ */
 export async function syncOnce(
   items: OutboxItem[],
   transport: SyncTransport,
   now: number,
+  gate: SyncGate,
   random?: () => number,
 ): Promise<OutboxItem[]> {
-  const due = dueItems(items, now);
+  if (!gate.enabled || !gate.consent.cloudBackup) return items;
+  const due = dueItems(items, now).filter(
+    (i) => i.operation !== 'create' || privacyFor(payloadAction(i)).cloudBackup,
+  );
   if (due.length === 0) return items;
   const updated = new Map<string, OutboxItem>();
   try {

@@ -9,6 +9,7 @@ import { contentRef, dvarTorahFor } from '../content/registry';
 import { useAppStore } from '../store/AppStore';
 import { actionDef } from '../data/actions';
 import { colors } from '../theme';
+import { NO_HEBREW_VOICE_HELP, shareText as shareTextNative, speak, SpeechSupport, speechSupport, stopSpeaking } from '../native/shareSpeech';
 
 type Props = {
   onBack: () => void;
@@ -43,57 +44,42 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
   const dateLabel = useMemo(todayHebrewLabel, []);
   const streakProgress = Math.min(1, derived.torahStreak / 30);
 
+  // Read-aloud only with a Hebrew voice on the device; otherwise a clear alternative (round 11 §4).
+  const [speech, setSpeech] = useState<SpeechSupport | null>(null);
   useEffect(() => {
+    let alive = true;
+    speechSupport().then((s) => alive && setSpeech(s), () => alive && setSpeech({ available: false, reason: 'unsupported' }));
     return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      alive = false;
+      void stopSpeaking();
     };
   }, []);
-
-  // Offer only what works on this device (Android WebView has neither speechSynthesis nor Web Share).
-  const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  const canShare = typeof navigator !== 'undefined' && (Boolean(navigator.share) || Boolean(navigator.clipboard));
+  const canSpeak = speech !== null && (speech.available || speech.reason === 'no-hebrew-voice');
+  const canShare = true;
+  const flash = (msg: string, ms = 2500) => {
+    setShareFeedback(msg);
+    setTimeout(() => setShareFeedback(null), ms);
+  };
 
   const toggleSpeech = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      setShareFeedback('הקראה קולית אינה נתמכת בדפדפן זה');
-      setTimeout(() => setShareFeedback(null), 2500);
+    if (!speech?.available) {
+      flash(NO_HEBREW_VOICE_HELP, 6000);
       return;
     }
-
     if (isSpeaking) {
-      window.speechSynthesis.cancel();
+      void stopSpeaking();
       setIsSpeaking(false);
       return;
     }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'he-IL';
-    utterance.rate = 0.88;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
     setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    void speak(text, () => setIsSpeaking(false));
   };
 
   const shareText = async () => {
-    const message = `מחשבה יומית ממצוות+\n\n${text}${item?.source ? `\n\n${item.source.title}${item.source.ref ? ` ${item.source.ref}` : ''}` : ''}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: 'דבר תורה יומי - מצוות+', text: message });
-        return;
-      }
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(message);
-        setShareFeedback('הטקסט הועתק ללוח לשיתוף');
-        setTimeout(() => setShareFeedback(null), 2500);
-      }
-    } catch {
-      // User dismissed share sheet
-    }
+    const message = `${item?.title ?? 'דבר תורה'} – מצוות+\n\n${text}${item?.source ? `\n\n${item.source.title}${item.source.ref ? ` ${item.source.ref}` : ''}` : ''}`;
+    const r = await shareTextNative('דבר תורה – מצוות+', message);
+    if (r === 'copied') flash('הטקסט הועתק ללוח לשיתוף');
+    else if (r === 'unavailable') flash('שיתוף אינו זמין במכשיר זה');
   };
 
   // No approved content (production without D08 content): say so plainly, no actions.

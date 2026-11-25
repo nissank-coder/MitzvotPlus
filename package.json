@@ -17,18 +17,21 @@
     "check:release": "node scripts/ci/check-release.mjs",
     "check:secrets": "node scripts/ci/check-secrets.mjs",
     "check:licenses": "node scripts/ci/check-licenses.mjs",
-    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses",
+    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions",
     "e2e": "npm run build && node scripts/e2e/scenarios.mjs",
-    "check:distribution": "node scripts/ci/check-distribution.mjs"
+    "check:distribution": "node scripts/ci/check-distribution.mjs",
+    "check:versions": "node scripts/ci/check-versions.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.1",
     "@capacitor-community/sqlite": "8.1.1",
+    "@capacitor-community/text-to-speech": "8.0.2",
     "@capacitor/android": "8.6.2",
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.6.2",
     "@capacitor/ios": "8.6.2",
     "@capacitor/keyboard": "8.0.6",
+    "@capacitor/share": "8.0.3",
     "@capacitor/splash-screen": "8.0.2",
     "@capacitor/status-bar": "8.0.4",
     "@fontsource/frank-ruhl-libre": "5.3.0",

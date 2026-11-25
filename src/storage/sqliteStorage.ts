@@ -1,5 +1,6 @@
 import { ActivityLog } from '../types';
 import { runMigrations, SqlExecutor } from './migrations';
+import { DB_ENCRYPTION } from '../config/features';
 import { newCreateItem, OutboxItem, syncPolicy, undoPlan, voidEventPayload } from '../sync/outbox';
 import { LEGACY_STORAGE_KEY, StateStorage } from './persistence';
 
@@ -194,15 +195,67 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
 export async function openNativeSqlite(): Promise<StateStorage> {
   const { CapacitorSQLite, SQLiteConnection } = await import('@capacitor-community/sqlite');
   const sqlite = new SQLiteConnection(CapacitorSQLite);
-  const name = 'mitzvotplus';
   await sqlite.checkConnectionsConsistency().catch(() => undefined);
-  const exists = (await sqlite.isConnection(name, false)).result;
-  const conn = exists
-    ? await sqlite.retrieveConnection(name, false)
-    : await sqlite.createConnection(name, false, 'no-encryption', 1, false);
-  await conn.open();
 
-  const executor: SqlExecutor = {
+  /** Opens (or reuses) a connection: plain, or SQLCipher with the key registered by registerKey. */
+  const connect = async (name: string, encrypted: boolean) => {
+    const exists = (await sqlite.isConnection(name, false)).result;
+    const conn = exists
+      ? await sqlite.retrieveConnection(name, false)
+      : await sqlite.createConnection(name, encrypted, encrypted ? 'secret' : 'no-encryption', 1, false);
+    await conn.open();
+    return conn;
+  };
+
+  let conn: Awaited<ReturnType<typeof connect>>;
+  if (DB_ENCRYPTION) {
+    const { openEncryptedDatabase } = await import('./encryptedDb');
+    const { openSecureStore } = await import('../native/secureStore');
+    const conns = new Map<string, Awaited<ReturnType<typeof connect>>>();
+    const result = await openEncryptedDatabase(
+      {
+        exists: async (n) => (await sqlite.isDatabase(n)).result ?? false,
+        open: async (n, key) => {
+          const c = await connect(n, key !== null);
+          conns.set(n, c);
+          return { ...executorFor(c), close: async () => { await sqlite.closeConnection(n, false); conns.delete(n); } };
+        },
+        remove: async (n) => {
+          if (conns.has(n)) await sqlite.closeConnection(n, false).catch(() => undefined);
+          await CapacitorSQLite.deleteDatabase({ database: n });
+        },
+        registerKey: async (key) => {
+          // The plugin keeps its own copy of the passphrase (Keychain / EncryptedSharedPreferences).
+          if (!(await sqlite.isSecretStored()).result) await sqlite.setEncryptionSecret(key);
+          else if (!(await sqlite.checkEncryptionSecret(key)).result) throw new Error('stored database secret does not match the key');
+        },
+      },
+      await openSecureStore(),
+    );
+    if (!result.db) throw new Error(`encrypted database unavailable: ${result.status === 'recovery' ? result.reason : result.status}`);
+    if (result.status !== 'fresh' && result.status !== 'migrated' && result.status !== 'encrypted') {
+      console.warn('Encrypted database:', result.status, 'reason' in result ? result.reason : '');
+    }
+    const active = [...conns.values()].at(-1);
+    if (!active) throw new Error('no database connection');
+    conn = active;
+  } else {
+    conn = await connect('mitzvotplus', false);
+  }
+
+  const executor: SqlExecutor = executorFor(conn);
+  const legacy = () => {
+    try {
+      return window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  };
+  return createSqlStorage(executor, legacy);
+}
+
+function executorFor(conn: { execute: (sql: string, tx?: boolean) => Promise<unknown>; query: (sql: string, values?: unknown[]) => Promise<{ values?: unknown[] }>; executeSet: (set: Array<{ statement: string; values: unknown[] }>, tx?: boolean) => Promise<unknown> }): SqlExecutor {
+  return {
     execute: async (sql) => {
       await conn.execute(sql, false);
     },
@@ -215,13 +268,4 @@ export async function openNativeSqlite(): Promise<StateStorage> {
       );
     },
   };
-
-  const legacy = () => {
-    try {
-      return window.localStorage.getItem(LEGACY_STORAGE_KEY);
-    } catch {
-      return null;
-    }
-  };
-  return createSqlStorage(executor, legacy);
 }
