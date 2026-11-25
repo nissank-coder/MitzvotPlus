@@ -1,0 +1,18 @@
+
+Distribution gate: BLOCKED (16)
+  - D01 developer account / operator: PENDING_OWNER
+  - D02 audience age: PENDING_OWNER
+  - D03 countries and languages: PENDING_OWNER
+  - D07 Hebcal licensing (GPL/LGPL): PENDING_OWNER
+  - D08 content reviewer and sources: PARTIALLY_APPROVED
+  - D11 encryption, retention, backups: PENDING_OWNER
+  - D13 app name and bundle ids: PENDING_OWNER
+  - D14 minimum OS and devices: PENDING_OWNER
+  - G1 real-device evidence: not PASS
+  - license @hebcal/core@5.10.1: GPL-2.0
+  - license @hebcal/hdate@0.14.5: GPL-2.0
+  - license @hebcal/noaa@0.9.2: LGPL-2.1
+  - iOS app privacy manifest (PrivacyInfo.xcprivacy) missing
+  - app id com.mitzvotplus.app is a development placeholder (D13)
+  - version source not unified: package.json 0.1.0, Android 1.0, iOS 1.0
+  - iPad is targeted (TARGETED_DEVICE_FAMILY 1,2) – needs iPad evidence or an iPhone-only decision
