@@ -88,3 +88,10 @@ describe('bundled dvar torah pack', () => {
     expect(manifest.find((r) => r.content_id === 'dvar-torah/test-placeholder-1')?.approval_status).toBe('TEST_ONLY');
   });
 });
+
+describe('bundled schedule (round 11)', async () => {
+  const { SCHEDULE, scheduleProblems, CONTENT } = await import('../content/registry');
+  it('every scheduled date points at an approved bundled item', () => {
+    expect(scheduleProblems({ ...SCHEDULE }, CONTENT)).toEqual([]);
+  });
+});

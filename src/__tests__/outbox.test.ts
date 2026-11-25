@@ -10,11 +10,12 @@ import { createFreshState, reducer } from '../store/state';
 import { AppState } from '../types';
 
 const NOW = Date.UTC(2026, 10, 24, 10);
+const ON = { enabled: true, consent: { cloudBackup: true } };
 const rcpt = (eventId: string, outcome: EventReceipt['outcome'], extra: Partial<EventReceipt> = {}): EventReceipt => ({
   eventId, outcome, serverReceivedAtUtc: new Date(NOW).toISOString(), ...extra,
 });
 const item = (id: string, extra: Partial<OutboxItem> = {}): OutboxItem => ({
-  eventId: id, operation: 'create', payload: '{}', status: 'pending', attempts: 0, nextAttemptAt: NOW, updatedAt: NOW, ...extra,
+  eventId: id, operation: 'create', payload: '{"actionType":"shacharit"}', status: 'pending', attempts: 0, nextAttemptAt: NOW, updatedAt: NOW, ...extra,
 });
 
 function sqlite(db = new DatabaseSync(':memory:'), failOn?: RegExp): SqlExecutor & { db: DatabaseSync } {
@@ -102,10 +103,10 @@ describe('ordering and voids', () => {
   it('syncOnce: missing receipts and thrown errors are retried, not dropped', async () => {
     const items = [item('a'), item('b')];
     const partial: SyncTransport = { submit: async () => [rcpt('a', 'accepted')] };
-    const after = await syncOnce(items, partial, NOW, () => 0.5);
+    const after = await syncOnce(items, partial, NOW, ON, () => 0.5);
     expect(after.map((i) => i.status)).toEqual(['accepted', 'pending']);
     const failing: SyncTransport = { submit: async () => { throw new Error('offline'); } };
-    const after2 = await syncOnce(after, failing, NOW + BACKOFF_MAX_MS, () => 0.5);
+    const after2 = await syncOnce(after, failing, NOW + BACKOFF_MAX_MS, ON, () => 0.5);
     expect(after2.map((i) => i.status)).toEqual(['accepted', 'pending']);
     expect(after2[1]!.attempts).toBe(2);
   });
@@ -197,7 +198,7 @@ describe('S10-02 privacy: the queue is default-deny', () => {
   const addKey = (s: AppState, key: AddKey, now: number) => reducer(s, { type: 'addAction', payload: { key, now } });
   type AddKey = Parameters<typeof reducer>[1] extends infer A ? (A extends { type: 'addAction'; payload: { key: infer K } } ? K : never) : never;
 
-  it.each(['speechPractice', 'cleanSpeech', 'charity', 'visitSick'] as const)('%s never enters the outbox (new entry)', async (key) => {
+  it.each(['speechPractice', 'cleanSpeech', 'charity', 'visitSick', 'matanotLaevyonim', 'personalHabit'] as const)('%s never enters the outbox (new entry)', async (key) => {
     const exec = sqlite();
     const storage = createSqlStorage(exec);
     await storage.save(addKey(createFreshState(NOW), key, NOW));

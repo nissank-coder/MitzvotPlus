@@ -1,0 +1,27 @@
+Distribution gate (release, cdf6b89): BLOCKED (26)
+  - D01 (Operator and developer-account type): PENDING_OWNER
+  - D02 (Launch audience age 13+ or 18+): PENDING_OWNER
+  - D03 (Countries and languages): PENDING_OWNER
+  - D04 (Identity / guest / sync): PENDING_OWNER
+  - D06 (Day/week/month boundaries and zmanim customs): PENDING_OWNER
+  - D07 (Calendar engine licensing): PENDING_OWNER
+  - D08 (Content source and reviewer): PARTIALLY_APPROVED
+  - D09 (Social scope): PENDING_OWNER
+  - D10 (Speech-timer privacy): PENDING_OWNER
+  - D11 (Retention/deletion/backups/telemetry): PENDING_OWNER
+  - D12 (Notifications and Sabbath promise): PENDING_OWNER
+  - D13 (Name/identity/app IDs): PENDING_OWNER
+  - D14 (Minimum OS/devices): PENDING_OWNER
+  - G1: not PASS
+  - G2: not PASS
+  - G3: not PASS
+  - G4: not PASS
+  - G5: not PASS
+  - G6: not PASS
+  - no PASS device evidence on a real android for commit cdf6b89
+  - no PASS device evidence on a real iphone for commit cdf6b89
+  - licence @hebcal/core@5.10.1: GPL-2.0 (D07)
+  - licence @hebcal/hdate@0.14.5: GPL-2.0 (D07)
+  - licence @hebcal/noaa@0.9.2: LGPL-2.1 (D07)
+  - app id com.mitzvotplus.app is a development placeholder (D13)
+  - iPad is targeted (1,2) without an approved iPad decision (D14)

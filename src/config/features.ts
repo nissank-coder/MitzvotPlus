@@ -24,3 +24,10 @@ export const SYNC_ENABLED = false;
 
 /** Reminders / notifications (D12). Off: there is no delivery mechanism, so no toggle is shown. */
 export const NOTIFICATIONS_ENABLED = false;
+
+/**
+ * Encrypted database (round 11 §2): off until the owner decides D11. Turning it on also needs
+ * `iosIsEncryption: true` / `androidIsEncryption: true` in capacitor.config.ts and device evidence.
+ * See src/storage/encryptedDb.ts for the safe migration.
+ */
+export const DB_ENCRYPTION: boolean = import.meta.env.VITE_DB_ENCRYPTION === 'true';

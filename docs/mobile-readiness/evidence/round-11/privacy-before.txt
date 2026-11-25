@@ -1,0 +1,9 @@
+     × matanot la-evyonim gets the same policy as charity (local only) 9ms
+     × a personal habit (free text the user chose) stays local 1ms
+     × cloud backup and social sharing are separate decisions 2ms
+     × a new event carries no city and no candle-lighting minutes (time zone and Israel/diaspora only) 3ms
+     × facts needed to rebuild the score travel with the event (on time, rules version, bundle source) 4ms
+     × nothing is sent while sync is disabled or without active consent 2ms
+     × a local-only event that somehow sits in the queue is never sent 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  7 failed (7)
