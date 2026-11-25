@@ -1,0 +1,6 @@
+date: 2026-11-25T20:00:06Z
+$ ls -l /dev/kvm
+ls: cannot access '/dev/kvm': No such file or directory
+$ grep -c -E 'vmx|svm' /proc/cpuinfo
+0
+result: BLOCKED – no hardware virtualisation; an Android emulator with 16 KB pages cannot run here. Static 16 KB alignment is checked in CI (android-debug).
