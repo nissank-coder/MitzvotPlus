@@ -5,6 +5,10 @@ interface ImportMetaEnv {
   readonly VITE_DEMO_CONTENT?: string;
   /** "true" turns on the encrypted database (D11; off by default). */
   readonly VITE_DB_ENCRYPTION?: string;
+  /** Backend (round 12) – development / staging only; never in a production build. */
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_ANON_KEY?: string;
+  readonly VITE_BACKEND_ENV?: string;
 }
 
 /** Injected by vite.config.ts (scripts/build-info.mjs). */

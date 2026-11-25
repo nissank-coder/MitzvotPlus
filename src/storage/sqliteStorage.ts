@@ -137,7 +137,7 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
         keep.add(log.id);
         const payload = JSON.stringify(log);
         if (saved.get(log.id) === payload) continue;
-        if (!saved.has(log.id) && !outboxState.has(log.id) && syncPolicy(log) !== 'local-only') {
+        if (!saved.has(log.id) && !outboxState.has(log.id) && syncPolicy(log) !== 'local-only' && !log.remote) {
           // New action: its outbox record is written in the same transaction (spec §7 step 1).
           const item = newCreateItem(log, installation, now);
           statements.push({ sql: OUTBOX_INSERT, values: outboxValues(item) });
@@ -149,10 +149,19 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
         });
       }
       const removed = [...saved.keys()].filter((id) => !keep.has(id));
+      // Entries removed because another device deleted them: the deletion is already on the server.
+      const remoteRemoved = new Set((state.sync as { remoteRemoved?: string[] } | undefined)?.remoteRemoved ?? []);
       for (const id of removed) {
         statements.push({ sql: 'DELETE FROM activities WHERE id = ?;', values: [id] });
+        if (remoteRemoved.has(id)) {
+          statements.push({ sql: "DELETE FROM outbox WHERE event_id = ? AND operation = 'create';", values: [id] });
+          outboxState.delete(id);
+          continue;
+        }
         const current = outboxState.get(id);
-        const plan = undoPlan(current ? ({ ...current } as OutboxItem) : undefined);
+        // An entry that came from another device exists on the server: deleting it here sends a void.
+        const fromRemote = !current && Boolean((JSON.parse(saved.get(id) ?? '{}') as { remote?: boolean }).remote);
+        const plan = fromRemote ? 'enqueue-void' : undoPlan(current ? ({ ...current } as OutboxItem) : undefined);
         if (plan === 'drop-local') {
           statements.push({ sql: 'DELETE FROM outbox WHERE event_id = ?;', values: [id] });
           outboxDropped.push(id);
@@ -182,8 +191,9 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
       await init();
       await db.transaction(
         items.map((i) => ({
-          sql: 'UPDATE outbox SET status = ?, attempts = ?, next_attempt_at = ?, reason_code = ?, accepted_score_delta = ?, updated_at = ? WHERE event_id = ?;',
-          values: [i.status, i.attempts, i.nextAttemptAt, i.reasonCode ?? null, i.acceptedScoreDelta ?? null, i.updatedAt, i.eventId],
+          // The payload changes only for an item that never left the device (re-encoded as schema v2).
+          sql: 'UPDATE outbox SET status = ?, attempts = ?, next_attempt_at = ?, reason_code = ?, accepted_score_delta = ?, updated_at = ?, payload = CASE WHEN attempts = 0 THEN ? ELSE payload END WHERE event_id = ?;',
+          values: [i.status, i.attempts, i.nextAttemptAt, i.reasonCode ?? null, i.acceptedScoreDelta ?? null, i.updatedAt, i.payload, i.eventId],
         })),
       );
       for (const i of items) outboxState.set(i.eventId, { status: i.status, attempts: i.attempts });

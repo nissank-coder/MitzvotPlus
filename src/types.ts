@@ -104,6 +104,8 @@ export type ActivityLog = {
   rules?: 'score-2' | 'score-3';
   /** Blessings recorded as part of a confirmed bundle for another entry (e.g. a prayer). */
   bundleOf?: string;
+  /** Came from another device of the same account (round 12): never queued for upload again. */
+  remote?: true;
 };
 
 /** A habit the user chose, with how many days a week it is meant for (7 = every day). */
@@ -167,6 +169,8 @@ export type AppState = {
   savedContent: string[];
   /** Goal history; the last entry is the current goal. */
   goalHistory: GoalSnapshot[];
+  /** Sync bookkeeping (round 12): pull cursor and entries removed by another device. */
+  sync?: { cursor: number; remoteRemoved: string[]; lastSyncAt: number | null };
   /** Personal challenges joined (round 9, C1). */
   challenges: ChallengeEnrollment[];
   /** Achievements earned (round 9, C1). */

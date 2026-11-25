@@ -1,0 +1,153 @@
+
+> mitzvot-plus@0.1.0 verify
+> npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions
+
+
+> mitzvot-plus@0.1.0 typecheck
+> tsc --noEmit
+
+
+> mitzvot-plus@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.1 /home/user/MitzvotPlus
+
+(node:398) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:434) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:456) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:470) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  20 passed (20)
+      Tests  226 passed (226)
+   Start at  16:34:48
+   Duration  2.04s (transform 40%, tests 31%, import 26%, worker 3%)
+
+    Isolate  20 workers spawned · ~112ms startup each (spawn + environment, per file)
+             at least ~633ms faster with isolate: false — reuses workers across files instead of one per file
+
+
+> mitzvot-plus@0.1.0 build
+> vite build
+
+vite v6.4.6 building for production...
+transforming...
+✓ 194 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                     1.34 kB │ gzip:   0.64 kB
+dist/assets/heebo-hebrew-400-normal-CVTJgQVK.woff2                  5.08 kB
+dist/assets/heebo-hebrew-900-normal-C2xjWvXw.woff2                  5.11 kB
+dist/assets/heebo-hebrew-700-normal-BmueYKsA.woff2                  5.12 kB
+dist/assets/heebo-hebrew-500-normal-TEhwuRN-.woff2                  5.16 kB
+dist/assets/heebo-hebrew-800-normal-CDdwy3LD.woff2                  5.17 kB
+dist/assets/heebo-symbols-400-normal-DYSXrd5A.woff2                 5.54 kB
+dist/assets/heebo-symbols-700-normal-DjMVWKhZ.woff2                 5.67 kB
+dist/assets/heebo-symbols-800-normal-FYIx6Vl3.woff2                 5.68 kB
+dist/assets/heebo-symbols-500-normal-DH-fW6iB.woff2                 5.70 kB
+dist/assets/heebo-symbols-900-normal-DNqom9KD.woff2                 5.70 kB
+dist/assets/heebo-latin-ext-400-normal-DRmJUxQB.woff2               6.35 kB
+dist/assets/heebo-latin-ext-900-normal-CpiYpblJ.woff2               6.52 kB
+dist/assets/heebo-latin-ext-500-normal-i0ou_jpq.woff2               6.52 kB
+dist/assets/heebo-hebrew-400-normal-DoqplqF9.woff                   6.54 kB
+dist/assets/heebo-latin-ext-800-normal-BXXnkLdf.woff2               6.56 kB
+dist/assets/heebo-latin-ext-700-normal-qhovM35d.woff2               6.56 kB
+dist/assets/heebo-hebrew-900-normal-DHmuj4t7.woff                   6.59 kB
+dist/assets/heebo-hebrew-700-normal-C-m02vPD.woff                   6.61 kB
+dist/assets/heebo-hebrew-800-normal-DvzqWKY1.woff                   6.61 kB
+dist/assets/heebo-hebrew-500-normal-B1vvQVzc.woff                   6.61 kB
+dist/assets/frank-ruhl-libre-hebrew-400-normal-D1SqjNdY.woff2       6.68 kB
+dist/assets/frank-ruhl-libre-hebrew-700-normal-ZxcPrX5v.woff2       6.86 kB
+dist/assets/heebo-symbols-400-normal-5E_VKyNT.woff                  7.12 kB
+dist/assets/heebo-symbols-800-normal-BkpivR9G.woff                  7.14 kB
+dist/assets/heebo-symbols-700-normal-Bez4Ifx8.woff                  7.15 kB
+dist/assets/heebo-symbols-900-normal-CZ1YqEgO.woff                  7.17 kB
+dist/assets/heebo-symbols-500-normal-BHV7NI0G.woff                  7.19 kB
+dist/assets/frank-ruhl-libre-latin-ext-400-normal-B_dXehWi.woff2    8.12 kB
+dist/assets/frank-ruhl-libre-latin-ext-700-normal-VfVLWWBc.woff2    8.26 kB
+dist/assets/frank-ruhl-libre-hebrew-400-normal-BXUQzM2e.woff        8.30 kB
+dist/assets/frank-ruhl-libre-hebrew-700-normal-B5o0XYJ1.woff        8.40 kB
+dist/assets/heebo-latin-ext-400-normal-DXPdCX6a.woff                8.56 kB
+dist/assets/heebo-latin-ext-900-normal-Dkn3VhLb.woff                8.65 kB
+dist/assets/heebo-latin-ext-500-normal-BxM-et3U.woff                8.66 kB
+dist/assets/heebo-latin-ext-700-normal-uPTFHbI6.woff                8.66 kB
+dist/assets/heebo-latin-ext-800-normal-CaKn05T8.woff                8.66 kB
+dist/assets/heebo-math-400-normal-B7IFZoQI.woff2                    9.50 kB
+dist/assets/heebo-math-800-normal-BsL7yxmb.woff2                    9.63 kB
+dist/assets/heebo-math-700-normal-CPsTiLVd.woff2                    9.67 kB
+dist/assets/heebo-math-500-normal-DRhwLwt2.woff2                    9.68 kB
+dist/assets/heebo-math-900-normal-COMcU8Ve.woff2                    9.70 kB
+dist/assets/frank-ruhl-libre-latin-ext-400-normal-BZfVaX-v.woff    10.60 kB
+dist/assets/frank-ruhl-libre-latin-ext-700-normal-C48ktjdO.woff    10.73 kB
+dist/assets/heebo-latin-400-normal-BGyEuwIV.woff2                  11.96 kB
+dist/assets/heebo-math-400-normal-BZIH-XlF.woff                    12.10 kB
+dist/assets/heebo-latin-800-normal-CXX3wFtI.woff2                  12.13 kB
+dist/assets/heebo-math-800-normal-CkZgLaga.woff                    12.14 kB
+dist/assets/heebo-math-700-normal-DYoC40KU.woff                    12.16 kB
+dist/assets/heebo-math-900-normal-BEGCYuDs.woff                    12.17 kB
+dist/assets/heebo-math-500-normal-CriDK-QD.woff                    12.19 kB
+dist/assets/heebo-latin-700-normal-PoyjiH5f.woff2                  12.22 kB
+dist/assets/heebo-latin-900-normal-C5-5scyM.woff2                  12.22 kB
+dist/assets/heebo-latin-500-normal-CRntKADR.woff2                  12.31 kB
+dist/assets/frank-ruhl-libre-latin-400-normal-hBB2j9Kl.woff2       15.31 kB
+dist/assets/frank-ruhl-libre-latin-700-normal-BtbVhCvj.woff2       15.49 kB
+dist/assets/heebo-latin-400-normal-BVgBBEsj.woff                   15.64 kB
+dist/assets/heebo-latin-900-normal-Df7b1kWg.woff                   15.70 kB
+dist/assets/heebo-latin-800-normal-jzg0ZXtx.woff                   15.71 kB
+dist/assets/heebo-latin-700-normal-DxB9_ClD.woff                   15.74 kB
+dist/assets/heebo-latin-500-normal-D9arPEGc.woff                   15.80 kB
+dist/assets/frank-ruhl-libre-latin-400-normal-CF3uE58i.woff        19.26 kB
+dist/assets/frank-ruhl-libre-latin-700-normal-Mv4_ahRh.woff        19.48 kB
+dist/assets/index-DKyxXe81.css                                     55.32 kB │ gzip:   9.87 kB
+dist/assets/web-KrS02ar7.js                                         0.18 kB │ gzip:   0.16 kB
+dist/assets/esm-CBWwbDnV.js                                         0.38 kB │ gzip:   0.27 kB
+dist/assets/web-CfcSA1Nn.js                                         0.42 kB │ gzip:   0.28 kB
+dist/assets/esm-CAON89YR.js                                         0.45 kB │ gzip:   0.28 kB
+dist/assets/esm-ChmFlqNs.js                                         0.46 kB │ gzip:   0.28 kB
+dist/assets/esm-LjfbIX4I.js                                         0.48 kB │ gzip:   0.29 kB
+dist/assets/esm-w4Qbp1Hq.js                                         0.57 kB │ gzip:   0.35 kB
+dist/assets/web-0XOOW4hc.js                                         0.90 kB │ gzip:   0.44 kB
+dist/assets/TextReader-D5pUZS_e.js                                  1.52 kB │ gzip:   0.78 kB
+dist/assets/web-D2ozXdCZ.js                                         1.74 kB │ gzip:   0.73 kB
+dist/assets/siddur-sefard-index-Cioqn9kX.js                         2.61 kB │ gzip:   1.02 kB
+dist/assets/TehillimScreen-BdJV1VAZ.js                              3.60 kB │ gzip:   1.69 kB
+dist/assets/SiddurScreen-COVN9bL4.js                                3.96 kB │ gzip:   1.97 kB
+dist/assets/sqliteStorage-BtV-Ops7.js                               9.50 kB │ gzip:   3.53 kB
+dist/assets/web-BbVhk2tN.js                                         9.68 kB │ gzip:   1.37 kB
+dist/assets/esm-Dbory5p1.js                                        14.11 kB │ gzip:   2.79 kB
+dist/assets/LearningScreen-keVLdEDE.js                             81.38 kB │ gzip:  28.83 kB
+dist/assets/calendar-DV6byOmE.js                                  150.43 kB │ gzip:  52.14 kB
+dist/assets/react-DJiRVR1m.js                                     223.22 kB │ gzip:  69.24 kB
+dist/assets/index-C2xA7QXz.js                                     235.86 kB │ gzip:  70.26 kB
+dist/assets/tehillim-DMlpCYkl.js                                  325.39 kB │ gzip:  78.10 kB
+dist/assets/siddur-sefard-weekday-Bubhu-1v.js                     484.21 kB │ gzip: 106.66 kB
+dist/assets/siddur-sefard-holiday-iS_BEq4h.js                     496.96 kB │ gzip:  92.67 kB
+dist/assets/siddur-sefard-shabbat-B5Y4b7l-.js                     677.65 kB │ gzip: 151.48 kB
+✓ built in 2.46s
+
+> mitzvot-plus@0.1.0 check:release
+> node scripts/ci/check-release.mjs
+
+Release check passed (88 files scanned).
+
+> mitzvot-plus@0.1.0 check:secrets
+> node scripts/ci/check-secrets.mjs
+
+Secret scan passed (345 tracked files).
+
+> mitzvot-plus@0.1.0 check:licenses
+> node scripts/ci/check-licenses.mjs
+
+WARNING @hebcal/core@5.10.1: GPL-2.0 (open decision D07 – blocks store distribution)
+WARNING @hebcal/hdate@0.14.5: GPL-2.0 (open decision D07 – blocks store distribution)
+WARNING @hebcal/noaa@0.9.2: LGPL-2.1 (open decision D07 – blocks store distribution)
+License check passed for 51 production packages (3 known exceptions).
+
+> mitzvot-plus@0.1.0 check:versions
+> node scripts/ci/check-versions.mjs
+
+Version check passed: 0.1.0 (Android and iOS)

@@ -43,7 +43,7 @@ function fakePlatform(opts: { failInsertAfter?: number; corruptCopy?: boolean } 
   const adapter: DbAdapter = {
     exists: async (n) => files.has(n),
     open: async (n, key) => {
-      if (files.has(n) && keys.get(n) !== key) throw new Error(`wrong key for ${n}`);
+      if (files.has(n) && (keys.get(n) ?? null) !== key) throw new Error(`wrong key for ${n}`);
       if (!files.has(n)) {
         files.set(n, new DatabaseSync(':memory:'));
         keys.set(n, key);
@@ -138,5 +138,28 @@ describe('encrypted database – safe migration', () => {
     const r = await openEncryptedDatabase(adapter, secure);
     expect(r.status).toBe('recovery');
     expect(await count(r.db!, 'activities')).toBe(2);
+  });
+});
+
+describe('encrypted database – hardening (round 12)', () => {
+  it('temporary data stays in memory and deleted content is overwritten', async () => {
+    const { adapter } = fakePlatform();
+    const r = await openEncryptedDatabase(adapter, memorySecureStore());
+    const temp = await r.db!.query<{ temp_store: number }>('PRAGMA temp_store;');
+    const sd = await r.db!.query<{ secure_delete: number }>('PRAGMA secure_delete;');
+    expect(temp[0]?.temp_store).toBe(2); // MEMORY
+    expect(sd[0]?.secure_delete).toBe(1);
+  });
+  it('an interrupted migration (crash before the switch) is retried from scratch; the plain DB stays intact', async () => {
+    const { adapter, files } = fakePlatform({ failInsertAfter: 1 });
+    const secure = memorySecureStore();
+    await seedPlain(adapter, 3);
+    expect((await openEncryptedDatabase(adapter, secure)).status).toBe('migration-failed');
+    // next launch (no failure this time): a clean migration
+    const ok = fakePlatform();
+    for (const [n, d] of files) ok.files.set(n, d);
+    const r = await openEncryptedDatabase(ok.adapter, secure);
+    expect(r.status).toBe('migrated');
+    expect(await count(r.db!, 'activities')).toBe(3);
   });
 });

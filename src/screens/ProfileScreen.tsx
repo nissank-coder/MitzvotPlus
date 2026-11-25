@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
@@ -9,6 +9,11 @@ import { hebrewYear } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { BUILD_INFO } from '../config/buildInfo';
 import { HabitEditorSheet } from '../components/gameplay';
+import { BACKEND_ENABLED } from '../backend/config';
+import { exportLocalJson, saveExport } from '../lib/exportData';
+
+// Development / staging only: production bundles contain no account or sync code.
+const AccountSection = BACKEND_ENABLED ? lazy(() => import('../components/AccountSection')) : null;
 import { colors } from '../theme';
 import { IconName } from '../types';
 
@@ -129,6 +134,30 @@ export function ProfileScreen() {
             <AppIcon name="reset" size={20} color={colors.danger} />
           </div>
         </button>
+      </Card>
+
+      {AccountSection ? (
+        <>
+          <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">
+            חשבון וסנכרון
+          </p>
+          <Card className="p-4 mb-5">
+            <Suspense fallback={null}>
+              <AccountSection />
+            </Suspense>
+          </Card>
+        </>
+      ) : null}
+
+      <Card className="px-4 mb-5">
+        <SettingRow
+          icon="share"
+          title="ייצוא הנתונים שלי"
+          subtitle="קובץ עם כל מה שנשמר במכשיר (כולל מידע פרטי)"
+          onPress={() => void saveExport(exportLocalJson(state))}
+        >
+          <AppIcon name="chevronLeft" size={19} color={colors.textMuted} />
+        </SettingRow>
       </Card>
 
       <p dir="rtl" className="text-[#718397] text-[13px] font-extrabold text-right mb-2 mr-1">

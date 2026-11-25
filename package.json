@@ -17,10 +17,12 @@
     "check:release": "node scripts/ci/check-release.mjs",
     "check:secrets": "node scripts/ci/check-secrets.mjs",
     "check:licenses": "node scripts/ci/check-licenses.mjs",
-    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions",
+    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions && npm run check:seed",
     "e2e": "npm run build && node scripts/e2e/scenarios.mjs",
     "check:distribution": "node scripts/ci/check-distribution.mjs",
-    "check:versions": "node scripts/ci/check-versions.mjs"
+    "check:versions": "node scripts/ci/check-versions.mjs",
+    "test:db": "node scripts/db/test-db.mjs",
+    "check:seed": "node scripts/db/gen-seed.mjs --check"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.1",
@@ -38,6 +40,7 @@
     "@fontsource/heebo": "5.3.0",
     "@hebcal/core": "^5.10.1",
     "@hebcal/learning": "^5.1.2",
+    "@supabase/supabase-js": "2.119.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -47,6 +50,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
+    "pg": "8.16.3",
     "playwright": "1.63.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.8.2",
