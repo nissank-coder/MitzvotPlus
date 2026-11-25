@@ -1,0 +1,12 @@
+commit 754f610 (main after PR #9 + #10)
+ Test Files  22 passed (22)
+      Tests  241 passed (241)
+✓ built in 2.86s
+Release check passed (88 files scanned).
+Secret scan passed (372 tracked files).
+WARNING @hebcal/core@5.10.1: GPL-2.0 (open decision D07 – blocks store distribution)
+WARNING @hebcal/hdate@0.14.5: GPL-2.0 (open decision D07 – blocks store distribution)
+WARNING @hebcal/noaa@0.9.2: LGPL-2.1 (open decision D07 – blocks store distribution)
+License check passed for 64 production packages (3 known exceptions).
+Version check passed: 0.1.0 (Android and iOS)
+Seed check passed: server rules and privacy match the app
