@@ -162,8 +162,15 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon
       - name: 16 KB page-size check
         run: scripts/ci/check-16kb.sh android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Build identity of this APK (write its buildId into test_evidence.csv after a device test)
+        run: |
+          node scripts/build-info.mjs --identity debug --artifact android/app/build/outputs/apk/debug/app-debug.apk | tee android/app/build/outputs/apk/debug/build-identity.json
+          echo "### APK build identity" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"; cat android/app/build/outputs/apk/debug/build-identity.json >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/debug/build-identity.json
           retention-days: 14
