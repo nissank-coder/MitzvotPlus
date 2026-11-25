@@ -98,7 +98,7 @@
 | הוכחה שבדיקות המסד תופסות פרצה: פתחתי בכוונה הרשאה לפרופילים וכתיבת ניקוד | 5 בדיקות נכשלו כצפוי | [db-fault-injection.txt](../evidence/round-12/db-fault-injection.txt) |
 | בדיקות קצה על בניית הייצור | 34/34 | [e2e-production.txt](../evidence/round-12/e2e-production.txt) |
 | שער ההפצה | debug: עובר; beta ו-release: חסומים כצפוי | `evidence/round-12/distribution-gate-*.txt` |
-| CI | ראה סעיף 5 | — |
+| CI: בדיקות, מסד נתונים, בדיקות קצה, Android | כל העבודות עברו | [ריצה 45658552768](https://github.com/nissank-coder/MitzvotPlus/actions/runs/45658552768) |
 
 **מה כיסו הבדיקות, לפי הדרישות:**
 
@@ -134,8 +134,8 @@
 
 | בנייה | מצב |
 |---|---|
-| Android debug APK ובדיקת 16 KB סטטית | CI_ANDROID |
-| iOS לסימולטור (ללא חתימה) | CI_IOS |
+| Android debug APK ובדיקת 16 KB סטטית | **עבר** ב-CI מקומיט a832ff6. ‏[APK להורדה](https://github.com/nissank-coder/MitzvotPlus/actions/runs/45658552768/artifacts/15042579703) (זמין עד 9.12.2026) |
+| iOS לסימולטור (ללא חתימה) | בתור ב-CI: מחשב Mac של GitHub עוד לא הוקצה בזמן כתיבת הדוח. בסבב 11 עבר |
 | 16 KB בזמן ריצה | **חסום:** אין `/dev/kvm` ואין וירטואליזציה ([16kb-runtime-check.txt](../evidence/round-12/16kb-runtime-check.txt)) |
 
 ## 6. חסום בסביבה הזו
