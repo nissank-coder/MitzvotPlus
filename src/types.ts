@@ -100,13 +100,47 @@ export type ActivityLog = {
   /** Recorded within the proper time (stored so the score can be recomputed). */
   onTime?: boolean;
   /** Scoring rules the entry is scored with. Absent = recorded before score-2: points frozen as stored. */
-  rules?: 'score-2';
+  rules?: 'score-2' | 'score-3';
   /** Blessings recorded as part of a confirmed bundle for another entry (e.g. a prayer). */
   bundleOf?: string;
 };
 
-/** Goals in force from a given day on (so changing a goal never rewrites past days). */
-export type GoalSnapshot = { from: string; dailyGoal: number; weeklyGoal: number; blessingGoal: number };
+/** A habit the user chose, with how many days a week it is meant for (7 = every day). */
+export type HabitSelection = { id: string; perWeek: number; label?: string };
+
+/**
+ * Goals in force from a given day on (so changing a goal never rewrites past days).
+ * With `habits`, the daily goal is "habitTarget habits done"; without, the older
+ * "dailyGoal distinct actions" goal applies (users who have not chosen habits yet).
+ */
+export type GoalSnapshot = {
+  from: string;
+  dailyGoal: number;
+  weeklyGoal: number;
+  blessingGoal: number;
+  habits?: HabitSelection[];
+  habitTarget?: number;
+};
+
+/** A personal challenge the user joined (definition frozen by id + version at joining). */
+export type ChallengeEnrollment = {
+  instanceId: string;
+  definitionId: string;
+  definitionVersion: number;
+  joinedAt: number;
+  /** First day counted (the joining day) and end, exclusive. YYYY-MM-DD. */
+  start: string;
+  end: string;
+  target: number;
+  /** Parameters frozen at joining (e.g. blessing threshold). */
+  params?: Record<string, number>;
+  leftAt?: number;
+  /** Set once, after the completing entry was saved on the device. */
+  completedAt?: number;
+};
+
+/** An achievement earned (kept once earned; one per id + version). */
+export type Award = { achievementId: string; version: number; earnedAt: number; rulesVersion: string };
 
 export type AppSettings = {
   notifications: boolean;
@@ -132,6 +166,10 @@ export type AppState = {
   savedContent: string[];
   /** Goal history; the last entry is the current goal. */
   goalHistory: GoalSnapshot[];
+  /** Personal challenges joined (round 9, C1). */
+  challenges: ChallengeEnrollment[];
+  /** Achievements earned (round 9, C1). */
+  awards: Award[];
   /** City in force from a day on: past rest days keep the city they were in (round 8, A06). */
   locationHistory: Array<{ from: string; cityId: string }>;
   /** Personal reflection per day, keyed by YYYY-MM-DD. */

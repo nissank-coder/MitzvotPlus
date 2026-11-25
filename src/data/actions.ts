@@ -58,6 +58,10 @@ export const ACTIONS = {
   guests: { title: 'הכנסת אורחים', icon: 'home', points: 15, dailyCap: 3, category: 'chesed' },
   visitSick: { title: 'ביקור חולים', icon: 'heart', points: 20, dailyCap: 2, category: 'chesed' },
   cleanSpeech: { title: 'יום של שמירת הלשון', icon: 'shield', points: 20, dailyCap: 1, oncePerDay: true, category: 'chesed' },
+  // Round 9 habits (score-3). Values are a proposal for owner approval (scoring-rules.md).
+  gratitude: { title: 'הכרת הטוב', icon: 'star', points: 10, dailyCap: 1, oncePerDay: true, category: 'chesed', quick: true },
+  speechPractice: { title: 'תרגול מודעות לדיבור', icon: 'shield', points: 10, dailyCap: 1, oncePerDay: true, category: 'chesed' },
+  personalHabit: { title: 'הרגל אישי', icon: 'target', points: 10, dailyCap: 1, oncePerDay: true, category: 'other' },
 
   // Shabbat
   candleLighting: { title: 'הדלקת נרות', icon: 'flame', points: 30, dailyCap: 1, oncePerDay: true, category: 'shabbat' },

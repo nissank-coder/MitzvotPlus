@@ -80,10 +80,25 @@ const SCORE_2: RuleSet = deepFreeze({
   },
 });
 
-export const RULESETS: Readonly<Record<string, RuleSet>> = deepFreeze({ 'score-2': SCORE_2 });
+/**
+ * score-3 (round 9): score-2 unchanged for every existing action, plus three new habit actions.
+ * Existing entries keep score-2; no value of an existing action changes.
+ */
+const SCORE_3: RuleSet = deepFreeze({
+  version: 'score-3',
+  blessingGoalBonus: SCORE_2.blessingGoalBonus,
+  actions: {
+    ...SCORE_2.actions,
+    gratitude: { points: 10, dailyCap: 1, oncePerDay: true },
+    speechPractice: { points: 10, dailyCap: 1, oncePerDay: true },
+    personalHabit: { points: 10, dailyCap: 1, oncePerDay: true },
+  },
+});
+
+export const RULESETS: Readonly<Record<string, RuleSet>> = deepFreeze({ 'score-2': SCORE_2, 'score-3': SCORE_3 });
 
 /** The rules new entries are recorded with. */
-export const CURRENT_RULES = 'score-2' as const;
+export const CURRENT_RULES = 'score-3' as const;
 export type RulesVersion = keyof typeof RULESETS;
 
 export function ruleSet(version: string | undefined): RuleSet | null {
