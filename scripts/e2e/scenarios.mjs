@@ -132,6 +132,44 @@ try {
   await tab('מסלולים');
   check((await count('text=/^1\\/3$/')) === 1, '6: challenge kept after reload');
 
+  // 6b. RTL, accessible names, keyboard (round 11 §7)
+  await tab('היום');
+  await settle();
+  check((await p.evaluate(() => getComputedStyle(document.querySelector('main h1') ?? document.body).direction)) === 'rtl', '6b: screens are right-to-left');
+  const unnamed = await p.evaluate(() =>
+    [...document.querySelectorAll('button')].filter((b) => !(b.getAttribute('aria-label') || b.textContent || '').trim()).length,
+  );
+  check(unnamed === 0, '6b: every button has an accessible name', `${unnamed} without a name`);
+  const focusNames = [];
+  await p.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : undefined));
+  for (let i = 0; i < 8; i += 1) {
+    await p.keyboard.press('Tab');
+    focusNames.push(await p.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || el === document.body) return '(body)';
+      return (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 30) || `<${el.tagName.toLowerCase()}>`;
+    }));
+  }
+  // The first press may only bring focus into the page; after that every control must be named.
+  check(
+    !focusNames.some((n) => n.startsWith('<')) && focusNames.filter((n) => n !== '(body)').length >= 7,
+    '6b: keyboard Tab moves through named controls',
+    JSON.stringify(focusNames),
+  );
+  check((await count('text=לימוד יומי')) > 0 && (await count('text=דבר תורה')) === 0, 'production: no Dvar Torah shown without approved content');
+
+  // 6c. Offline: recording works without a network and is kept after reconnecting
+  await ctx.setOffline(true);
+  await p.click('[aria-label="רשמתי: הכרת הטוב"]').catch(() => {});
+  await p.locator('button', { hasText: '+ ברכה' }).first().click();
+  await settle();
+  check((await toast()).includes('נרשם') || (await toast()).includes('הישג'), '6c: saved feedback while offline', await toast());
+  await ctx.setOffline(false);
+  await p.reload();
+  await settle();
+  await tab('התקדמות');
+  check((await count('text=/^יומן · השבוע \\(5\\)$/')) === 1, '6c: the offline entry is kept', await text('text=/^יומן · /'));
+
   // 7. Existing user (state from before habits) keeps history; offered habits
   await fresh({
     version: 2, onboarded: true, userName: 'ותיק', memberSince: NOW - 40 * 86400000, legacyPoints: 500,
