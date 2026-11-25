@@ -13,6 +13,8 @@ const FREQUENCIES = [
   { value: 5, label: '5 בשבוע' },
   { value: 3, label: '3 בשבוע' },
 ];
+/** What the frequency means (S10-01): every day = part of the daily goal; otherwise weekly. */
+const FREQ_NOTE = 'כל יום – חלק מהיעד היומי. 3 או 5 בשבוע – נמדד בשבוע, ולא נחשב חסר ביום שלא נעשה.';
 
 /** Choose 1–5 habits (2–3 recommended) and how often. Used in onboarding and in "אני". */
 export function HabitPicker({
@@ -69,6 +71,7 @@ export function HabitPicker({
                         <span className="text-[12px] text-[#5C6F82]">{h.description}</span>
                       </span>
                     </button>
+                    {sel ? <p className="px-3 pb-1 text-[11px] text-[#5C6F82]">{FREQ_NOTE}</p> : null}
                     {sel ? (
                       <div className="flex flex-row gap-2 px-3 pb-3" role="radiogroup" aria-label={`תדירות: ${h.title}`}>
                         {FREQUENCIES.map((f) => (

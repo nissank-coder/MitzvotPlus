@@ -12,7 +12,8 @@ import { TodayPlanCard } from '../components/TodayPlanCard';
 import { ideaForDay, loadPracticalIdeas, PRACTICAL_CATEGORY, PracticalIdea } from '../content/practical';
 import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { formatTime } from '../lib/dates';
-import { habitById } from '../lib/habits';
+import { habitById, recordPlan } from '../lib/habits';
+import { ActionKey, actionDef } from '../data/actions';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { FeatureKey, IconName } from '../types';
@@ -54,12 +55,20 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
   const returning = derived.activityStreak === 0 && derived.totalCount > 0;
   const hour = calendar.now.getHours();
   const greeting = hour < 12 ? 'בוקר טוב' : hour < 17 ? 'צהריים טובים' : 'ערב טוב';
+  // "I did it" never records something the user did not choose (S10-01): ambiguous habits ask
+  // which prayer was said, or open the screen where the exact item is recorded.
+  const [choose, setChoose] = useState<{ title: string; actions: ActionKey[] } | null>(null);
   const recordHabit = (id: string) => {
+    const plan = recordPlan(id);
     const def = habitById(id);
-    if (!def) return;
-    if (def.logAction === 'blessing') addBlessing('other');
-    else addAction(def.logAction);
+    if (!plan || !def) return;
+    if (plan.kind === 'open') onOpenFeature(plan.feature);
+    else if (plan.kind === 'choose') setChoose({ title: def.title, actions: plan.actions });
+    else if (plan.action === 'blessing') addBlessing('other');
+    else addAction(plan.action);
   };
+  const doneToday = new Set(derived.todayLogs.map((l) => l.actionKey));
+
 
   return (
     <div dir="rtl" className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-4 flex flex-col gap-4">
@@ -113,7 +122,9 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
               <div className="flex-1 flex flex-col gap-1.5">
                 <span className="text-[12px] font-extrabold text-[#1B6F8F]">היעד שלי היום</span>
                 <span className="text-[19px] font-black text-[#17324D] leading-tight">
-                  {derived.todayGoalMet
+                  {target === 0
+                    ? 'היום אין הרגל יומי – ההרגלים שלך נמדדים בשבוע'
+                    : derived.todayGoalMet
                     ? 'היעד הושלם. יישר כוח'
                     : returning
                       ? 'ברוך השב. כל יום הוא התחלה'
@@ -157,6 +168,36 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
                 </li>
               ))}
             </ul>
+            {derived.weeklyHabits.length > 0 ? (
+              <div className="rounded-[16px] bg-[#F4F8FB] p-3 flex flex-col gap-2">
+                <span className="text-[12px] font-extrabold text-[#1B6F8F]">הרגלים שבועיים · לא חלק מהיעד היומי</span>
+                {derived.weeklyHabits.map((h) => (
+                  <div key={h.sel.id} className="flex flex-row items-center gap-2">
+                    <span className="flex-1 text-[14px] font-bold text-[#17324D]">{h.title}</span>
+                    <span className="text-[12px] text-[#5C6F82]">
+                      {Math.min(h.daysThisWeek, h.perWeek)}/{h.perWeek} השבוע
+                    </span>
+                    {!h.doneToday ? (
+                      <button
+                        type="button"
+                        onClick={() => recordHabit(h.sel.id)}
+                        aria-label={`רשמתי: ${h.title}`}
+                        className="min-h-[36px] px-3 rounded-full border border-[#2AAE9B] text-[#1E8C7C] text-[12px] font-black bg-white"
+                      >
+                        רשמתי
+                      </button>
+                    ) : (
+                      <span className="text-[12px] font-bold text-[#2E7D5B]">היום ✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {derived.notDueToday.length > 0 ? (
+              <span className="text-[12px] text-[#5C6F82]">
+                לא נדרש היום (שבת/חג): {derived.notDueToday.map((h) => habitById(h.id)?.title ?? h.id).join(', ')}
+              </span>
+            ) : null}
             <button type="button" onClick={() => setHabitsOpen(true)} className="self-start text-[13px] font-bold text-[#1B6F8F] min-h-[36px]">
               שינוי ההרגלים שלי
             </button>
@@ -283,7 +324,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
           {habits
             .filter((h) => h.def.logAction !== 'blessing')
             .map((h) => (
-              <QuickChip key={h.sel.id} label={`+ ${h.def.title}`} onPress={() => addAction(h.def.logAction)} />
+              <QuickChip key={h.sel.id} label={`+ ${h.def.title}`} onPress={() => recordHabit(h.sel.id)} />
             ))}
           {!habits.some((h) => h.def.logAction === 'chesed') ? <QuickChip label="+ מעשה חסד" onPress={() => addAction('chesed')} /> : null}
         </div>
@@ -384,6 +425,40 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
       />
       {backfillOpen ? <BackfillSheet days={pending} onClose={() => setBackfillOpen(false)} /> : null}
       {habitsOpen ? <HabitEditorSheet onClose={() => setHabitsOpen(false)} /> : null}
+      {choose ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={() => setChoose(null)}>
+          <div
+            role="dialog"
+            aria-label={`איזו תפילה? ${choose.title}`}
+            className="w-full max-w-[460px] bg-white rounded-t-[28px] px-4 pt-5 pb-6 flex flex-col gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-[18px] font-black text-[#17324D]">איזו תפילה התפללת?</h2>
+            <p className="text-[13px] text-[#5C6F82]">נרשם רק מה שבחרת.</p>
+            {choose.actions.map((a) => {
+              const done = doneToday.has(a);
+              return (
+                <button
+                  key={a}
+                  type="button"
+                  disabled={done}
+                  onClick={() => {
+                    addAction(a);
+                    setChoose(null);
+                  }}
+                  className={`min-h-[52px] rounded-[16px] border text-[15px] font-extrabold text-right px-4 ${done ? 'bg-[#EAF7EF] text-[#4DAA78] border-[#CFE8D8]' : 'bg-white text-[#17324D] border-[#DDE8EE]'}`}
+                >
+                  {actionDef(a).title}
+                  {done ? ' · נרשם היום' : ''}
+                </button>
+              );
+            })}
+            <button type="button" onClick={() => setChoose(null)} className="min-h-[48px] text-[14px] font-bold text-[#5C6F82]">
+              ביטול
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
