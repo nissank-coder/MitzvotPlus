@@ -5,8 +5,9 @@ import { SaveStatusBanner } from './components/SaveStatusBanner';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
 import { BlessingGuideScreen } from './screens/BlessingGuideScreen';
 import { BlessingsScreen } from './screens/BlessingsScreen';
-import { ContentScreen } from './screens/ContentScreen';
-import { GoalsScreen } from './screens/GoalsScreen';
+import { ProgressScreen } from './screens/ProgressScreen';
+import { TracksScreen } from './screens/TracksScreen';
+import { CelebrationToast } from './components/gameplay';
 import { HolidaysScreen } from './screens/HolidaysScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { LashonHaraScreen } from './screens/LashonHaraScreen';
@@ -31,14 +32,14 @@ import { COMMUNITY_ENABLED } from './config/features';
 
 function MitzvotApp() {
   const { hydrated, state, calendar, storageError, flush, refreshClock } = useAppStore();
-  const [tab, setTab] = useState<TabKey>('home');
+  const [tab, setTab] = useState<TabKey>('today');
   const [feature, setFeature] = useState<FeatureKey>(null);
   const [quickAddVisible, setQuickAddVisible] = useState(false);
 
   // After "delete all data" the user goes through onboarding again and should land on the home tab.
   useEffect(() => {
     if (!state.onboarded) {
-      setTab('home');
+      setTab('today');
       setFeature(null);
     }
   }, [state.onboarded]);
@@ -79,8 +80,8 @@ function MitzvotApp() {
         goBack();
         return true;
       }
-      if (tab !== 'home') {
-        setTab('home');
+      if (tab !== 'today') {
+        setTab('today');
         return true;
       }
       return false;
@@ -95,7 +96,7 @@ function MitzvotApp() {
     onForeground: refreshClock,
   });
 
-  const openProfile = () => selectTab('profile');
+  const openProfile = () => selectTab('me');
   const back = goBack;
 
   const content = (() => {
@@ -137,38 +138,34 @@ function MitzvotApp() {
       case 'holidays':
         return <HolidaysScreen {...common} />;
       case 'goals':
-        return (
-          <GoalsScreen
-            onBack={back}
-            onOpenProfile={openProfile}
-            onOpenBlessings={() => openFeature('blessings')}
-            onOpenLearning={() => openFeature('learning')}
-            onOpenTorah={() => openFeature('torah')}
-          />
-        );
+        // Older entry point (deep links, inner screens): the progress tab.
+        return <ProgressScreen />;
       default:
         break;
     }
 
     switch (tab) {
-      case 'content':
-        return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
+      case 'progress':
+        return <ProgressScreen />;
+      case 'tracks':
+        return <TracksScreen onOpenFeature={openFeature} />;
       case 'community':
-        if (!CommunityScreen) return <ContentScreen onOpenFeature={openFeature} onOpenProfile={openProfile} />;
+        if (!CommunityScreen) return <TracksScreen onOpenFeature={openFeature} />;
         return (
           <Suspense fallback={null}>
             <CommunityScreen onOpenProfile={openProfile} />
           </Suspense>
         );
-      case 'profile':
+      case 'me':
         return <ProfileScreen />;
-      case 'home':
+      case 'today':
       default:
         return (
           <HomeScreen
             onOpenFeature={openFeature}
             onOpenProfile={openProfile}
-            onOpenCommunity={() => selectTab('community')}
+            onOpenProgress={() => selectTab('progress')}
+            onOpenTracks={() => selectTab('tracks')}
             onQuickAdd={() => setQuickAddVisible(true)}
           />
         );
@@ -207,6 +204,7 @@ function MitzvotApp() {
       <main className="flex-1 flex flex-col">{content}</main>
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
       <QuickAddSheet visible={quickAddVisible} onClose={() => setQuickAddVisible(false)} />
+      <CelebrationToast />
     </div>
   );
 }

@@ -163,3 +163,25 @@ describe('practical content', () => {
     expect(ideaForDay(ideas, TODAY, ['gratitude'])).toBe(a);
   });
 });
+
+describe('progress periods (B2)', async () => {
+  const { periodStats } = await import('../lib/periods');
+  it('a new user sees no comparison with days before joining; today is "open"', () => {
+    let s = { ...onboard(['chesed']), memberSince: NOW };
+    s = add(s, { key: 'torahStudy' });
+    const st = periodStats(d(s).progressContext, 'week');
+    expect(st.previous).toBeNull();
+    expect(st.percent).toBeNull();
+    expect(st.days.find((x) => x.key === '2026-11-22')!.state).toBe('before');
+    expect(st.days.find((x) => x.key === TODAY)!.state).toBe('open');
+    expect(st.byCategory.map((c) => c.category)).toEqual(['torah']);
+  });
+  it('compares with the previous week only when that week is after the start', () => {
+    let s = { ...onboard(['chesed']), memberSince: NOW - 20 * DAY };
+    s = add(s, { key: 'chesed', dateKey: '2026-11-17' });
+    s = add(s, { key: 'chesed' });
+    const st = periodStats(d(s).progressContext, 'week');
+    expect(st.previous).toMatchObject({ goalDays: 1 });
+    expect(st.goalDays).toBe(1);
+  });
+});

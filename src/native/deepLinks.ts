@@ -6,7 +6,9 @@ export const URL_SCHEME = 'mitzvotplus';
 const FEATURES: Array<Exclude<FeatureKey, null>> = [
   'blessings', 'torah', 'speech', 'goals', 'prayers', 'blessingGuide', 'learning', 'mitzvot', 'holidays', 'siddur', 'tehillim',
 ];
-const TABS: TabKey[] = COMMUNITY_ENABLED ? ['home', 'content', 'community', 'profile'] : ['home', 'content', 'profile'];
+const TABS: TabKey[] = COMMUNITY_ENABLED ? ['today', 'progress', 'tracks', 'me', 'community'] : ['today', 'progress', 'tracks', 'me'];
+/** Links from earlier versions keep working. */
+const TAB_ALIASES: Record<string, TabKey> = { home: 'today', content: 'tracks', profile: 'me', goals: 'progress' };
 
 export type DeepLinkTarget = { tab: TabKey; feature: FeatureKey };
 
@@ -26,10 +28,12 @@ export function parseDeepLink(url: string): DeepLinkTarget | null {
   const parts = [parsed.hostname, ...parsed.pathname.split('/')].filter(Boolean);
   const [kind, name] = parts;
   if (kind === 'open' && name && (FEATURES as string[]).includes(name)) {
-    return { tab: 'content', feature: name as Exclude<FeatureKey, null> };
+    if (name === 'goals') return { tab: 'progress', feature: null };
+    return { tab: 'tracks', feature: name as Exclude<FeatureKey, null> };
   }
-  if (kind === 'tab' && name && (TABS as string[]).includes(name)) {
-    return { tab: name as TabKey, feature: null };
+  const tab = name ? (TAB_ALIASES[name] ?? name) : undefined;
+  if (kind === 'tab' && tab && (TABS as string[]).includes(tab)) {
+    return { tab: tab as TabKey, feature: null };
   }
   return null;
 }

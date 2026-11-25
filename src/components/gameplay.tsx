@@ -1,0 +1,254 @@
+import React, { useEffect, useState } from 'react';
+import { AchievementView, ChallengeView } from '../lib/challenges';
+import { HABIT_DOMAINS, HabitDomain, HABITS, habitById } from '../lib/habits';
+import { useAppStore } from '../store/AppStore';
+import { colors } from '../theme';
+import { Gender, HabitSelection } from '../types';
+import { AppIcon } from './AppIcon';
+
+/* ------------------------------- Habit picker ------------------------------- */
+
+const FREQUENCIES = [
+  { value: 7, label: 'כל יום' },
+  { value: 5, label: '5 בשבוע' },
+  { value: 3, label: '3 בשבוע' },
+];
+
+/** Choose 1–5 habits (2–3 recommended) and how often. Used in onboarding and in "אני". */
+export function HabitPicker({
+  value,
+  onChange,
+  gender,
+}: {
+  value: HabitSelection[];
+  onChange: (next: HabitSelection[]) => void;
+  gender: Gender;
+}) {
+  const domains = Object.keys(HABIT_DOMAINS) as HabitDomain[];
+  const selected = (id: string) => value.find((h) => h.id === id);
+  const toggle = (id: string) => {
+    if (selected(id)) onChange(value.filter((h) => h.id !== id));
+    else if (value.length < 5) onChange([...value, { id, perWeek: 7 }]);
+  };
+  const setFreq = (id: string, perWeek: number) => onChange(value.map((h) => (h.id === id ? { ...h, perWeek } : h)));
+
+  return (
+    <div dir="rtl" className="flex flex-col gap-4">
+      {domains.map((domain) => {
+        const meta = HABIT_DOMAINS[domain];
+        const habits = HABITS.filter((h) => h.domain === domain && (!h.menOnly || gender === 'male'));
+        return (
+          <section key={domain} aria-label={meta.title}>
+            <h3 className="text-[13px] font-black mb-2" style={{ color: meta.color }}>
+              {meta.title}
+            </h3>
+            <div className="flex flex-col gap-2">
+              {habits.map((h) => {
+                const sel = selected(h.id);
+                return (
+                  <div
+                    key={h.id}
+                    className={`rounded-[18px] border bg-white ${sel ? 'border-[#2AAE9B] border-2 bg-[#F1FAF8]' : 'border-[#DDE8EE]'}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggle(h.id)}
+                      aria-pressed={Boolean(sel)}
+                      className="w-full min-h-[60px] flex flex-row items-center gap-3 px-3 text-right"
+                    >
+                      <span
+                        className={`w-6 h-6 rounded-[7px] border-2 flex items-center justify-center shrink-0 ${sel ? 'bg-[#2AAE9B] border-[#2AAE9B]' : 'border-[#B9CCD6]'}`}
+                      >
+                        {sel ? <AppIcon name="check" size={14} color={colors.white} strokeWidth={3} /> : null}
+                      </span>
+                      <span className="flex-1 flex flex-col">
+                        <span className="text-[15px] font-extrabold text-[#17324D]">
+                          {h.title}
+                          {h.private ? <span className="text-[11px] font-bold text-[#1B6F8F] mr-2">· פרטי</span> : null}
+                        </span>
+                        <span className="text-[12px] text-[#5C6F82]">{h.description}</span>
+                      </span>
+                    </button>
+                    {sel ? (
+                      <div className="flex flex-row gap-2 px-3 pb-3" role="radiogroup" aria-label={`תדירות: ${h.title}`}>
+                        {FREQUENCIES.map((f) => (
+                          <button
+                            key={f.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={sel.perWeek === f.value}
+                            onClick={() => setFreq(h.id, f.value)}
+                            className={`flex-1 min-h-[40px] rounded-[12px] text-[12px] font-extrabold border ${
+                              sel.perWeek === f.value ? 'bg-[#17324D] text-white border-[#17324D]' : 'bg-white text-[#17324D] border-[#DDE8EE]'
+                            }`}
+                          >
+                            {f.label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Modal sheet to edit habits from Home or "אני". */
+export function HabitEditorSheet({ onClose }: { onClose: () => void }) {
+  const { state, derived, setHabits } = useAppStore();
+  const [value, setValue] = useState<HabitSelection[]>(derived.habitsToday.map((h) => h.sel));
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={onClose}>
+      <div
+        dir="rtl"
+        role="dialog"
+        aria-label="ההרגלים שלי"
+        className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-[#F4F8FB] rounded-t-[28px] px-4 pt-5 pb-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-[20px] font-black text-[#17324D]">ההרגלים שלי</h2>
+        <p className="text-[13px] text-[#5C6F82] mt-1 mb-4">
+          מומלץ 2–3 הרגלים. שינוי חל מהיום והלאה – ההיסטוריה נשארת כפי שהייתה.
+        </p>
+        <HabitPicker value={value} onChange={setValue} gender={state.profile.gender} />
+        <div className="sticky bottom-0 flex flex-row gap-2 pt-4 bg-[#F4F8FB]">
+          <button type="button" onClick={onClose} className="flex-1 min-h-[50px] rounded-[16px] border border-[#DDE8EE] bg-white font-extrabold text-[#17324D]">
+            ביטול
+          </button>
+          <button
+            type="button"
+            disabled={value.length === 0}
+            onClick={() => {
+              setHabits(value);
+              onClose();
+            }}
+            className="flex-[2] min-h-[50px] rounded-[16px] bg-[#2AAE9B] disabled:bg-[#A7B4C0] text-white font-extrabold"
+          >
+            שמירה ({value.length} נבחרו)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------- Progress --------------------------------- */
+
+export function Bar({ value, max, color = '#2AAE9B', label }: { value: number; max: number; color?: string; label?: string }) {
+  const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
+  return (
+    <div className="h-2 rounded-full bg-[#E6EEF3] overflow-hidden" role="progressbar" aria-valuenow={value} aria-valuemax={max} aria-label={label}>
+      <div className="h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${pct}%`, backgroundColor: color }} />
+    </div>
+  );
+}
+
+/* -------------------------------- Challenges -------------------------------- */
+
+const STATE_LABEL: Record<ChallengeView['state'], string> = { active: 'פעיל', completed: 'הושלם', expired: 'הסתיים', left: 'עזבת' };
+
+export function ChallengeCard({ view, onLeave, compact }: { view: ChallengeView; onLeave?: () => void; compact?: boolean }) {
+  const { def, value, target, state, daysLeft } = view;
+  const active = state === 'active';
+  return (
+    <div dir="rtl" className="rounded-[22px] bg-white border border-[#DDE8EE] card-shadow p-4 flex flex-col gap-3">
+      <div className="flex flex-row items-start justify-between gap-2">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[12px] font-extrabold text-[#1B6F8F]">
+            {active ? `אתגר פעיל · עוד ${daysLeft} ימים` : STATE_LABEL[state]}
+            {def.private ? ' · פרטי' : ''}
+          </span>
+          <span className="text-[17px] font-black text-[#17324D]">{def.title}</span>
+          {!compact ? <span className="text-[13px] text-[#5C6F82]">{def.description}</span> : null}
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-3 py-1 text-[13px] font-black ${state === 'completed' ? 'bg-[#E3F4F1] text-[#1E8C7C]' : 'bg-[#EEF3F6] text-[#17324D]'}`}
+        >
+          {value}/{target}
+        </span>
+      </div>
+      <Bar value={value} max={target} label={`${def.title}: ${value} מתוך ${target}`} />
+      <span className="text-[12px] text-[#5C6F82]">
+        {state === 'completed'
+          ? 'הושלם ונשמר'
+          : active
+            ? `${def.unit} נספרים מיום ההצטרפות · שבת וחג לא נחשבים חסרים`
+            : `${value} ${def.unit} בתקופת האתגר`}
+      </span>
+      {active && onLeave ? (
+        <button type="button" onClick={onLeave} className="self-start text-[12px] font-bold text-[#5C6F82] underline min-h-[36px]">
+          עזיבת האתגר
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------- Achievements ------------------------------- */
+
+export function AchievementBadge({ view }: { view: AchievementView }) {
+  const { def, value, earned } = view;
+  const locked = !earned;
+  return (
+    <div dir="rtl" className="flex flex-col items-center text-center gap-1.5" aria-label={`${def.title}: ${earned ? 'הושג' : `${value} מתוך ${def.threshold}`}`}>
+      <div
+        className={`w-[58px] h-[58px] rounded-[18px] flex items-center justify-center ${
+          def.future ? 'bg-[#F0F5F8] border border-dashed border-[#C4D3DC]' : locked ? 'bg-[#EEF3F6] border border-dashed border-[#B9CCD6]' : 'bg-[#E3F4F1]'
+        }`}
+      >
+        <AppIcon name={earned ? 'trophy' : def.future ? 'community' : 'lock'} size={24} color={earned ? '#1E8C7C' : '#7D90A0'} />
+      </div>
+      <span className={`text-[11px] font-extrabold leading-tight ${locked ? 'text-[#5C6F82]' : 'text-[#17324D]'}`}>{def.title}</span>
+      <span className="text-[10px] text-[#5C6F82] leading-tight">
+        {def.future ? 'בגרסה הציבורית' : earned ? 'הושג' : `${value}/${def.threshold}`}
+      </span>
+    </div>
+  );
+}
+
+/* ------------------------------- Celebration ------------------------------- */
+
+/**
+ * Quiet feedback after a SAVED change. No confetti, no sound; respects reduced motion.
+ * Shown 3 seconds; screen readers hear it once (role="status").
+ */
+export function CelebrationToast() {
+  const { celebration, dismissCelebration } = useAppStore();
+  useEffect(() => {
+    if (!celebration) return;
+    const t = window.setTimeout(dismissCelebration, celebration.kind === 'award' || celebration.kind === 'challenge' ? 4500 : 2600);
+    return () => window.clearTimeout(t);
+  }, [celebration, dismissCelebration]);
+  if (!celebration) return null;
+  const strong = celebration.kind !== 'saved';
+  return (
+    <div className="fixed inset-x-0 bottom-[92px] z-40 flex justify-center px-4 pointer-events-none">
+      <div
+        key={celebration.id}
+        role="status"
+        dir="rtl"
+        className={`pointer-events-auto max-w-[420px] w-full rounded-[18px] px-4 py-3 flex flex-row items-center gap-3 shadow-lg animate-[toast_.25s_ease-out] motion-reduce:animate-none ${
+          strong ? 'bg-[#17324D] text-white' : 'bg-white text-[#17324D] border border-[#DDE8EE]'
+        }`}
+      >
+        <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${strong ? 'bg-[#2AAE9B]' : 'bg-[#E3F4F1]'}`}>
+          <AppIcon name={celebration.kind === 'award' ? 'trophy' : 'check'} size={18} color={strong ? colors.white : '#1E8C7C'} strokeWidth={2.6} />
+        </span>
+        <span className="flex-1 flex flex-col">
+          <span className="text-[14px] font-black">{celebration.title}</span>
+          {celebration.detail ? <span className={`text-[12px] ${strong ? 'text-[#C9D6E0]' : 'text-[#5C6F82]'}`}>{celebration.detail}</span> : null}
+        </span>
+        <button type="button" onClick={dismissCelebration} aria-label="סגירה" className="w-9 h-9 flex items-center justify-center">
+          <AppIcon name="close" size={16} color={strong ? colors.white : '#5C6F82'} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export const habitIcon = (id: string) => habitById(id)?.icon ?? 'check';
