@@ -61,39 +61,56 @@ export const DVAR_TORAH_AVAILABLE: boolean = CONTENT.some((c) => c.kind === 'dva
 
 export const contentRef = (c: ContentItem) => `${c.id}@${c.version}`;
 
-/**
- * Which approved item belongs to which date (round 11 §4): an explicit schedule in the pack,
- * `schedule: { "YYYY-MM-DD": "dvar-torah/<id>" }`. Adding items or dates never changes a date
- * that already has its item (the old rotation "day modulo count" did).
- */
-export const SCHEDULE: Readonly<Record<string, string>> = Object.freeze(
-  ((dvarTorahPack as { schedule?: Record<string, string> }).schedule ?? {}) as Record<string, string>,
-);
-
-/** How many days an item stays shown after its date when the next date has none. */
-export const CARRY_DAYS = 7;
+type Schedules = { daily?: Record<string, string>; weekly?: Record<string, string>; schedule?: Record<string, string> };
+const packSchedules = dvarTorahPack as unknown as Schedules;
 
 /**
- * The Dvar Torah for a date:
- *  1. the approved item scheduled for that date;
- *  2. otherwise the latest scheduled approved item in the previous CARRY_DAYS days;
- *  3. otherwise nothing ("no Dvar Torah today") – never an unapproved item.
- * Development / demo builds without any schedule show the TEST_ONLY placeholder (never in production:
- * CONTENT has no TEST_ONLY item there, and the release check fails otherwise).
+ * Two separate schedules (round 12): the DAILY Dvar Torah (one item per date, exact date only) and
+ * the WEEKLY parasha content (shown for the whole week). `{ "YYYY-MM-DD": "dvar-torah/<id>" }`.
+ * Adding items or dates never changes a date that already has its item.
  */
-export function dvarTorahFor(
-  dateKey: string,
-  items: ContentItem[] = CONTENT,
-  schedule: Readonly<Record<string, string>> = SCHEDULE,
-): ContentItem | null {
+export const DAILY_SCHEDULE: Readonly<Record<string, string>> = Object.freeze({ ...(packSchedules.daily ?? {}) });
+export const WEEKLY_SCHEDULE: Readonly<Record<string, string>> = Object.freeze({ ...(packSchedules.weekly ?? packSchedules.schedule ?? {}) });
+/** @deprecated round 11 name – the weekly schedule. */
+export const SCHEDULE = WEEKLY_SCHEDULE;
+
+/** How many days a weekly item stays shown after its date. */
+export const CARRY_DAYS = 6;
+
+function pick(dateKey: string, items: ContentItem[], schedule: Readonly<Record<string, string>>, carry: number): ContentItem | null {
   const approved = new Map(items.filter((c) => c.kind === 'dvar-torah' && c.approval === 'APPROVED').map((c) => [c.id, c]));
   const [y = 2026, m = 1, d = 1] = dateKey.split('-').map(Number);
-  for (let back = 0; back <= CARRY_DAYS; back += 1) {
+  for (let back = 0; back <= carry; back += 1) {
     const key = new Date(Date.UTC(y, m - 1, d - back)).toISOString().slice(0, 10);
     const id = schedule[key];
     if (id !== undefined) return approved.get(id) ?? null;
   }
-  if (Object.keys(schedule).length === 0 && approved.size === 0) {
+  return null;
+}
+
+/** The weekly (parasha) item: the latest scheduled approved item within the last CARRY_DAYS days. */
+export function weeklyFor(
+  dateKey: string,
+  items: ContentItem[] = CONTENT,
+  schedule: Readonly<Record<string, string>> = WEEKLY_SCHEDULE,
+): ContentItem | null {
+  return pick(dateKey, items, schedule, CARRY_DAYS);
+}
+
+/**
+ * The DAILY Dvar Torah for a date: only the approved item scheduled for that exact date – never an
+ * unapproved item. Development / demo builds without any schedule show the TEST_ONLY placeholder
+ * (production CONTENT has approved items only; the release check fails otherwise).
+ */
+export function dvarTorahFor(
+  dateKey: string,
+  items: ContentItem[] = CONTENT,
+  schedule: Readonly<Record<string, string>> = DAILY_SCHEDULE,
+): ContentItem | null {
+  const exact = pick(dateKey, items, schedule, 0);
+  if (exact) return exact;
+  const approvedCount = items.filter((c) => c.kind === 'dvar-torah' && c.approval === 'APPROVED').length;
+  if (Object.keys(schedule).length === 0 && Object.keys(WEEKLY_SCHEDULE).length === 0 && approvedCount === 0) {
     // Only reachable in dev/demo: production CONTENT holds approved items only.
     return items.find((c) => c.kind === 'dvar-torah' && c.approval !== 'APPROVED') ?? null;
   }

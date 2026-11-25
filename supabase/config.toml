@@ -1,0 +1,25 @@
+# Supabase CLI – LOCAL development only (`supabase start`). Hosted staging/production projects are
+# created by the owner (EU region, e.g. Frankfurt, pending approval) and configured in their dashboard.
+project_id = "mitzvotplus"
+
+[db]
+major_version = 16
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+otp_length = 6
+otp_expiry = 600
+max_frequency = "60s"
+
+[auth.rate_limit]
+email_sent = 4
+token_verifications = 30

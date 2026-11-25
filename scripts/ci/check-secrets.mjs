@@ -17,7 +17,11 @@ const patterns = [
   [/xox[abprs]-[A-Za-z0-9-]{10,}/, 'Slack token'],
   [/sk_live_[0-9a-zA-Z]{20,}/, 'Stripe live key'],
   [/service_role/i, 'Supabase service-role reference'],
+  // Any JWT-shaped value (Supabase anon / service keys, session tokens) – everywhere, supabase/ included.
+  [/eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}/, 'JWT / API key'],
 ];
+/** The database folder names the standard Supabase role in SQL (no key): only the word is allowed there. */
+const allowWordIn = (what, file) => what === 'Supabase service-role reference' && /^supabase\/.+\.sql$/.test(file);
 const skip = [/^package-lock\.json$/, /^src\/content\/packs\//, /^docs\/mobile-readiness\/evidence\//, /\.(png|jpg|jpeg|pdf|woff2?|jar)$/, /^scripts\/ci\/check-secrets\.mjs$/, /^docs\//];
 
 const problems = [];
@@ -31,7 +35,7 @@ for (const f of files) {
   } catch {
     continue;
   }
-  for (const [re, what] of patterns) if (re.test(text)) problems.push(`${what} in ${f}`);
+  for (const [re, what] of patterns) if (re.test(text) && !allowWordIn(what, f)) problems.push(`${what} in ${f}`);
 }
 if (problems.length) {
   console.error('Secret scan FAILED:\n- ' + problems.join('\n- '));
