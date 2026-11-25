@@ -1,0 +1,30 @@
+E2E: 28 passed, 0 failed
+  PASS production: no demo button
+  PASS 1: daily goal = 2 daily habits (weekly one excluded)
+  PASS 1: weekly habit shown separately
+  PASS production: no draft content
+  PASS 2: prayer chooser opens
+  PASS 2: saved feedback after recording
+  PASS 2: an already recorded prayer cannot be chosen again
+  PASS 2: three different prayers complete the habit (1/2)
+  PASS 3: learning-track habit opens the learning screen
+  PASS 3: opening the track did not record anything
+  PASS 4: challenge joined
+  PASS 4: challenge counts today's prayer category
+  PASS 5: weekly habit 1/3 this week
+  PASS 5: progress week summary shown
+  PASS 5: journal has the 4 recorded entries
+  PASS 5: first achievement recorded
+  PASS 6: habits kept after reload
+  PASS 6: challenge kept after reload
+  PASS 7: existing user loads
+  PASS 7: habits offered, not forced
+  PASS 7: history kept (2 entries this week)
+  PASS 7: screen renders
+  PASS 8: tab התקדמות opens
+  PASS 8: tab מסלולים opens
+  PASS 8: tab אני opens
+  PASS 8: tab היום opens
+  PASS 8: build fingerprint shown
+  PASS 8: delete-all returns to onboarding
+exit=0

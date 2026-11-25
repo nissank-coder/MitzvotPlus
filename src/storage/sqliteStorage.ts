@@ -1,6 +1,6 @@
 import { ActivityLog } from '../types';
 import { runMigrations, SqlExecutor } from './migrations';
-import { newCreateItem, OutboxItem, undoPlan, voidEventPayload } from '../sync/outbox';
+import { newCreateItem, OutboxItem, syncPolicy, undoPlan, voidEventPayload } from '../sync/outbox';
 import { LEGACY_STORAGE_KEY, StateStorage } from './persistence';
 
 const STATE_KEY = 'app_state';
@@ -69,13 +69,28 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
         await runMigrations(db);
         const rows = await db.query<Row>('SELECT id, payload FROM activities;');
         for (const r of rows) saved.set(r.id, r.payload);
+        // S10-02: create events of local-only actions that were queued by an older version and never
+        // left the device are removed from the queue (the activities themselves are kept).
+        const localOnly = [...saved.entries()]
+          .filter(([, payload]) => syncPolicy(JSON.parse(payload) as ActivityLog) === 'local-only')
+          .map(([id]) => id);
+        if (localOnly.length > 0) {
+          await db.transaction(
+            localOnly.map((id) => ({
+              sql: "DELETE FROM outbox WHERE event_id = ? AND operation = 'create' AND status = 'pending' AND attempts = 0;",
+              values: [id],
+            })),
+          );
+        }
         const ob = await db.query<{ event_id: string; status: OutboxItem['status']; attempts: number }>('SELECT event_id, status, attempts FROM outbox;');
         for (const r of ob) outboxState.set(r.event_id, { status: r.status, attempts: r.attempts });
         const inst = await db.query<{ value: string }>('SELECT value FROM kv WHERE key = ?;', [INSTALLATION_KEY]);
         installation = inst[0]?.value ?? newInstallationId();
         if (!inst[0]) await db.transaction([{ sql: 'INSERT INTO kv (key, value, updated_at) VALUES (?, ?, ?);', values: [INSTALLATION_KEY, installation, Date.now()] }]);
         // Activities saved before the outbox existed get their create event once.
-        const orphans = await db.query<Row>('SELECT a.id, a.payload FROM activities a LEFT JOIN outbox o ON o.event_id = a.id WHERE o.event_id IS NULL;');
+        const orphanRows = await db.query<Row>('SELECT a.id, a.payload FROM activities a LEFT JOIN outbox o ON o.event_id = a.id WHERE o.event_id IS NULL;');
+        // Local-only actions are never (re)queued.
+        const orphans = orphanRows.filter((r) => syncPolicy(JSON.parse(r.payload) as ActivityLog) !== 'local-only');
         if (orphans.length > 0) {
           const now = Date.now();
           const items = orphans.map((r) => newCreateItem(JSON.parse(r.payload) as ActivityLog, installation, now));
@@ -121,7 +136,7 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null):
         keep.add(log.id);
         const payload = JSON.stringify(log);
         if (saved.get(log.id) === payload) continue;
-        if (!saved.has(log.id) && !outboxState.has(log.id)) {
+        if (!saved.has(log.id) && !outboxState.has(log.id) && syncPolicy(log) !== 'local-only') {
           // New action: its outbox record is written in the same transaction (spec §7 step 1).
           const item = newCreateItem(log, installation, now);
           statements.push({ sql: OUTBOX_INSERT, values: outboxValues(item) });

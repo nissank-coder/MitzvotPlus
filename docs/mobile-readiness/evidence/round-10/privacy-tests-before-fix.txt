@@ -1,0 +1,8 @@
+     × speechPractice never enters the outbox (new entry) 10ms
+     × cleanSpeech never enters the outbox (new entry) 3ms
+     × charity never enters the outbox (new entry) 3ms
+     × visitSick never enters the outbox (new entry) 2ms
+     × private rows already queued (never sent) are removed from the queue on upgrade and not recreated; activities stay 1ms
+     × the policy is an explicit allowlist: unknown actions stay local 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  6 failed | 17 passed (23)

@@ -71,6 +71,30 @@ export function canonicalJson(value: unknown): string {
 }
 
 /**
+ * Sync privacy policy (round 10, S10-02; round-8/privacy-sync-plan.md). Default-deny: only the
+ * actions listed here may ever be queued for a future cloud sync – and only after the user's
+ * consent (sync is off: SYNC_ENABLED=false). Everything else stays on the device: speech awareness
+ * and the speech-guard day, charity, visiting the sick, and any action this table does not know.
+ * The speech timer, resets and personal reflections are not activities and never reach the queue.
+ */
+const SYNCABLE_ACTIONS: ReadonlySet<string> = new Set([
+  'shacharit', 'mincha', 'arvit', 'musaf', 'tefillin', 'shema', 'birkotHashachar', 'hallel', 'tehillim', 'prayer',
+  'blessing', 'birkatHamazon',
+  'torahStudy', 'dailyTorah', 'learningTrack', 'mitzvahStudy',
+  'chesed', 'parents', 'guests',
+  'candleLighting', 'challah', 'shnayimMikra', 'kiddush', 'shabbatMeal', 'havdalah', 'fullShabbat',
+  'omer', 'chanukahCandles', 'megillah', 'mishloachManot', 'matanotLaevyonim', 'purimSeuda', 'shofar', 'sukkah', 'lulav',
+  'bedikatChametz', 'seder', 'fastDay',
+  'gratitude', 'personalHabit',
+]);
+
+export type SyncPolicy = 'local-only' | 'sync-with-consent';
+
+export function syncPolicy(log: Pick<ActivityLog, 'actionKey'>): SyncPolicy {
+  return log.actionKey && SYNCABLE_ACTIONS.has(log.actionKey) ? 'sync-with-consent' : 'local-only';
+}
+
+/**
  * The create event for a log entry. Client points are NOT part of the payload: the server derives
  * the authoritative score; local points stay provisional until accepted.
  */

@@ -20,6 +20,8 @@ export type ProgressContext = {
   /** At least one chosen habit done on a day. */
   habitDay: (dateKey: string) => boolean;
   isRestDay: (dateKey: string) => boolean;
+  /** Not judged: rest day without entries, or no habit was due that day (weekly habits only). */
+  neutralDay: (dateKey: string) => boolean;
   goalHistory: GoalSnapshot[];
   /** First day measured (the user's start). */
   measureFrom: string;
@@ -213,7 +215,7 @@ function comebacks(ctx: ProgressContext): number {
       if (seenGoal && gap >= 3) return 1;
       seenGoal = true;
       gap = 0;
-    } else if (!ctx.isRestDay(k) && k !== ctx.todayKey) gap += 1;
+    } else if (!ctx.neutralDay(k) && k !== ctx.todayKey) gap += 1;
   }
   return 0;
 }

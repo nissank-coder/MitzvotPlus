@@ -2,7 +2,7 @@ import { addDays, localDateKey, weekKeys } from '../lib/dates';
 import { goalsOn, measureDays, metricsFor, scoreLogs } from '../lib/metrics';
 import { badges, bestStreak, currentStreak, daysWith, levelInfo, RestRule, shabbatOnly, weekBreakdown } from '../lib/progress';
 import { ActivityLog, AppState, BlessingCategory } from '../types';
-import { dayGoalMet, habitById, habitProgress, habitsDoneOn, habitTitle } from '../lib/habits';
+import { DayGoalStatus, dayGoalStatus, dueHabits, habitById, habitProgress, habitsDoneOn, habitTitle, isDaily } from '../lib/habits';
 import { joinable, journeyStage, measure, ProgressContext, viewAchievements, viewChallenge } from '../lib/challenges';
 
 export type Derived = ReturnType<typeof computeDerived>;
@@ -53,15 +53,19 @@ export function computeDerived(
   }
   // The personal goal of each day: the habits in force that day (or, before habits were chosen,
   // the older "N distinct actions" goal). Cached per day.
-  const goalCache = new Map<string, boolean>();
-  const goalMet = (key: string) => {
+  // Weekly habits and weekday-only habits on rest days are not part of a day's goal (S10-01).
+  const goalCache = new Map<string, DayGoalStatus>();
+  const goalStatus = (key: string) => {
     let v = goalCache.get(key);
     if (v === undefined) {
-      v = dayGoalMet(goalsOn(state.goalHistory, key), byDay.get(key) ?? [], measures.get(key)?.distinctActions ?? 0);
+      v = dayGoalStatus(goalsOn(state.goalHistory, key), byDay.get(key) ?? [], measures.get(key)?.distinctActions ?? 0, isRestDay(key));
       goalCache.set(key, v);
     }
     return v;
   };
+  const goalMet = (key: string) => goalStatus(key) === 'met';
+  /** A day that is not judged: rest day without entries, or nothing was due (weekly habits only). */
+  const neutralDay = (key: string) => goalStatus(key) === 'neutral' || (!measures.get(key) && isRestDay(key));
   const habitDay = (key: string) => habitsDoneOn(goalsOn(state.goalHistory, key), byDay.get(key) ?? []).done.length > 0;
 
   // Consistency over the last 30 days, each day against the goal that applied ON that day.
@@ -75,6 +79,7 @@ export function computeDerived(
     const m = measures.get(key);
     if (i === 0 && !goalMet(key)) continue;
     if (!m && isRestDay(key)) continue;
+    if (goalStatus(key) === 'neutral') continue;
     eligibleDays += 1;
     if (goalMet(key)) goalDays += 1;
   }
@@ -89,15 +94,28 @@ export function computeDerived(
   const week = weekBreakdown(logs, todayKey, score.byDay);
 
   // Habits of today, each with its progress from today's entries.
+  // Today's goal = the daily habits due today; weekly habits are measured over the week.
   const goalToday = goalsOn(state.goalHistory, todayKey);
-  const habitsToday = (goalToday.habits ?? []).flatMap((sel) => {
+  const todayLogsList = byDay.get(todayKey) ?? [];
+  const habitsToday = dueHabits(goalToday, isRestDay(todayKey)).flatMap((sel) => {
     const def = habitById(sel.id);
-    return def ? [{ sel, def, title: habitTitle(sel), ...habitProgress(def, byDay.get(todayKey) ?? []) }] : [];
+    return def ? [{ sel, def, title: habitTitle(sel), ...habitProgress(def, todayLogsList) }] : [];
   });
   const habitTarget = Math.min(goalToday.habitTarget ?? habitsToday.length, habitsToday.length);
+  const weekDays = weekKeys(todayKey);
+  const weeklyHabits = (goalToday.habits ?? [])
+    .filter((sel) => !isDaily(sel))
+    .flatMap((sel) => {
+      const def = habitById(sel.id);
+      if (!def) return [];
+      const daysThisWeek = weekDays.filter((k) => k <= todayKey && habitProgress(def, byDay.get(k) ?? []).done).length;
+      return [{ sel, def, title: habitTitle(sel), perWeek: sel.perWeek, daysThisWeek, doneToday: habitProgress(def, todayLogsList).done }];
+    });
+  // Habits not due today (weekday-only on a rest day) are shown separately, never as missed.
+  const notDueToday = (goalToday.habits ?? []).filter((sel) => isDaily(sel) && !habitsToday.some((h) => h.sel.id === sel.id));
 
   // Challenges and achievements (C1): derived from the same log.
-  const ctx: ProgressContext = { todayKey, byDay, goalMet, habitDay, isRestDay, goalHistory: state.goalHistory, measureFrom };
+  const ctx: ProgressContext = { todayKey, byDay, goalMet, habitDay, isRestDay, neutralDay, goalHistory: state.goalHistory, measureFrom };
   const challengeViews = state.challenges.flatMap((e) => {
     const v = viewChallenge(e, ctx);
     return v ? [v] : [];
@@ -134,18 +152,20 @@ export function computeDerived(
     /** null = no closed day to measure yet (shown as "no baseline yet", not 0%). */
     consistency: eligibleDays === 0 ? null : Math.round((goalDays / eligibleDays) * 100),
     consistencyDays: { goalDays, eligibleDays },
-    goalStreak: currentStreak(goalDaySet, todayKey, isRestDay),
+    goalStreak: currentStreak(goalDaySet, todayKey, neutralDay),
     todayGoalMet: goalMet(todayKey),
     /** Weekly target for this week (snapshot at the start of the week). */
     weeklyGoal,
     unknownRules: score.unknownRules.length,
     badges: badges(logs, bestActivityStreak),
     /** True once the user chose habits (round 9); older users keep the distinct-actions goal. */
-    hasHabits: habitsToday.length > 0,
+    hasHabits: (goalToday.habits ?? []).length > 0,
+    weeklyHabits,
+    notDueToday,
     habitsToday,
     habitTarget,
     habitsDoneToday: habitsToday.filter((h) => h.done).length,
-    bestGoalStreak: bestStreak(goalDaySet, isRestDay),
+    bestGoalStreak: bestStreak(goalDaySet, neutralDay),
     goalDaysTotal,
     stage: journeyStage(goalDaysTotal),
     progressContext: ctx,

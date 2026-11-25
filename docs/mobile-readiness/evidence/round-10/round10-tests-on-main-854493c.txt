@@ -1,0 +1,7 @@
+     × "I did it" for a fixed learning track opens the learning screen instead of logging general learning 6ms
+     × asks which prayer was said – never records one that was not chosen 1ms
+     × a 3-a-week habit is not part of the daily goal and is measured in the week 3ms
+     × with weekly habits only, a day without them is neutral – never a missed day 1ms
+     × tefillin is not expected on Shabbat: another habit done on Shabbat meets the goal 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  5 failed | 3 passed (8)

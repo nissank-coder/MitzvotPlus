@@ -1,0 +1,14 @@
+== fault 1: wrong habit counter (+1) ==
+E2E: 24 passed, 4 failed
+  FAIL 1: daily goal = 2 daily habits (weekly one excluded)
+  FAIL 2: three different prayers complete the habit (1/2)
+  FAIL 3: opening the track did not record anything
+  FAIL 6: habits kept after reload
+exit=1
+== fault 2: JS error in the progress screen ==
+E2E: 25 passed, 4 failed
+  FAIL 5: progress week summary shown
+  FAIL 5: journal has the 4 recorded entries
+  FAIL 5: first achievement recorded
+  FAIL console error: injected fault
+exit=1

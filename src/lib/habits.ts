@@ -1,5 +1,5 @@
 import { ActionKey } from '../data/actions';
-import { ActivityLog, GoalSnapshot, HabitSelection, IconName } from '../types';
+import { ActivityLog, FeatureKey, GoalSnapshot, HabitSelection, IconName } from '../types';
 import { metricsFor } from './metrics';
 
 /**
@@ -25,7 +25,33 @@ export type HabitDefinition = {
   /** Private habits never leave the device and are never shared (speech awareness). */
   private?: boolean;
   menOnly?: boolean;
+  /** Not expected on Shabbat / Yom Tov (e.g. tefillin): left out of the goal on rest days. */
+  weekdaysOnly?: boolean;
 };
+
+/**
+ * What "I did it" does for a habit (round 10, S10-01). A habit whose entry is ambiguous never
+ * records on the user's behalf: the user chooses which prayer was said, or goes to the screen
+ * where the exact item is recorded (a learning track needs the track and the day).
+ */
+export type RecordPlan =
+  | { kind: 'log'; action: ActionKey }
+  | { kind: 'choose'; actions: ActionKey[] }
+  | { kind: 'open'; feature: Exclude<FeatureKey, null> };
+
+const PLANS: Record<string, RecordPlan> = {
+  'learn-track': { kind: 'open', feature: 'learning' },
+  'mitzvah-study': { kind: 'open', feature: 'mitzvot' },
+  tehillim: { kind: 'open', feature: 'tehillim' },
+  'prayer-any': { kind: 'choose', actions: ['shacharit', 'mincha', 'arvit', 'musaf'] },
+  'three-prayers': { kind: 'choose', actions: ['shacharit', 'mincha', 'arvit'] },
+};
+
+export function recordPlan(id: string): RecordPlan | null {
+  const h = habitById(id);
+  if (!h) return null;
+  return PLANS[id] ?? { kind: 'log', action: h.logAction };
+}
 
 export const HABIT_DOMAINS: Record<HabitDomain, { title: string; color: string; background: string }> = {
   blessings: { title: 'ברכות', color: '#946300', background: '#FFF5DB' },
@@ -53,7 +79,7 @@ export const HABITS: readonly HabitDefinition[] = Object.freeze([
   { id: 'shacharit', version: 1, title: 'שחרית', description: 'תפילת שחרית', domain: 'prayer', icon: 'sun', logAction: 'shacharit', matches: ['shacharit'], perDay: 1 },
   { id: 'mincha', version: 1, title: 'מנחה', description: 'תפילת מנחה', domain: 'prayer', icon: 'prayer', logAction: 'mincha', matches: ['mincha'], perDay: 1 },
   { id: 'three-prayers', version: 1, title: 'שלוש תפילות', description: 'שחרית, מנחה וערבית', domain: 'prayer', icon: 'moon', logAction: 'arvit', matches: ['shacharit', 'mincha', 'arvit'], perDay: 3 },
-  { id: 'tefillin', version: 1, title: 'הנחת תפילין', description: 'בכל יום חול', domain: 'prayer', icon: 'scroll', logAction: 'tefillin', matches: ['tefillin'], perDay: 1, menOnly: true },
+  { id: 'tefillin', version: 1, title: 'הנחת תפילין', description: 'בכל יום חול', domain: 'prayer', icon: 'scroll', logAction: 'tefillin', matches: ['tefillin'], perDay: 1, menOnly: true, weekdaysOnly: true },
   { id: 'chesed', version: 1, title: 'מעשה חסד', description: 'עזרה, ביקור, אירוח או כיבוד הורים', domain: 'chesed', icon: 'heart', logAction: 'chesed', matches: CHESED, perDay: 1 },
   { id: 'charity', version: 1, title: 'צדקה', description: 'נתינה בכל סכום – הסכום לא נרשם', domain: 'chesed', icon: 'charity', logAction: 'charity', matches: ['charity'], perDay: 1 },
   { id: 'parents', version: 1, title: 'כיבוד הורים', description: 'שיחה, עזרה או מחווה', domain: 'chesed', icon: 'user', logAction: 'parents', matches: ['parents'], perDay: 1 },
@@ -81,7 +107,15 @@ export function habitProgress(habit: HabitDefinition, dayLogs: ActivityLog[]): {
   return { value, needed: habit.perDay, done: value >= habit.perDay };
 }
 
-/** Habits done on a day, for the habits in force that day. */
+/** Daily habits are those chosen for every day; fewer days a week = a weekly habit (S10-01). */
+export const isDaily = (s: HabitSelection) => s.perWeek >= 7;
+
+/** Habits of a day's goal: daily ones, without weekday-only habits on a rest day. */
+export function dueHabits(goal: GoalSnapshot, restDay: boolean): HabitSelection[] {
+  return (goal.habits ?? []).filter((s) => isDaily(s) && !(restDay && habitById(s.id)?.weekdaysOnly));
+}
+
+/** Habits done on a day (all chosen habits, daily and weekly). */
 export function habitsDoneOn(goal: GoalSnapshot, dayLogs: ActivityLog[]): { done: string[]; total: number } {
   const selected = goal.habits ?? [];
   const done = selected.filter((s) => {
@@ -91,13 +125,29 @@ export function habitsDoneOn(goal: GoalSnapshot, dayLogs: ActivityLog[]): { done
   return { done: done.map((s) => s.id), total: selected.length };
 }
 
-/** Whether the personal daily goal was met on a day (habits if chosen, else distinct actions). */
-export function dayGoalMet(goal: GoalSnapshot, dayLogs: ActivityLog[], distinctActions: number): boolean {
+export type DayGoalStatus = 'met' | 'missed' | 'neutral';
+
+/**
+ * Personal goal of a day.
+ * - With habits: the daily habits due that day (habitTarget of them). A day with no daily habit
+ *   due (only weekly habits, or weekday-only habits on Shabbat) is neutral – met if any chosen
+ *   habit was done, otherwise not counted at all.
+ * - Without habits (older users): the "N distinct actions" goal.
+ */
+export function dayGoalStatus(goal: GoalSnapshot, dayLogs: ActivityLog[], distinctActions: number, restDay = false): DayGoalStatus {
   if (goal.habits && goal.habits.length > 0) {
-    const { done } = habitsDoneOn(goal, dayLogs);
-    return done.length >= Math.min(goal.habitTarget ?? goal.habits.length, goal.habits.length);
+    const due = dueHabits(goal, restDay);
+    const done = new Set(habitsDoneOn(goal, dayLogs).done);
+    if (due.length === 0) return done.size > 0 ? 'met' : 'neutral';
+    const target = Math.min(goal.habitTarget ?? due.length, due.length);
+    return due.filter((s) => done.has(s.id)).length >= target ? 'met' : 'missed';
   }
-  return distinctActions >= goal.dailyGoal;
+  return distinctActions >= goal.dailyGoal ? 'met' : 'missed';
+}
+
+/** Whether the personal daily goal was met on a day. */
+export function dayGoalMet(goal: GoalSnapshot, dayLogs: ActivityLog[], distinctActions: number, restDay = false): boolean {
+  return dayGoalStatus(goal, dayLogs, distinctActions, restDay) === 'met';
 }
 
 /** Normalises a habit choice: known ids only, no duplicates, 1–5 habits, 1–7 days a week. */

@@ -59,6 +59,7 @@ function count(ctx: ProgressContext, start: string, end: string) {
     const met = ctx.goalMet(k);
     if (k === ctx.todayKey && !met) continue;
     if (!has && ctx.isRestDay(k)) continue;
+    if (!met && ctx.neutralDay(k)) continue;
     eligibleDays += 1;
     if (met) goalDays += 1;
   }
@@ -76,8 +77,9 @@ export function periodStats(ctx: ProgressContext, period: Period): PeriodStats {
     else if (k < ctx.measureFrom && logs.length === 0) state = 'before';
     else if (ctx.goalMet(k)) state = 'goal';
     else if (k === ctx.todayKey) state = 'open';
+    else if (ctx.isRestDay(k) && logs.length === 0) state = 'rest';
+    else if (ctx.neutralDay(k)) state = 'rest';
     else if (logs.length > 0) state = 'partial';
-    else if (ctx.isRestDay(k)) state = 'rest';
     else state = 'empty';
     days.push({ key: k, label: period === 'month' ? String(Number(k.slice(8))) : HEB_DAYS[dow] ?? '', state, entries: logs.length });
   }
