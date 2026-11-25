@@ -199,9 +199,9 @@
 
 | בנייה | מצב |
 |---|---|
-| CI: בדיקות, מסד, הזרקה, אינטגרציה, חזרה בדפדפן, בדיקות קצה | CI_ALL |
-| Android debug APK ובדיקת 16 KB סטטית | CI_ANDROID |
-| iOS לסימולטור (ללא חתימה) | CI_IOS |
+| CI: בדיקות, מסד, הזרקה, אינטגרציה, חזרה בדפדפן, בדיקות קצה | **עבר** מקומיט 3c3c736 ([ריצה 45692663676](https://github.com/nissank-coder/MitzvotPlus/actions/runs/45692663676)). ריצה קודמת נכשלה על באג בבדיקה (סעיף 4) |
+| Android debug APK ובדיקת 16 KB סטטית | **עבר**. [APK להורדה](https://github.com/nissank-coder/MitzvotPlus/actions/runs/45692663676/artifacts/15059148033), זמין עד 9.12.2026. בתוך הקובץ: `build-identity.json` עם ה-`buildId` שיש לרשום אחרי בדיקה בטלפון |
+| iOS לסימולטור (ללא חתימה) | **עבר**: בנייה, התקנה והפעלה ([ריצה 45692663613](https://github.com/nissank-coder/MitzvotPlus/actions/runs/45692663613)). זה סימולטור בלבד |
 | 16 KB בזמן ריצה | **חסום:** אין `/dev/kvm` ואין וירטואליזציה ([16kb-runtime-check.txt](../evidence/round-12.5/16kb-runtime-check.txt)) |
 
 ## 6. חסום בסביבה הזו
