@@ -50,6 +50,61 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX IF NOT EXISTS idx_outbox_due ON outbox (status, next_attempt_at);`,
     ],
   },
+  {
+    version: 3,
+    name: 'account-spaces',
+    // Round 12.5: every row belongs to a data space – 'guest' or 'user:<account id>' – so one
+    // account's history, settings, queue and sync cursor can never mix with another's. Existing
+    // data is the guest's: who it belongs to is not guessed. The installation id is per device ('*').
+    statements: [
+      `CREATE TABLE activities_v3 (
+        space TEXT NOT NULL,
+        id TEXT NOT NULL,
+        date_key TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        action_key TEXT,
+        points_local INTEGER NOT NULL,
+        payload TEXT NOT NULL,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        PRIMARY KEY (space, id)
+      );`,
+      `INSERT INTO activities_v3 (space, id, date_key, created_at, action_key, points_local, payload, sync_status)
+        SELECT 'guest', id, date_key, created_at, action_key, points_local, payload, sync_status FROM activities;`,
+      `DROP TABLE activities;`,
+      `ALTER TABLE activities_v3 RENAME TO activities;`,
+      `CREATE INDEX idx_activities_date ON activities (space, date_key);`,
+      `CREATE TABLE outbox_v3 (
+        space TEXT NOT NULL,
+        event_id TEXT NOT NULL,
+        operation TEXT NOT NULL CHECK (operation IN ('create', 'void')),
+        target_event_id TEXT,
+        payload TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'deferred', 'accepted', 'rejected')),
+        attempts INTEGER NOT NULL DEFAULT 0,
+        next_attempt_at INTEGER NOT NULL,
+        reason_code TEXT,
+        accepted_score_delta INTEGER,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (space, event_id)
+      );`,
+      `INSERT INTO outbox_v3 (space, event_id, operation, target_event_id, payload, status, attempts, next_attempt_at, reason_code, accepted_score_delta, updated_at)
+        SELECT 'guest', event_id, operation, target_event_id, payload, status, attempts, next_attempt_at, reason_code, accepted_score_delta, updated_at FROM outbox;`,
+      `DROP TABLE outbox;`,
+      `ALTER TABLE outbox_v3 RENAME TO outbox;`,
+      `CREATE INDEX idx_outbox_due ON outbox (space, status, next_attempt_at);`,
+      `CREATE TABLE kv_v3 (
+        space TEXT NOT NULL,
+        key TEXT NOT NULL,
+        value TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (space, key)
+      );`,
+      `INSERT INTO kv_v3 (space, key, value, updated_at)
+        SELECT CASE WHEN key = 'installation_id' THEN '*' ELSE 'guest' END, key, value, updated_at FROM kv;`,
+      `DROP TABLE kv;`,
+      `ALTER TABLE kv_v3 RENAME TO kv;`,
+    ],
+  },
 ];
 
 /** Minimal database surface the migration runner needs – implemented by SQLite and by tests. */

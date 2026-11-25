@@ -170,7 +170,15 @@ export type AppState = {
   /** Goal history; the last entry is the current goal. */
   goalHistory: GoalSnapshot[];
   /** Sync bookkeeping (round 12): pull cursor and entries removed by another device. */
-  sync?: { cursor: number; remoteRemoved: string[]; lastSyncAt: number | null };
+  sync?: {
+    cursor: number;
+    remoteRemoved: string[];
+    lastSyncAt: number | null;
+    /** Fingerprint of the goal snapshots the server last accepted (round 12.5). */
+    goalsHash?: string | null;
+    /** Set when the user deleted the cloud copy: re-enabling backup asks before uploading again. */
+    cloudDeletedAt?: number | null;
+  };
   /** Personal challenges joined (round 9, C1). */
   challenges: ChallengeEnrollment[];
   /** Achievements earned (round 9, C1). */

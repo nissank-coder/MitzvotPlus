@@ -1,40 +1,74 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { accountApi, AccountApi, AccountUser, Consent } from '../backend/account';
 import { supabaseClient } from '../backend/supabase';
 import { BACKEND } from '../backend/config';
 import { useAppStore } from '../store/AppStore';
-import type { SyncStatus } from '../sync/engine';
+import type { SyncErrorCode, SyncStatus } from '../sync/engine';
 import { ConfirmDialog } from './ConfirmDialog';
 
 /**
- * "חשבון וסנכרון" (round 12) – development / staging builds only (BACKEND_ENABLED); lazy-loaded so
- * production bundles contain none of it. Guest by default; sign-in with an e-mail one-time code.
- * Backup is OFF until the user turns it on; private actions never leave the device.
+ * "חשבון וסנכרון" – development / staging builds only (BACKEND_ENABLED); lazy-loaded so production
+ * bundles contain none of it. Guest by default; sign-in with an e-mail one-time code.
+ *
+ * Round 12.5 – every account has its own data space on the device (history, settings, queue,
+ * cursor). Nothing moves between them unless the user confirms it: guest → account when signing
+ * in, or a deleted account → guest. Signing out returns to the guest's own data.
  */
+const GUEST = 'guest';
+const spaceOf = (u: AccountUser) => `user:${u.id}`;
+
 const STATUS_TEXT: Record<SyncStatus['state'], string> = {
   off: 'כבוי',
   'signed-out': 'לא מחובר',
   'consent-needed': 'גיבוי כבוי – לא נשלח דבר',
   syncing: 'מסנכרן…',
   ok: 'מסונכרן',
-  error: 'שגיאה – ננסה שוב',
+  error: 'לא סונכרן',
+  cancelled: 'הסנכרון הופסק',
   'account-deleted': 'החשבון נמחק',
 };
+const ERROR_TEXT: Record<SyncErrorCode, string> = {
+  offline: 'אין חיבור לשרת. הנתונים שמורים במכשיר וישלחו בפעם הבאה.',
+  not_authenticated: 'החיבור לחשבון פג. התחברו שוב.',
+  consent_required: 'הגיבוי כבוי בשרת. לא נשלח דבר.',
+  account_deleted: 'החשבון נמחק.',
+  rate_limited: 'יותר מדי בקשות. ננסה שוב מאוחר יותר.',
+  local_save_failed: 'השמירה במכשיר נכשלה, ולכן לא נשלח ולא התקבל דבר.',
+  unknown: 'שגיאה בסנכרון. הנתונים שמורים במכשיר.',
+};
+
+type Dialog = 'transfer' | 'logout' | 'logout-wipe' | 'delete' | 'revoke' | 'reupload' | null;
 
 export default function AccountSection() {
-  const { runSync } = useAppStore();
+  const { runSync, cancelSync, space, spaceCount, switchSpace, state, decideReupload, markCloudDeleted } = useAppStore();
   const [api, setApi] = useState<AccountApi | null>(null);
   const [user, setUser] = useState<AccountUser | null>(null);
+  const [pendingUser, setPendingUser] = useState<AccountUser | null>(null);
+  const [guestCount, setGuestCount] = useState(0);
   const [consent, setConsentState] = useState<Consent>({ cloudBackup: false, social: false });
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [status, setStatus] = useState<SyncStatus>({ state: 'signed-out' });
   const [message, setMessage] = useState<string | null>(null);
-  const [confirm, setConfirm] = useState<'delete' | 'logout' | 'revoke' | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [dialog, setDialog] = useState<Dialog>(null);
+  const [busy, setBusy] = useState(false);
+  // ConfirmDialog calls onClose after onConfirm too: "cancel" actions run only if not confirmed.
+  const confirmed = useRef(false);
+  const onConfirmOf = (fn: () => void) => () => {
+    confirmed.current = true;
+    fn();
+  };
+  const onCancelOf = (fn: () => void) => () => {
+    const wasConfirmed = confirmed.current;
+    confirmed.current = false;
+    setDialog(null);
+    if (!wasConfirmed) fn();
+  };
 
   useEffect(() => {
-    supabaseClient().then(async (sb) => {
+    void supabaseClient().then(async (sb) => {
       const a = accountApi(sb);
       setApi(a);
       const u = await a.currentUser();
@@ -43,35 +77,91 @@ export default function AccountSection() {
     });
   }, []);
 
+  const run = async (fn: () => Promise<void>) => {
+    setMessage(null);
+    setNotice(null);
+    setBusy(true);
+    try {
+      await fn();
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      setMessage(m === 'local_save_failed' ? ERROR_TEXT.local_save_failed : m);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** After a successful sign-in: show this account's own data; offer to move the guest's data. */
+  const enterAccount = async (u: AccountUser) => {
+    const target = spaceOf(u);
+    if (space === target) return;
+    const n = space === GUEST ? await spaceCount(GUEST) : 0;
+    if (n > 0) {
+      setGuestCount(n);
+      setPendingUser(u);
+      setDialog('transfer');
+      return;
+    }
+    await switchSpace(target);
+  };
+
   const sync = useCallback(async () => {
-    if (!api || !user) return;
+    if (!api || !user || space !== spaceOf(user)) return;
     setStatus({ state: 'syncing' });
     const s = await runSync(api.remote(), consent.cloudBackup);
     setStatus(s);
     if (s.state === 'account-deleted') setUser(null);
-  }, [api, user, consent.cloudBackup, runSync]);
+  }, [api, user, space, consent.cloudBackup, runSync]);
 
-  const run = async (fn: () => Promise<void>) => {
-    setMessage(null);
-    try {
-      await fn();
-    } catch (e) {
-      setMessage(e instanceof Error ? e.message : String(e));
-    }
+  const leave = async (wipe: boolean) => {
+    if (!api || !user) return;
+    const mine = spaceOf(user);
+    cancelSync();
+    // Save and switch first: if the device cannot save, the user stays signed in and nothing is lost.
+    await switchSpace(GUEST, wipe ? { deleteSpace: mine } : {});
+    const { serverRevoked } = await api.signOut();
+    setUser(null);
+    setStatus({ state: 'signed-out' });
+    setNotice(serverRevoked ? 'התנתקת.' : 'התנתקת במכשיר הזה. השרת לא היה זמין, והחיבור הישן יפוג מעצמו.');
   };
 
   if (!api) return <p className="text-[13px] text-[#5C6F82]">טוען חשבון…</p>;
 
+  const mismatch = user !== null && space !== spaceOf(user);
+  const orphanAccountSpace = user === null && space !== GUEST;
+
   return (
     <div dir="rtl" className="flex flex-col gap-3" data-testid="account-section">
       <p className="text-[11px] text-[#8A5A00] bg-[#FFF5DB] rounded px-2 py-1 self-start">שרת {BACKEND.env === 'staging' ? 'בדיקות (staging)' : 'פיתוח'} – לא ייצור</p>
+
+      {status.state === 'account-deleted' && space !== GUEST ? (
+        <div className="flex flex-col gap-2 rounded-[14px] bg-[#FDF0EF] p-3" data-testid="account-deleted">
+          <p className="text-[13px] text-[#17324D]">החשבון נמחק בשרת. הנתונים שלו עדיין במכשיר הזה. מה לעשות בהם?</p>
+          <button type="button" disabled={busy} onClick={() => run(async () => { await switchSpace(GUEST, { transferFrom: space }); await api.signOut(); setStatus({ state: 'signed-out' }); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] font-bold text-[#17324D]">
+            להעביר אותם לשימוש כאורח
+          </button>
+          <button type="button" disabled={busy} onClick={() => run(async () => { await switchSpace(GUEST, { deleteSpace: space }); await api.signOut(); setStatus({ state: 'signed-out' }); })} className="min-h-[44px] rounded-[14px] text-[#C95B53] font-black">
+            למחוק אותם מהמכשיר
+          </button>
+        </div>
+      ) : null}
+
+      {orphanAccountSpace && status.state !== 'account-deleted' ? (
+        <div className="flex flex-col gap-2 rounded-[14px] bg-[#F4F8FB] p-3">
+          <p className="text-[13px] text-[#17324D]">החיבור לחשבון פג. הנתונים המוצגים הם של החשבון. התחברו שוב כדי להמשיך לסנכרן.</p>
+          <button type="button" disabled={busy} onClick={() => run(() => switchSpace(GUEST))} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] font-bold text-[#17324D]">
+            מעבר לנתוני האורח
+          </button>
+        </div>
+      ) : null}
+
       {!user ? (
         step === 'email' ? (
           <div className="flex flex-col gap-2">
-            <p className="text-[13px] text-[#5C6F82]">אפשר להמשיך כאורח. חשבון מאפשר גיבוי והחלפת מכשיר – ההיסטוריה שבמכשיר נשמרת.</p>
+            <p className="text-[13px] text-[#5C6F82]">אפשר להמשיך כאורח. לכל חשבון יש נתונים נפרדים במכשיר. מה שנרשם כאורח עובר לחשבון רק אם תאשרו זאת.</p>
             <label className="text-[13px] font-bold text-[#17324D]" htmlFor="acct-email">דוא״ל</label>
             <input id="acct-email" type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3" />
-            <button type="button" disabled={!/^\S+@\S+\.\S+$/.test(email)} onClick={() => run(async () => { await api.requestCode(email); setStep('code'); })} className="min-h-[48px] rounded-[14px] bg-[#2AAE9B] disabled:bg-[#A7B4C0] text-white font-extrabold">
+            <button type="button" disabled={busy || !/^\S+@\S+\.\S+$/.test(email)} onClick={() => run(async () => { await api.requestCode(email); setStep('code'); })} className="min-h-[48px] rounded-[14px] bg-[#2AAE9B] disabled:bg-[#A7B4C0] text-white font-extrabold">
               שליחת קוד התחברות
             </button>
           </div>
@@ -79,12 +169,33 @@ export default function AccountSection() {
           <div className="flex flex-col gap-2">
             <label className="text-[13px] font-bold text-[#17324D]" htmlFor="acct-code">הקוד שנשלח ל-{email}</label>
             <input id="acct-code" inputMode="numeric" autoComplete="one-time-code" dir="ltr" value={code} onChange={(e) => setCode(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3 tracking-widest" />
-            <button type="button" onClick={() => run(async () => { const u = await api.verifyCode(email, code); setUser(u); setConsentState(await api.consent()); setStep('email'); setCode(''); })} className="min-h-[48px] rounded-[14px] bg-[#2AAE9B] text-white font-extrabold">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() =>
+                run(async () => {
+                  const u = await api.verifyCode(email, code);
+                  setUser(u);
+                  setConsentState(await api.consent());
+                  setStep('email');
+                  setCode('');
+                  setStatus({ state: 'off' });
+                  await enterAccount(u);
+                })
+              }
+              className="min-h-[48px] rounded-[14px] bg-[#2AAE9B] text-white font-extrabold"
+            >
               התחברות
             </button>
             <button type="button" onClick={() => setStep('email')} className="min-h-[40px] text-[13px] text-[#5C6F82]">חזרה</button>
           </div>
         )
+      ) : mismatch ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-[14px] text-[#17324D]">מחובר: <span dir="ltr">{user.email}</span>. הנתונים המוצגים אינם של החשבון הזה.</p>
+          <button type="button" disabled={busy} onClick={() => run(() => enterAccount(user))} className="min-h-[44px] rounded-[14px] bg-[#2AAE9B] text-white font-extrabold">מעבר לנתוני החשבון</button>
+          <button type="button" disabled={busy} onClick={() => run(async () => { await api.signOut(); setUser(null); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">התנתקות</button>
+        </div>
       ) : (
         <div className="flex flex-col gap-2">
           <p className="text-[14px] text-[#17324D]">מחובר: <span dir="ltr">{user.email}</span></p>
@@ -92,52 +203,113 @@ export default function AccountSection() {
             <input
               type="checkbox"
               checked={consent.cloudBackup}
-              onChange={(e) => (e.target.checked ? run(async () => { await api.setConsent({ ...consent, cloudBackup: true }); setConsentState({ ...consent, cloudBackup: true }); }) : setConfirm('revoke'))}
+              onChange={(e) =>
+                e.target.checked
+                  ? run(async () => {
+                      await api.setConsent({ ...consent, cloudBackup: true });
+                      setConsentState({ ...consent, cloudBackup: true });
+                      if (state.sync?.cloudDeletedAt) setDialog('reupload');
+                    })
+                  : setDialog('revoke')
+              }
               className="w-5 h-5 accent-[#2AAE9B]"
             />
             גיבוי בענן של פעולות שאינן פרטיות
           </label>
           <p className="text-[11px] text-[#5C6F82]">שמירת הלשון, מודעות לדיבור, צדקה, מתנות לאביונים, ביקור חולים והרגל אישי לעולם לא נשלחים.</p>
-          <div className="flex flex-row items-center justify-between rounded-[14px] bg-[#F4F8FB] px-3 min-h-[44px]" role="status">
+          <div className="flex flex-col rounded-[14px] bg-[#F4F8FB] px-3 py-2 min-h-[44px] justify-center" role="status" data-testid="sync-status">
             <span className="text-[13px] font-bold text-[#17324D]">סנכרון: {STATUS_TEXT[status.state]}</span>
-            {status.state === 'ok' || status.state === 'error' ? <span className="text-[11px] text-[#5C6F82]">ממתינים: {status.pending}</span> : null}
+            {status.state === 'error' ? <span className="text-[12px] text-[#C95B53]">{ERROR_TEXT[status.code]} ממתינים: {status.pending}</span> : null}
+            {status.state === 'ok' ? (
+              <span className="text-[11px] text-[#5C6F82]">
+                נשלחו {status.pushed}, התקבלו {status.pulled}, ממתינים {status.pending}
+                {status.rejected ? `, ${status.rejected} נשארו במכשיר בלבד` : ''}
+              </span>
+            ) : null}
           </div>
-          <button type="button" onClick={() => void sync()} className="min-h-[44px] rounded-[14px] border border-[#2AAE9B] text-[#1E8C7C] font-extrabold">סנכרון עכשיו</button>
-          <button type="button" onClick={() => run(async () => { const data = await api.exportServerData(); const { saveExport } = await import('../lib/exportData'); await saveExport(JSON.stringify(data, null, 2), 'mitzvot-plus-cloud-export.json'); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">
+          <button type="button" disabled={busy || status.state === 'syncing'} onClick={() => void sync()} className="min-h-[44px] rounded-[14px] border border-[#2AAE9B] text-[#1E8C7C] font-extrabold">סנכרון עכשיו</button>
+          <button type="button" disabled={busy} onClick={() => run(async () => { const data = await api.exportServerData(); const { saveExport } = await import('../lib/exportData'); await saveExport(JSON.stringify(data, null, 2), 'mitzvot-plus-cloud-export.json'); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">
             ייצוא המידע שבשרת
           </button>
-          <button type="button" onClick={() => setConfirm('logout')} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">התנתקות</button>
-          <button type="button" onClick={() => setConfirm('delete')} className="min-h-[44px] rounded-[14px] text-[#C95B53] font-black">מחיקת החשבון</button>
+          <button type="button" disabled={busy} onClick={() => setDialog('logout')} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">התנתקות</button>
+          <button type="button" disabled={busy} onClick={() => setDialog('logout-wipe')} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] text-[#17324D] font-bold">התנתקות ומחיקת נתוני החשבון מהמכשיר</button>
+          <button type="button" disabled={busy} onClick={() => setDialog('delete')} className="min-h-[44px] rounded-[14px] text-[#C95B53] font-black">מחיקת החשבון</button>
         </div>
       )}
+      {notice ? <p role="status" className="text-[12px] text-[#5C6F82]">{notice}</p> : null}
       {message ? <p role="alert" className="text-[12px] text-[#C95B53]">{message}</p> : null}
+
       <ConfirmDialog
-        open={confirm === 'revoke'}
-        title="כיבוי הגיבוי"
-        message="לא יישלח עוד מידע. למחוק גם את מה שכבר גובה בשרת? (הנתונים במכשיר נשארים)"
-        confirmLabel="כיבוי ומחיקה מהשרת"
-        cancelLabel="ביטול"
-        onConfirm={() => run(async () => { await api.setConsent({ ...consent, cloudBackup: false }, true); setConsentState({ ...consent, cloudBackup: false }); })}
-        onClose={() => setConfirm(null)}
+        open={dialog === 'transfer'}
+        title="להעביר את נתוני האורח לחשבון?"
+        message={`במכשיר יש ${guestCount} רישומים שנעשו כאורח. אפשר להעביר אותם לחשבון, או להשאיר אותם כאורח ולהתחיל בחשבון נתונים נפרדים.`}
+        confirmLabel="העברה לחשבון"
+        cancelLabel="להשאיר כאורח"
+        onConfirm={onConfirmOf(() => {
+          if (pendingUser) void run(() => switchSpace(spaceOf(pendingUser), { transferFrom: GUEST }));
+          setPendingUser(null);
+        })}
+        onClose={onCancelOf(() => {
+          if (pendingUser) void run(() => switchSpace(spaceOf(pendingUser)));
+          setPendingUser(null);
+        })}
       />
       <ConfirmDialog
-        open={confirm === 'logout'}
+        open={dialog === 'revoke'}
+        title="כיבוי הגיבוי"
+        message="הסנכרון ייעצר מיד ולא יישלח עוד מידע. למחוק גם את מה שכבר גובה בשרת? הנתונים במכשיר נשארים."
+        confirmLabel="כיבוי ומחיקה מהשרת"
+        cancelLabel="כיבוי בלבד"
+        destructive
+        onConfirm={onConfirmOf(() => void run(async () => { cancelSync(); await api.setConsent({ ...consent, cloudBackup: false }, true); markCloudDeleted(); setConsentState({ ...consent, cloudBackup: false }); setStatus({ state: 'consent-needed' }); }))}
+        onClose={onCancelOf(() => void run(async () => { cancelSync(); await api.setConsent({ ...consent, cloudBackup: false }); setConsentState({ ...consent, cloudBackup: false }); setStatus({ state: 'consent-needed' }); }))}
+      />
+      <ConfirmDialog
+        open={dialog === 'reupload'}
+        title="להעלות שוב את ההיסטוריה?"
+        message="הגיבוי שבשרת נמחק קודם. אפשר להעלות שוב את כל מה שבמכשיר, או לגבות רק מה שיירשם מעכשיו."
+        confirmLabel="להעלות את כל ההיסטוריה"
+        cancelLabel="רק מעכשיו"
+        onConfirm={onConfirmOf(() => void run(async () => { await decideReupload(true); }))}
+        onClose={onCancelOf(() => void decideReupload(false))}
+      />
+      <ConfirmDialog
+        open={dialog === 'logout'}
         title="התנתקות"
-        message="הנתונים נשארים במכשיר כאורח. במכשיר משותף אפשר למחוק אותם במסך זה (מחיקת כל הנתונים)."
+        message="תחזרו לנתוני האורח. נתוני החשבון נשארים שמורים במכשיר, ויחזרו כשתתחברו שוב. הם לא יוצגו לאורח."
         confirmLabel="התנתקות"
         cancelLabel="ביטול"
-        onConfirm={() => run(async () => { await api.signOut(); setUser(null); setStatus({ state: 'signed-out' }); })}
-        onClose={() => setConfirm(null)}
+        onConfirm={() => run(() => leave(false))}
+        onClose={() => setDialog(null)}
       />
       <ConfirmDialog
-        open={confirm === 'delete'}
+        open={dialog === 'logout-wipe'}
+        title="התנתקות ומחיקה מהמכשיר"
+        message="נתוני החשבון יימחקו מהמכשיר הזה (למשל במכשיר משותף). מה שגובה בשרת נשאר. פעולות פרטיות שלא גובו יאבדו."
+        confirmLabel="התנתקות ומחיקה"
+        cancelLabel="ביטול"
+        destructive
+        onConfirm={() => run(() => leave(true))}
+        onClose={() => setDialog(null)}
+      />
+      <ConfirmDialog
+        open={dialog === 'delete'}
         title="מחיקת החשבון"
-        message="החשבון וכל המידע שבשרת יימחקו לצמיתות. הנתונים במכשיר יישארו כאורח, אלא אם תמחקו גם אותם."
+        message="החשבון וכל המידע שבשרת יימחקו לצמיתות, וגם נתוני החשבון במכשיר הזה. מומלץ לייצא קודם. נתוני האורח לא נפגעים."
         confirmLabel="מחיקת החשבון"
         cancelLabel="ביטול"
         destructive
-        onConfirm={() => run(async () => { await api.deleteAccount(); setUser(null); setStatus({ state: 'account-deleted' }); })}
-        onClose={() => setConfirm(null)}
+        onConfirm={() =>
+          run(async () => {
+            const mine = spaceOf(user!);
+            cancelSync();
+            await api.deleteAccount();
+            setUser(null);
+            setStatus({ state: 'signed-out' });
+            await switchSpace(GUEST, { deleteSpace: mine });
+          })
+        }
+        onClose={() => setDialog(null)}
       />
     </div>
   );

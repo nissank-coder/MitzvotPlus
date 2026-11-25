@@ -214,7 +214,7 @@ describe('S10-02 privacy: the queue is default-deny', () => {
     await createSqlStorage(sqlite(db)).save(s);
     // Simulate a queue written by an older version (before the policy existed).
     const priv = s.logs.find((l) => l.actionKey === 'speechPractice')!;
-    db.prepare("INSERT INTO outbox (event_id, operation, payload, status, attempts, next_attempt_at, updated_at) VALUES (?, 'create', '{}', 'pending', 0, 0, 0)").run(priv.id);
+    db.prepare("INSERT INTO outbox (space, event_id, operation, payload, status, attempts, next_attempt_at, updated_at) VALUES ('guest', ?, 'create', '{}', 'pending', 0, 0, 0)").run(priv.id);
     const upgraded = createSqlStorage(sqlite(db));
     const ob = await upgraded.listOutbox();
     expect(ob.map((o) => o.eventId)).toEqual([s.logs.find((l) => l.actionKey === 'chesed')!.id]);

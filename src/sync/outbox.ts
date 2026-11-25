@@ -265,7 +265,7 @@ export async function syncOnce(
 ): Promise<OutboxItem[]> {
   if (!gate.enabled || !gate.consent.cloudBackup) return items;
   // At most MAX_BATCH per request (the server refuses more); the caller repeats for the rest.
-  const due = dueItems(items, now)
+  const due = dueItems(items, now, MAX_BATCH)
     .filter((i) => i.operation !== 'create' || privacyFor(payloadAction(i)).cloudBackup)
     .slice(0, MAX_BATCH);
   if (due.length === 0) return items;
