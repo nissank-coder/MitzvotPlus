@@ -7,6 +7,7 @@ import { ActionInput, buildLog } from '../lib/scoring';
 import { goalsOn, withGoals } from '../lib/metrics';
 import { cleanHabits } from '../lib/habits';
 import { challengeById, challengeWindow } from '../lib/challenges';
+import { logFromRemote, RemoteEvent } from '../sync/engine';
 import { emptyTimer, resetTimer, SpeechTimer, startTimer, undoReset } from '../lib/speechTimer';
 import { ActivityLog, AppSettings, AppState, Award, BlessingCategory, GoalSnapshot, HabitSelection, IconName, LogKind, UserProfile } from '../types';
 
@@ -249,6 +250,8 @@ export type Action =
   | { type: 'leaveChallenge'; payload: { instanceId: string; now: number } }
   | { type: 'completeChallenges'; payload: { instanceIds: string[]; now: number } }
   | { type: 'grantAwards'; payload: Award[] }
+  | { type: 'applyRemoteEvents'; payload: RemoteEvent[] }
+  | { type: 'resetSyncCursor' }
   | { type: 'addAction'; payload: ActionInput }
   | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
@@ -473,6 +476,37 @@ export function reducer(state: AppState, action: Action): AppState {
       );
       return fresh.length === 0 ? state : { ...state, awards: [...state.awards, ...fresh] };
     }
+
+    case 'applyRemoteEvents': {
+      // Entries from other devices of the same account (round 12 sync). Idempotent: an event already
+      // applied (or made here) changes nothing. A deletion from another device wins.
+      const sync = state.sync ?? { cursor: 0, remoteRemoved: [], lastSyncAt: null };
+      const ids = new Set(state.logs.map((l) => l.id));
+      let logs = state.logs;
+      let cursor = sync.cursor;
+      const removed = new Set(sync.remoteRemoved);
+      const voided = new Set<string>();
+      for (const ev of action.payload) {
+        cursor = Math.max(cursor, ev.seq);
+        if (ev.operation === 'void' && ev.target_event_id) voided.add(ev.target_event_id);
+      }
+      for (const ev of action.payload) {
+        if (ev.operation !== 'create' || ids.has(ev.event_id) || voided.has(ev.event_id) || removed.has(ev.event_id)) continue;
+        const log = logFromRemote(ev);
+        if (log) {
+          logs = [log, ...logs];
+          ids.add(log.id);
+        }
+      }
+      if (voided.size > 0) {
+        logs = logs.filter((l) => !voided.has(l.id) && !(l.bundleOf && voided.has(l.bundleOf)));
+        for (const id of voided) removed.add(id);
+      }
+      return { ...state, logs, sync: { cursor, remoteRemoved: [...removed].slice(-500), lastSyncAt: Date.now() } };
+    }
+
+    case 'resetSyncCursor':
+      return { ...state, sync: { cursor: 0, remoteRemoved: [], lastSyncAt: null } };
 
     case 'updateSettings':
       return { ...state, settings: { ...state.settings, ...action.payload } };

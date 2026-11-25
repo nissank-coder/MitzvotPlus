@@ -238,6 +238,8 @@ export function applyTransportFailure(item: OutboxItem, now: number, random?: ()
  * One sync pass: send due items, apply receipts. Items without a receipt in a successful
  * response are treated as a temporary failure (retried), never dropped.
  */
+export const MAX_BATCH = 100;
+
 /** Conditions checked at the moment of sending (round 11 §3): sync on AND active consent. */
 export type SyncGate = { enabled: boolean; consent: { cloudBackup: boolean } };
 
@@ -262,9 +264,10 @@ export async function syncOnce(
   random?: () => number,
 ): Promise<OutboxItem[]> {
   if (!gate.enabled || !gate.consent.cloudBackup) return items;
-  const due = dueItems(items, now).filter(
-    (i) => i.operation !== 'create' || privacyFor(payloadAction(i)).cloudBackup,
-  );
+  // At most MAX_BATCH per request (the server refuses more); the caller repeats for the rest.
+  const due = dueItems(items, now)
+    .filter((i) => i.operation !== 'create' || privacyFor(payloadAction(i)).cloudBackup)
+    .slice(0, MAX_BATCH);
   if (due.length === 0) return items;
   const updated = new Map<string, OutboxItem>();
   try {

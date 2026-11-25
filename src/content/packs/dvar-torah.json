@@ -1,6 +1,7 @@
 {
   "schema": 1,
-  "note": "Approved Dvar Torah items only. Each item needs a matching APPROVED row in docs/mobile-readiness/content_license_manifest.csv. See docs/mobile-readiness/dvar-torah-content-workflow.md. Dates map to items in `schedule` (YYYY-MM-DD → id); see round-11/dvar-torah-work-package.csv.",
+  "note": "Approved Dvar Torah items only. Each item needs a matching APPROVED row in docs/mobile-readiness/content_license_manifest.csv. `daily` = one item per exact date (round-12/dvar-torah-daily-work-package.csv); `weekly` = parasha content shown for the week (round-11/dvar-torah-work-package.csv).",
   "items": [],
-  "schedule": {}
+  "weekly": {},
+  "daily": {}
 }

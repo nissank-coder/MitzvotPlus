@@ -1,0 +1,7 @@
+date: 2026-11-25T16:50:09Z
+commit: 32b51b9
+$ ls -l /dev/kvm
+ls: cannot access '/dev/kvm': No such file or directory
+$ grep -c -E 'vmx|svm' /proc/cpuinfo
+0
+result: BLOCKED – no hardware virtualisation in this container, an Android emulator (16 KB page-size system image) cannot run. Static 16 KB alignment of native libraries is checked in CI (android-debug job).

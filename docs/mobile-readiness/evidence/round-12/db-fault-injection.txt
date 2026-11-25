@@ -1,0 +1,8 @@
+== injected: open profile policy + client can write scores ==
+DB: 52 passed, 5 failed
+  FAIL 2: A sees exactly one profile (own)
+  FAIL 2: A cannot read B profile
+  FAIL 6: a client cannot set its own score
+  FAIL 6: a client cannot change its score
+  FAIL 7: server-side score equals the client engine – 99999 vs 46
+exit=1

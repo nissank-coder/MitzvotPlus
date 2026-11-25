@@ -90,8 +90,9 @@ describe('bundled dvar torah pack', () => {
 });
 
 describe('bundled schedule (round 11)', async () => {
-  const { SCHEDULE, scheduleProblems, CONTENT } = await import('../content/registry');
-  it('every scheduled date points at an approved bundled item', () => {
-    expect(scheduleProblems({ ...SCHEDULE }, CONTENT)).toEqual([]);
+  const { DAILY_SCHEDULE, WEEKLY_SCHEDULE, scheduleProblems, CONTENT } = await import('../content/registry');
+  it('every scheduled date (daily and weekly) points at an approved bundled item', () => {
+    expect(scheduleProblems({ ...DAILY_SCHEDULE }, CONTENT)).toEqual([]);
+    expect(scheduleProblems({ ...WEEKLY_SCHEDULE }, CONTENT)).toEqual([]);
   });
 });

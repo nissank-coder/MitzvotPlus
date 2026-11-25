@@ -89,6 +89,16 @@ async function verify(a: SqlExecutor, b: SqlExecutor): Promise<string | null> {
   return null;
 }
 
+/**
+ * Hardening for the encrypted database (round 12): temporary tables and sorts stay in memory (no
+ * unencrypted temp files), deleted content is overwritten. SQLCipher encrypts every page, including
+ * the WAL / journal, with the same key.
+ */
+export async function hardenEncrypted(db: SqlExecutor): Promise<void> {
+  await db.execute('PRAGMA temp_store = MEMORY;');
+  await db.execute('PRAGMA secure_delete = ON;');
+}
+
 export async function openEncryptedDatabase(adapter: DbAdapter, secure: SecureStore): Promise<EncryptedOpenResult> {
   const active = await secure.get(PARTITION, ACTIVE);
   let key = await secure.get(PARTITION, KEY);
@@ -112,6 +122,7 @@ export async function openEncryptedDatabase(adapter: DbAdapter, secure: SecureSt
   // Already migrated: open, and remove the old plain database only once this open succeeded.
   if (active === ENCRYPTED_DB && encExists) {
     const db = await adapter.open(ENCRYPTED_DB, key);
+    await hardenEncrypted(db);
     await runMigrations(db);
     // The encrypted copy was verified row by row at migration time. It may have new entries since,
     // so the old copy is not compared again: it is removed once the encrypted database opened on a
@@ -128,6 +139,7 @@ export async function openEncryptedDatabase(adapter: DbAdapter, secure: SecureSt
 
   if (!plainExists) {
     const db = await adapter.open(ENCRYPTED_DB, key);
+    await hardenEncrypted(db);
     await runMigrations(db);
     await secure.set(PARTITION, ACTIVE, ENCRYPTED_DB);
     return { status: 'fresh', db };
@@ -140,6 +152,7 @@ export async function openEncryptedDatabase(adapter: DbAdapter, secure: SecureSt
   try {
     if (encExists) await adapter.remove(ENCRYPTED_DB); // a half-finished earlier attempt, never active
     enc = await adapter.open(ENCRYPTED_DB, key);
+    await hardenEncrypted(enc);
     await runMigrations(enc);
     await copyAll(plain, enc);
     const diff = await verify(plain, enc);

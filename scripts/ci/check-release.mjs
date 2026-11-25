@@ -16,6 +16,8 @@ const text = files.filter((f) => /\.(js|html|css|json)$/.test(f)).map((f) => [f,
 const forbidden = [
   ['TEST-ONLY-NOT-FOR-DISTRIBUTION', 'TEST_ONLY content license marker'],
   ['DRAFT-NOT-APPROVED', 'draft practical content (not approved, D08)'],
+  ['supabase-js', 'backend client in a production build (sync must stay off in production)'],
+  ['submit_events', 'sync code in a production build'],
   ['להתקשר למישהו שלא דיברת איתו', 'draft practical content text'],
   ['TEST_ONLY', 'TEST_ONLY content item'],
   ['test-placeholder', 'placeholder Dvar Torah id'],

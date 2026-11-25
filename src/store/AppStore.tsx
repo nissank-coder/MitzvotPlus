@@ -17,6 +17,8 @@ import {
   ZmanimForDay,
 } from '../lib/jewishCalendar';
 import { ActionInput, buildLog } from '../lib/scoring';
+import { syncNow, SyncRemote, SyncStatus } from '../sync/engine';
+import type { SqlStateStorage } from '../storage/sqliteStorage';
 import { restRuleFor } from '../lib/restRule';
 import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
 import { AppSettings, AppState, BlessingCategory, HabitSelection, UserProfile } from '../types';
@@ -80,6 +82,11 @@ type StoreValue = {
    * number on a button always matches what is recorded (0 if it would be a duplicate or capped).
    */
   previewPoints: (key: ActionKey, options?: ActionOptions) => number;
+  /**
+   * Runs one two-way sync with the given server (round 12). Only on the phone's SQLite storage (the
+   * browser storage has no outbox); the caller passes the user's current consent.
+   */
+  runSync: (remote: SyncRemote, consent: boolean) => Promise<SyncStatus>;
   /** Saves / unsaves a specific content item (id@version). */
   toggleSavedContent: (ref: string) => void;
   /** Confirms how many blessings were said as part of an entry (replaces any earlier number). */
@@ -295,6 +302,27 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       leaveChallenge: (instanceId) => dispatch({ type: 'leaveChallenge', payload: { instanceId, now: Date.now() } }),
       celebration,
       dismissCelebration: () => setCelebration(null),
+      runSync: async (remote, consent) => {
+        const storage = storageRef.current as (SqlStateStorage & { kind: 'sqlite' }) | null;
+        if (!storage || storage.kind !== 'sqlite' || !('listOutbox' in storage)) return { state: 'error', code: 'unknown', at: Date.now(), pending: 0 };
+        await flush();
+        let logs = state.logs;
+        let cursor = state.sync?.cursor ?? 0;
+        return syncNow({
+          listOutbox: () => storage.listOutbox(),
+          saveOutbox: (i) => storage.saveOutbox(i),
+          installationId: () => storage.installationId(),
+          logs: () => logs,
+          cursor: () => cursor,
+          applyRemote: (events) => {
+            dispatch({ type: 'applyRemoteEvents', payload: events });
+            cursor = Math.max(cursor, ...events.map((e) => e.seq));
+          },
+          remote,
+          gate: { enabled: true, consent: { cloudBackup: consent } },
+          now: Date.now,
+        });
+      },
       addAction,
       previewPoints,
       addBlessing: (category, title) => addAction('blessing', { category, title }),
