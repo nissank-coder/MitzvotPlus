@@ -69,7 +69,7 @@ jobs:
     name: Database – migrations, RLS and server functions (PostgreSQL 16)
     runs-on: ubuntu-latest
     needs: verify
-    timeout-minutes: 15
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:16
@@ -89,6 +89,21 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: node scripts/db/test-db.mjs
+      - name: Fault injection – the same tests must FAIL on a deliberately broken schema
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_FAULT: supabase/tests/fault-injection.sql
+        run: "! node scripts/db/test-db.mjs > /dev/null"
+      - name: Integration – the app's account + sync code against the local Supabase stand-in
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: npm run test:integration
+      - name: Install Chromium for Playwright (version from package-lock)
+        run: npx playwright install --with-deps chromium
+      - name: Browser rehearsal of a staging build (CSP, sign-in, data spaces, consent, deletion)
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: npm run e2e:staging
 
   e2e:
     name: End-to-end scenarios (production build)

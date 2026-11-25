@@ -37,10 +37,15 @@ const ERROR_TEXT: Record<SyncErrorCode, string> = {
   unknown: 'שגיאה בסנכרון. הנתונים שמורים במכשיר.',
 };
 
+const AUTH_TEXT: Record<string, string> = {
+  code_invalid_or_expired: 'הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.',
+  code_rate_limited: 'אפשר לבקש קוד חדש בעוד דקה.',
+};
+
 type Dialog = 'transfer' | 'logout' | 'logout-wipe' | 'delete' | 'revoke' | 'reupload' | null;
 
 export default function AccountSection() {
-  const { runSync, cancelSync, space, spaceCount, switchSpace, state, decideReupload, markCloudDeleted } = useAppStore();
+  const { runSync, cancelSync, space, spaceCount, switchSpace, state, decideReupload, markCloudDeleted, flush } = useAppStore();
   const [api, setApi] = useState<AccountApi | null>(null);
   const [user, setUser] = useState<AccountUser | null>(null);
   const [pendingUser, setPendingUser] = useState<AccountUser | null>(null);
@@ -85,7 +90,7 @@ export default function AccountSection() {
       await fn();
     } catch (e) {
       const m = e instanceof Error ? e.message : String(e);
-      setMessage(m === 'local_save_failed' ? ERROR_TEXT.local_save_failed : m);
+      setMessage(AUTH_TEXT[m] ?? (m === 'local_save_failed' ? ERROR_TEXT.local_save_failed : /fetch|network|offline/i.test(m) ? ERROR_TEXT.offline : m));
     } finally {
       setBusy(false);
     }
@@ -117,10 +122,12 @@ export default function AccountSection() {
     if (!api || !user) return;
     const mine = spaceOf(user);
     cancelSync();
-    // Save and switch first: if the device cannot save, the user stays signed in and nothing is lost.
-    await switchSpace(GUEST, wipe ? { deleteSpace: mine } : {});
+    // Order: (1) save – if the device cannot save, stay signed in and lose nothing; (2) end the
+    // session – the screens reload during the switch and must not find it any more; (3) switch.
+    if (!(await flush())) throw new Error('local_save_failed');
     const { serverRevoked } = await api.signOut();
     setUser(null);
+    await switchSpace(GUEST, wipe ? { deleteSpace: mine } : {});
     setStatus({ state: 'signed-out' });
     setNotice(serverRevoked ? 'התנתקת.' : 'התנתקת במכשיר הזה. השרת לא היה זמין, והחיבור הישן יפוג מעצמו.');
   };
@@ -137,10 +144,10 @@ export default function AccountSection() {
       {status.state === 'account-deleted' && space !== GUEST ? (
         <div className="flex flex-col gap-2 rounded-[14px] bg-[#FDF0EF] p-3" data-testid="account-deleted">
           <p className="text-[13px] text-[#17324D]">החשבון נמחק בשרת. הנתונים שלו עדיין במכשיר הזה. מה לעשות בהם?</p>
-          <button type="button" disabled={busy} onClick={() => run(async () => { await switchSpace(GUEST, { transferFrom: space }); await api.signOut(); setStatus({ state: 'signed-out' }); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] font-bold text-[#17324D]">
+          <button type="button" disabled={busy} onClick={() => run(async () => { await api.signOut(); setStatus({ state: 'signed-out' }); await switchSpace(GUEST, { transferFrom: space }); })} className="min-h-[44px] rounded-[14px] border border-[#DDE8EE] font-bold text-[#17324D]">
             להעביר אותם לשימוש כאורח
           </button>
-          <button type="button" disabled={busy} onClick={() => run(async () => { await switchSpace(GUEST, { deleteSpace: space }); await api.signOut(); setStatus({ state: 'signed-out' }); })} className="min-h-[44px] rounded-[14px] text-[#C95B53] font-black">
+          <button type="button" disabled={busy} onClick={() => run(async () => { await api.signOut(); setStatus({ state: 'signed-out' }); await switchSpace(GUEST, { deleteSpace: space }); })} className="min-h-[44px] rounded-[14px] text-[#C95B53] font-black">
             למחוק אותם מהמכשיר
           </button>
         </div>

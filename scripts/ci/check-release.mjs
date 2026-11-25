@@ -18,6 +18,8 @@ const forbidden = [
   ['DRAFT-NOT-APPROVED', 'draft practical content (not approved, D08)'],
   ['supabase-js', 'backend client in a production build (sync must stay off in production)'],
   ['submit_events', 'sync code in a production build'],
+  ['local-gateway', 'the test stand-in for Supabase in a build'],
+  ['__test/mailbox', 'the test stand-in for Supabase in a build'],
   ['להתקשר למישהו שלא דיברת איתו', 'draft practical content text'],
   ['TEST_ONLY', 'TEST_ONLY content item'],
   ['test-placeholder', 'placeholder Dvar Torah id'],
@@ -34,6 +36,9 @@ for (const [needle, why] of forbidden) {
 }
 const html = readFileSync(join(DIST, 'index.html'), 'utf8');
 if (!html.includes('Content-Security-Policy')) problems.push('index.html has no Content-Security-Policy');
+// Round 12.5: a production build may connect only to itself and the Sefaria API – never a backend.
+const connect = /connect-src ([^;"]*)/.exec(html)?.[1]?.trim();
+if (connect !== "'self' https://www.sefaria.org") problems.push(`production connect-src must be "'self' https://www.sefaria.org" (got: ${connect ?? 'none'})`);
 
 if (problems.length) {
   console.error('Release check FAILED:\n- ' + problems.join('\n- '));

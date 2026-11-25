@@ -37,10 +37,13 @@ export function accountApi(sb: SupabaseClient) {
     },
     async requestCode(email: string): Promise<void> {
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      if (error && (error as { status?: number }).status === 429) throw new SyncError('rate_limited', 'code_rate_limited');
       if (error) throw new SyncError(errorCode(error), error.message);
     },
     async verifyCode(email: string, code: string): Promise<AccountUser> {
       const { data, error } = await sb.auth.verifyOtp({ email, token: code.trim(), type: 'email' });
+      // A wrong, used or expired code (the server does not say which): ask for a new one.
+      if (error && (error as { status?: number }).status === 403) throw new SyncError('not_authenticated', 'code_invalid_or_expired');
       if (error || !data.user) throw new SyncError(errorCode(error), error?.message ?? 'no user');
       return { id: data.user.id, email: data.user.email ?? null };
     },

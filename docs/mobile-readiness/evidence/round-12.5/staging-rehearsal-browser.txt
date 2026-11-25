@@ -1,0 +1,21 @@
+Staging rehearsal: 20 passed, 0 failed
+  PASS CSP: the staging build may connect to exactly its backend
+  PASS staging build: the account section says it is not production
+  PASS a wrong code: a clear message in Hebrew
+  PASS 1: after sign-in the app asks before moving the guest's 2 entries
+  PASS 1: the account's own data space is active
+  PASS 1: the guest's entries stay the guest's
+  PASS 1: the account starts with its own, empty data (onboarding)
+  PASS 2: after sign-out the guest's data is shown
+  PASS 2: the guest's name is back on screen
+  PASS 2: the account's data is kept separately on the device
+  PASS 2: no session token in the browser storage
+  PASS 3: the confirmed transfer moved both entries to the account
+  PASS 3: and the guest has nothing left
+  PASS 3: nothing of account A reached account B
+  PASS 4: turning backup on is recorded on the server
+  PASS 4: deleting the account removes it on the server
+  PASS 4: and the account's data on this device
+  PASS 4: the app is back to a guest
+  PASS CSP: no request was blocked
+  PASS no console errors
