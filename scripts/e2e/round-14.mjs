@@ -108,6 +108,10 @@ try {
   // N – a clean install, to the first entry and its undo.
   await block(async () => {
     const { p, ctx } = await open(null);
+    // The first screen of a clean install: "המשך" is a button, not a disc over the free height
+    // (it grew with flex-[2] in the page column – in main too).
+    const cont = await p.getByRole('button', { name: 'המשך', exact: true }).boundingBox();
+    check(Boolean(cont) && cont.height >= 44 && cont.height <= 72, 'N: the first "המשך" is a normal button (44–72px high)', cont ? `${Math.round(cont.height)}px` : 'missing');
     await p.fill('#onboarding-name', 'חדש');
     await p.click('text=המשך');
     await p.locator('button[aria-pressed]', { hasText: 'לימוד יומי' }).first().click();

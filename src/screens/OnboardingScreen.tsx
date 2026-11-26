@@ -130,7 +130,7 @@ function PrimaryButton({ children, onPress, disabled }: { children: React.ReactN
       type="button"
       disabled={disabled}
       onClick={onPress}
-      className="flex-[2] w-full min-h-[54px] rounded-full bg-brand text-white text-[16px] font-black flex flex-row items-center justify-center gap-2 disabled:opacity-45"
+      className="[.flex-row>&]:flex-[2] w-full min-h-[54px] rounded-full bg-brand text-white text-[16px] font-black flex flex-row items-center justify-center gap-2 disabled:opacity-45"
     >
       {children}
     </button>
