@@ -1,0 +1,126 @@
+DB: 98 passed, 27 failed
+  PASS migration 20261126000001_core.sql
+  PASS migration 20261126000002_social.sql
+  PASS migration 20261126000003_seed_rules_and_privacy.sql
+  PASS migration 20261127000001_hardening.sql
+  PASS 1: row-level security on every public table
+  PASS 2: A sees exactly one profile (own)
+  PASS 2: A cannot read B profile
+  PASS 2: A cannot change B profile
+  PASS 2: consent cannot be set by a direct update
+  PASS 2: profiles cannot be deleted directly
+  PASS 2: anonymous reads nothing
+  PASS 3: submit without consent is refused
+  PASS 3: with consent, 4 events accepted
+  PASS 4: resending after a lost response = duplicate, not a second copy
+  PASS 4: B cannot submit (or overwrite) A's event id
+  PASS 4: exactly 4 events stored for A
+  PASS 5: private actions rejected by the server
+  PASS 6: no direct insert into events
+  PASS 6: events cannot be deleted directly
+  PASS 6: events cannot be changed directly
+  PASS 6: B reads none of A's events
+  PASS 6: B pulls none of A's events
+  PASS 6: a client cannot set its own score
+  PASS 6: a client cannot change its score
+  PASS 7: server-side score equals the client engine
+  PASS 7: 101 blessings (+ goal bonus) + 4 chesed – server equals client (292)
+  PASS 8: device 2 deletes an entry made on device 1 (void)
+  PASS 8: the same entry deleted on both devices – second deletion is a duplicate
+  PASS 8: device 1 pulls the deletion
+  PASS 8: cursor – nothing new after the last seq
+  PASS 8: B cannot delete A's entry
+  PASS 9: more than 100 events in one request refused
+  PASS 9: hourly rate limit enforced
+  PASS 9: anonymous cannot call submit_events
+  PASS 9: internal scoring function not callable by clients
+  PASS 10: export contains only the user's own data
+  PASS 11: no social consent – cannot invite
+  PASS 11: friendships cannot be created directly (only by invitation)
+  PASS 11: invitations cannot be inserted directly
+  PASS 11: B (with consent) creates a single-use invitation
+  PASS 11: A without social consent cannot redeem
+  PASS 11: a wrong code gives the generic answer
+  PASS 11: A redeems – A and B are friends
+  PASS 11: an invitation works only once
+  PASS 11: friend does not see a profile that is not visible
+  PASS 11: friend sees a visible social profile
+  PASS 11: a stranger sees nothing
+  PASS 11: an expired invitation is refused
+  PASS 11: achievements cannot be inserted directly
+  PASS 11: an achievement not earned on the server cannot be shared
+  PASS 11: an achievement the server cannot verify cannot be shared
+  PASS 11: 100 blessings in a day on the server – A07 can be shared
+  PASS 11: a friend sees the shared achievement
+  PASS 11: a friend can give "יישר כוח"
+  PASS 11: a stranger cannot
+  PASS 11: kudos cannot be inserted directly
+  PASS 11: profile hidden – shared achievements hidden
+  PASS 11: social consent withdrawn – shared achievements hidden
+  PASS 11: and the profile does not become visible again by itself
+  PASS 11: without social consent nothing can be shared
+  PASS 11: after a new consent and visibility, visible again
+  PASS 11: non-members cannot see a group
+  PASS 11: nobody joins a group directly
+  PASS 11: no social consent – cannot create a group
+  PASS 11: members see each other
+  PASS 11: after a block, the profile is not visible
+  PASS 11: after a block, shared achievements hidden
+  PASS 11: a block ends the friendship
+  PASS 11: and removes the kudos
+  PASS 11: in a shared group, the blocked member is not visible
+  PASS 11: no kudos across a block
+  PASS 11: an invitation cannot get around a block
+  PASS 11: A cannot see that B blocked them
+  PASS 11: blocking an unknown id reveals nothing (no error)
+  PASS 11: the reported user cannot read reports
+  PASS 11: reports only through the rate-limited function
+  PASS 12: after revoking consent, uploads are refused
+  PASS 13: account deletion removes all events
+  PASS 13: and all scores
+  PASS 13: and friendships
+  PASS 13: an old device with the old token cannot resurrect the account
+  PASS 14: the anonymous role has no access to any table
+  PASS 14: the anonymous role can call no function
+  PASS 14: on the private profile only the display name can be changed
+  PASS 15: a batch with malformed items is answered item by item (no crash)
+  PASS 15: refused – an id with forbidden characters
+  PASS 15: refused – an element that is not an object
+  PASS 15: the valid event in the same batch is accepted
+  PASS 16: goal history accepted
+  PASS 16: an impossible goal is refused
+  PASS 17: a second upload of the same account waits for the first
+  PASS 17: nothing uncommitted is visible to a pull
+  PASS 17: commit order = seq order – a cursor cannot skip an event
+  PASS 17: consent revoked during an upload – the upload is refused
+  PASS 17: and nothing of it was stored
+  PASS 17: account deleted during an upload – the upload is refused
+  PASS 17: and the deleted account has no events
+  PASS 17: a pull after deletion reports the deletion
+  FAIL 5: old schema v1 payloads (with city) rejected
+  FAIL 8: score recomputed after the deletion – equals the client engine – 46 vs 6
+  FAIL 8: a deletion must carry the deterministic id void:<target>
+  FAIL 11: no relationship helper in the exposed schema – [{"proname":"are_friends"}]
+  FAIL 14: signed-in users can call exactly the API functions – are_friends,block_user,create_invite,delete_my_account,export_my_data,give_kudos,pull_events,redeem_invite,set_blessing_goals,set_consent,share_achievement,submit_events,submit_report
+  FAIL 14: direct writes exist only where intended (no events, scores, consent, rules) – activity_events:INSERT blocks:DELETE friendships:DELETE group_members:DELETE groups:DELETE,INSERT,UPDATE invites:DELETE kudos:DELETE profiles:UPDATE shared_achievements:DELETE social_profiles:DELETE,INSERT,UPDATE
+  FAIL 15: refused – private field on an allowed action – {"event_id":"log-mal-0001","outcome":"accepted","reason":null}
+  FAIL 15: refused – city in the calendar context – {"event_id":"log-mal-0002","outcome":"accepted","reason":null}
+  FAIL 15: refused – a time that is not a UTC timestamp – {"event_id":"log-mal-0003","outcome":"accepted","reason":null}
+  FAIL 15: refused – a time in the future – {"event_id":"log-mal-0004","outcome":"accepted","reason":null}
+  FAIL 15: refused – a local date far from the time – {"event_id":"log-mal-0005","outcome":"accepted","reason":null}
+  FAIL 15: refused – a flag of the wrong type – {"event_id":"log-mal-0006","outcome":"accepted","reason":null}
+  FAIL 15: refused – an unknown rules version – {"event_id":"log-mal-0007","outcome":"accepted","reason":null}
+  FAIL 15: refused – no rules version (legacy entry) – {"event_id":"log-mal-0008","outcome":"accepted","reason":null}
+  FAIL 15: refused – payload id differs from the envelope – {"event_id":"log-mal-0009","outcome":"accepted","reason":null}
+  FAIL 15: refused – a reference that is too long – {"event_id":"log-mal-0010","outcome":"accepted","reason":null}
+  FAIL 15: refused – a bundle on an action that is not a blessing – {"event_id":"log-mal-0011","outcome":"accepted","reason":null}
+  FAIL 15: refused – an oversized payload – {"event_id":"log-mal-0012","outcome":"accepted","reason":null}
+  FAIL 15: refused – a quantity other than 1 – {"event_id":"log-mal-0013","outcome":"accepted","reason":null}
+  FAIL 15: refused – schema version as text – {"event_id":"log-mal-0014","outcome":"accepted","reason":null}
+  FAIL 15: refused – a void with an extra field – {"event_id":"void:log-mwwe9b32-60-988k","outcome":"rejected","reason":"unknown_target"}
+  FAIL 15: nothing malformed was stored
+  FAIL 15: the stored payload holds only allowed fields
+  FAIL 16: every day equals the client engine (goal change, mixed versions, order, bundle, after-the-fact) – 2026-11-20: client 120 / server 150
+  FAIL 16: after a deletion on an old day – scored with the goal in force on that day – 2026-11-20: client 118 / server 148
+  FAIL 16: after the bundle was reduced from 5 to 2 – 2026-11-20: client 118 / server 148
+  FAIL 16: a new goal does not change the score of earlier days – 2026-11-20: client 118 / server 148

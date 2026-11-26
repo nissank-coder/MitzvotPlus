@@ -40,3 +40,55 @@ export function memoryStorage(initial: string | null = null): StateStorage & { d
     dump: () => value,
   };
 }
+
+/* ------------------------------ Data spaces in browser storage (round 12.5) ------------------------------ */
+
+const ACTIVE_SPACE_KEY = 'mitzvot_plus_active_space';
+/** The guest keeps the original key (existing data is the guest's); each account has its own key. */
+export const spaceKey = (space: string) => (space === 'guest' ? LEGACY_STORAGE_KEY : `${LEGACY_STORAGE_KEY}@${space}`);
+
+type LocalSpaces = {
+  readonly kind: 'localStorage';
+  active: () => Promise<string>;
+  setActive: (space: string) => Promise<void>;
+  open: (space: string) => Promise<StateStorage>;
+  count: (space: string) => Promise<number>;
+  transfer: (from: string, to: string) => Promise<{ moved: number; whole: boolean }>;
+  deleteSpace: (space: string) => Promise<void>;
+};
+
+/** Same contract as createSqlSpaces (web and development builds; no outbox in the browser). */
+export function localStorageSpaces(store: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> = window.localStorage): LocalSpaces {
+  const read = (space: string) => {
+    const raw = store.getItem(spaceKey(space));
+    return raw ? (JSON.parse(raw) as { logs?: ActivityLog[] } & Record<string, unknown>) : null;
+  };
+  return {
+    kind: 'localStorage',
+    active: async () => store.getItem(ACTIVE_SPACE_KEY) ?? 'guest',
+    setActive: async (space) => store.setItem(ACTIVE_SPACE_KEY, space),
+    open: async (space) => ({
+      kind: 'localStorage',
+      load: async () => store.getItem(spaceKey(space)),
+      save: async (state) => {
+        store.setItem(spaceKey(space), JSON.stringify(state));
+      },
+    }),
+    count: async (space) => read(space)?.logs?.length ?? 0,
+    transfer: async (from, to) => {
+      if (from === to) throw new Error('invalid transfer');
+      const source = read(from);
+      if (!source) return { moved: 0, whole: false };
+      const logs = (source.logs ?? []).map(({ remote: _remote, ...l }) => l as ActivityLog);
+      const target = read(to);
+      const fresh = { cursor: 0, remoteRemoved: [], lastSyncAt: null };
+      const next = target
+        ? { ...target, logs: [...(target.logs ?? []), ...logs.filter((l) => !(target.logs ?? []).some((t) => t.id === l.id))] }
+        : { ...source, logs, sync: fresh };
+      store.setItem(spaceKey(to), JSON.stringify(next));
+      store.removeItem(spaceKey(from));
+      return { moved: logs.length, whole: !target };
+    },
+    deleteSpace: async (space) => store.removeItem(spaceKey(space)),
+  };
+}

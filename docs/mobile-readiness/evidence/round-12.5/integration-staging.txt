@@ -1,0 +1,14 @@
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: sign-in with an e-mail code (real supabase-js) > a wrong code, an expired code and asking again too soon are refused; the right code signs in 1163ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: sign-in with an e-mail code (real supabase-js) > the session refreshes itself (short-lived access tokens) and the private profile starts with consent off 24ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > nothing is sent before consent; private actions never leave the phone 52ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > the second phone receives the entries, the server score equals the engine of both phones 1135ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > a deletion on phone 2 reaches phone 1; deleting it on both phones counts once; nothing is scored twice 42ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > a lost connection is an error with the entry kept; the next run sends it once 32494ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > a goal change is sent before the events and old days keep their own goal 12ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > an event with an unexpected private field is refused through the real API, even for a backed-up action 1113ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > revoking consent with deletion empties the cloud copy and stops uploads 9ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: two phones, one account > account deleted on phone 1: phone 2 learns it on its next sync, and its old session cannot bring anything back 16ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: sign-out > sign-out revokes the session on the server; the old refresh token no longer works 12ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: sign-out > sign-out without a connection still removes the session from the phone, and says so 25431ms
+ ✓ src/__integration__/staging.integration.ts > staging rehearsal: sign-out > two accounts on one phone: the second account sees nothing of the first 77ms
+      Tests  13 passed (13)

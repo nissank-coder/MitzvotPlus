@@ -8,4 +8,5 @@ dist/
 .vite/
 coverage/
 reports/
+dist-staging/
 dist-design/

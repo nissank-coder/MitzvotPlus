@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { localStorageStorage, StateStorage } from '../storage/persistence';
+import { localStorageSpaces, StateStorage } from '../storage/persistence';
 import { SaveController, SaveStatus } from '../storage/saveController';
 import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { ActionKey } from '../data/actions';
@@ -18,7 +18,8 @@ import {
 } from '../lib/jewishCalendar';
 import { ActionInput, buildLog } from '../lib/scoring';
 import { syncNow, SyncRemote, SyncStatus } from '../sync/engine';
-import type { SqlStateStorage } from '../storage/sqliteStorage';
+import { createSyncCoordinator } from '../sync/coordinator';
+import type { SpaceManager, SqlStateStorage } from '../storage/sqliteStorage';
 import { restRuleFor } from '../lib/restRule';
 import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
 import { AppSettings, AppState, BlessingCategory, HabitSelection, UserProfile } from '../types';
@@ -95,6 +96,21 @@ type StoreValue = {
    * browser storage has no outbox); the caller passes the user's current consent.
    */
   runSync: (remote: SyncRemote, consent: boolean) => Promise<SyncStatus>;
+  /** Stops a running sync: its later responses are dropped (sign-out, account switch, consent off). */
+  cancelSync: () => void;
+  /** The data space on screen: 'guest' or 'user:<account id>' (round 12.5). */
+  space: string;
+  /** Number of entries stored in a data space on this device. */
+  spaceCount: (space: string) => Promise<number>;
+  /**
+   * Switches the data on screen to another space. Pending changes are saved first (if that fails,
+   * nothing switches). `transferFrom` moves that space's entries into the new one – only after the
+   * user confirmed it; `deleteSpace` removes a space from this device (also confirmed).
+   */
+  switchSpace: (space: string, options?: { transferFrom?: string; deleteSpace?: string }) => Promise<void>;
+  /** After the cloud copy was deleted: queue every entry again (user agreed), or keep it local. */
+  decideReupload: (upload: boolean) => Promise<number>;
+  markCloudDeleted: () => void;
   /** Saves / unsaves a specific content item (id@version). */
   toggleSavedContent: (ref: string) => void;
   /** Confirms how many blessings were said as part of an entry (replaces any earlier number). */
@@ -122,13 +138,13 @@ function useNow(): [Date, () => void] {
   return [now, refresh];
 }
 
-/** SQLite on iOS/Android, browser storage on the web. */
-async function openStorage(): Promise<StateStorage> {
+/** SQLite on iOS/Android, browser storage on the web – one data space per account. */
+async function openSpaces(): Promise<SpaceManager> {
   if (Capacitor.isNativePlatform()) {
-    const { openNativeSqlite } = await import('../storage/sqliteStorage');
-    return openNativeSqlite();
+    const { openNativeSpaces } = await import('../storage/sqliteStorage');
+    return openNativeSpaces();
   }
-  return localStorageStorage();
+  return localStorageSpaces() as unknown as SpaceManager;
 }
 
 export function AppStoreProvider({ children }: PropsWithChildren): React.ReactElement {
@@ -136,6 +152,12 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   const [hydrated, setHydrated] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const storageRef = useRef<StateStorage | null>(null);
+  const spacesRef = useRef<SpaceManager | null>(null);
+  const [space, setSpace] = useState('guest');
+  const spaceRef = useRef('guest');
+  // Every sign-out / account switch / consent change starts a new generation: a sync of an older
+  // generation can still finish its requests, but nothing it receives is applied any more.
+  const coordinator = useRef(createSyncCoordinator()).current;
   const saverRef = useRef<SaveController | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>({ state: 'idle', error: null, failures: 0, lastSavedAt: null });
   const [now, refreshClock] = useNow();
@@ -148,9 +170,14 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     let cancelled = false;
     (async () => {
       try {
-        const storage = await openStorage();
+        const spaces = await openSpaces();
+        const active = await spaces.active();
+        const storage = await spaces.open(active);
         const raw = await storage.load();
         if (cancelled) return;
+        spacesRef.current = spaces;
+        spaceRef.current = active;
+        setSpace(active);
         storageRef.current = storage;
         const loaded = loadState(raw);
         const saver = new SaveController(storage, setSaveStatus);
@@ -177,9 +204,11 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
 
   // Every change is handed to the save controller; a failed load leaves it unset, so stored data is
   // never overwritten.
+  const requestedCursor = useRef(0);
   useEffect(() => {
     if (!hydrated) return;
     saverRef.current?.request(state);
+    requestedCursor.current = state.sync?.cursor ?? 0;
   }, [hydrated, state]);
 
   // One rest-day rule for every streak: Shabbat and Yom Tov for the selected city (cached per day).
@@ -310,27 +339,88 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       leaveChallenge: (instanceId) => dispatch({ type: 'leaveChallenge', payload: { instanceId, now: Date.now() } }),
       celebration,
       dismissCelebration: () => setCelebration(null),
-      runSync: async (remote, consent) => {
+      runSync: (remote, consent) => {
         const storage = storageRef.current as (SqlStateStorage & { kind: 'sqlite' }) | null;
-        if (!storage || storage.kind !== 'sqlite' || !('listOutbox' in storage)) return { state: 'error', code: 'unknown', at: Date.now(), pending: 0 };
-        await flush();
-        let logs = state.logs;
-        let cursor = state.sync?.cursor ?? 0;
-        return syncNow({
-          listOutbox: () => storage.listOutbox(),
-          saveOutbox: (i) => storage.saveOutbox(i),
-          installationId: () => storage.installationId(),
-          logs: () => logs,
-          cursor: () => cursor,
-          applyRemote: (events) => {
-            dispatch({ type: 'applyRemoteEvents', payload: events });
-            cursor = Math.max(cursor, ...events.map((e) => e.seq));
-          },
-          remote,
-          gate: { enabled: true, consent: { cloudBackup: consent } },
-          now: Date.now,
+        return coordinator.run(spaceRef.current, () => spaceRef.current, async (sameSession) => {
+          const isCurrent = () => sameSession() && storageRef.current === storage;
+          if (!storage || storage.kind !== 'sqlite' || !('listOutbox' in storage)) return { state: 'error', code: 'unknown', at: Date.now(), pending: 0 };
+          const logs = state.logs;
+          let cursor = state.sync?.cursor ?? 0;
+          let goalsHash = state.sync?.goalsHash ?? null;
+          return syncNow({
+            listOutbox: () => storage.listOutbox(),
+            saveOutbox: (i) => storage.saveOutbox(i),
+            installationId: () => storage.installationId(),
+            logs: () => logs,
+            cursor: () => cursor,
+            applyRemote: (events) => {
+              if (!isCurrent()) return;
+              dispatch({ type: 'applyRemoteEvents', payload: events });
+              cursor = Math.max(cursor, ...events.map((e) => e.seq));
+            },
+            persist: async () => {
+              // Wait until the state holding the applied events reached the save controller, then
+              // write it: entries and cursor in one transaction, before "synced" is shown.
+              for (let i = 0; i < 200 && requestedCursor.current < cursor; i += 1) await new Promise((r) => setTimeout(r, 10));
+              return isCurrent() && requestedCursor.current >= cursor && (await flush());
+            },
+            isCurrent,
+            goals: {
+              current: () => state.goalHistory.map((g) => ({ from: g.from, blessingGoal: g.blessingGoal })),
+              sent: () => goalsHash,
+              markSent: (hash) => {
+                goalsHash = hash;
+                if (isCurrent()) dispatch({ type: 'syncGoalsSent', payload: { hash } });
+              },
+            },
+            remote,
+            gate: { enabled: true, consent: { cloudBackup: consent } },
+            now: Date.now,
+          });
         });
       },
+      cancelSync: () => coordinator.cancel(),
+      space,
+      spaceCount: async (target) => (spacesRef.current ? spacesRef.current.count(target) : 0),
+      switchSpace: async (target, options = {}) => {
+        const spaces = spacesRef.current;
+        if (!spaces) throw new Error('storage_unavailable');
+        coordinator.cancel();
+        // Nothing of the current space may be lost: save first, or do not switch at all.
+        if (saverRef.current && !(await saverRef.current.flush())) throw new Error('local_save_failed');
+        setHydrated(false);
+        try {
+          saverRef.current?.dispose();
+          saverRef.current = null;
+          if (options.transferFrom) await spaces.transfer(options.transferFrom, target);
+          if (options.deleteSpace && options.deleteSpace !== target) await spaces.deleteSpace(options.deleteSpace);
+          await spaces.setActive(target);
+          const storage = await spaces.open(target);
+          const loaded = loadState(await storage.load());
+          storageRef.current = storage;
+          spaceRef.current = target;
+          const saver = new SaveController(storage, setSaveStatus);
+          saver.markLoaded(loaded);
+          saverRef.current = saver;
+          seen.current = null;
+          primed.current = false;
+          dispatch({ type: 'hydrate', payload: loaded });
+          setSpace(target);
+        } catch (error) {
+          // The data of the space stays where it was; the app refuses to write over anything.
+          setStorageError(error instanceof Error ? error.message : String(error));
+          throw error;
+        } finally {
+          setHydrated(true);
+        }
+      },
+      decideReupload: async (upload) => {
+        dispatch({ type: 'cloudReuploadDecided' });
+        const storage = storageRef.current as SqlStateStorage | null;
+        if (!upload || !storage || !('requeueAccepted' in storage)) return 0;
+        return storage.requeueAccepted();
+      },
+      markCloudDeleted: () => dispatch({ type: 'cloudDataDeleted', payload: { at: Date.now() } }),
       addAction,
       previewPoints,
       addBlessing: (category, title) => addAction('blessing', { category, title }),
@@ -356,7 +446,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),
     };
-  }, [calendar, city, derived, isRestDay, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock, celebration]);
+  }, [calendar, city, derived, isRestDay, hydrated, state, todayKey, storageError, saveStatus, isLogSaved, retrySave, flush, refreshClock, celebration, space]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

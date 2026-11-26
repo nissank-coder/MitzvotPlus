@@ -20,10 +20,10 @@ describe('distribution gate', () => {
     expect(r.code).toBe(1);
     for (const id of ['D01', 'D04', 'D06', 'D07', 'D11', 'D14']) expect(r.out).toContain(id);
     for (const g of ['G1', 'G3', 'G6']) expect(r.out).toContain(`${g}:`);
-    expect(r.out).toMatch(/no PASS device evidence on a real android for commit abcdef1/);
+    expect(r.out).toMatch(/no PASS device evidence on a real android for build fp=[0-9a-f]{16};cfg=release\+backend=none\+dbenc=off/);
   });
-  it('a store build must name the commit it is built from', () => {
-    expect(run('--kind', 'beta').out).toContain('--commit <sha> is required');
+  it('a store build is identified by its release fingerprint and configuration (round 12.5)', () => {
+    expect(run('--kind', 'beta').out).toMatch(/Distribution gate \(beta, fp=[0-9a-f]{16};cfg=beta\+backend=none\+dbenc=off\)/);
   });
   it('versions come from one source', () => {
     expect(execFileSync('node', ['scripts/ci/check-versions.mjs'], { encoding: 'utf8' })).toContain('Version check passed');

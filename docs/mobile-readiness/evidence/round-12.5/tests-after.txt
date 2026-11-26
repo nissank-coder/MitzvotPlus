@@ -1,0 +1,24 @@
+
+ RUN  v5.1.1 /home/user/MitzvotPlus
+
+(node:3483) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3574) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3580) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3588) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3602) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3616) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  24 passed (24)
+      Tests  264 passed (264)
+   Start at  19:55:37
+   Duration  1.66s (tests 51%, import 34%, transform 11%, worker 4%)
+
+    Isolate  24 workers spawned · ~93ms startup each (spawn + environment, per file)
+             at least ~650ms faster with isolate: false — reuses workers across files instead of one per file
+

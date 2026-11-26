@@ -1,0 +1,11 @@
+<!-- Supabase Auth e-mail template: "Magic Link" (used by signInWithOtp). The app signs in with the
+     6-digit CODE, not with a link: the template shows only {{ .Token }}. No tracking, no images. -->
+<html dir="rtl" lang="he">
+  <body style="font-family: Arial, sans-serif; color: #17324D;">
+    <h2>קוד הכניסה שלך למצוות+</h2>
+    <p>הקלידו את הקוד באפליקציה:</p>
+    <p style="font-size: 28px; font-weight: bold; letter-spacing: 6px;" dir="ltr">{{ .Token }}</p>
+    <p>הקוד תקף ל-10 דקות ולשימוש אחד בלבד.</p>
+    <p>לא ביקשתם להתחבר? אפשר להתעלם מההודעה. אף אחד לא יוכל להיכנס בלי הקוד.</p>
+  </body>
+</html>

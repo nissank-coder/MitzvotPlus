@@ -1,42 +1,33 @@
-import { defineConfig, Plugin } from 'vite';
+import { defineConfig, loadEnv, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 // @ts-expect-error – plain .mjs helper shared with CI
 import { buildInfo } from './scripts/build-info.mjs';
+// @ts-expect-error – plain .mjs helper shared with CI and tests
+import { cspFor } from './scripts/csp.mjs';
 
 /**
- * Content-Security-Policy for production builds (the bundle that ships inside the native app).
- * Only bundled code runs; network access is limited to the Sefaria text API.
+ * Content-Security-Policy for builds (the bundle that ships inside the native app).
+ * Only bundled code runs; network access is limited to the Sefaria text API, plus – in development
+ * and staging builds with a backend – exactly that backend's origin (scripts/csp.mjs).
  * Not applied in dev, where Vite injects inline scripts.
  */
-const CSP = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://www.sefaria.org",
-  "object-src 'none'",
-  "base-uri 'none'",
-  "form-action 'none'",
-].join('; ');
-
-function cspPlugin(): Plugin {
+function cspPlugin(csp: string): Plugin {
   return {
     name: 'mitzvot-csp',
     apply: 'build',
     transformIndexHtml: (html) =>
-      html.replace('<meta charset="UTF-8" />', `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />`),
+      html.replace('<meta charset="UTF-8" />', `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />`),
   };
 }
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => ({
   // Version, commit (only when known), build time and source fingerprint – shown under
   // "אודות האפליקציה" so it is clear which code a preview (e.g. AI Studio) runs.
   define: {
     __BUILD_INFO__: JSON.stringify({ ...buildInfo(), kind: command === 'serve' ? 'dev-server' : 'build' }),
   },
-  plugins: [react(), tailwindcss(), cspPlugin()],
+  plugins: [react(), tailwindcss(), cspPlugin(cspFor({ ...loadEnv(mode, process.cwd(), 'VITE_'), ...process.env }))],
   server: {
     host: '0.0.0.0',
     port: 3000,
