@@ -245,15 +245,16 @@ function ToggleSwitch({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative w-12 h-7 rounded-full transition-colors ${
-        checked ? 'bg-[#BDECE3]' : 'bg-line'
-      }`}
+      className="min-w-[48px] min-h-[44px] flex items-center justify-center"
     >
-      <span
-        className={`block w-5 h-5 rounded-full shadow-sm transition-transform ${
-          checked ? 'translate-x-6 bg-brand' : 'translate-x-1 bg-white'
-        }`}
-      />
+      {/* The visible track stays small; the tap area is 44px high (round 14). */}
+      <span className={`relative block w-12 h-7 rounded-full transition-colors ${checked ? 'bg-brand-soft' : 'bg-line'}`}>
+        <span
+          className={`absolute top-1 right-auto left-0 block w-5 h-5 rounded-full shadow-sm transition-transform ${
+            checked ? 'translate-x-6 bg-brand' : 'translate-x-1 bg-white'
+          }`}
+        />
+      </span>
     </button>
   );
 }

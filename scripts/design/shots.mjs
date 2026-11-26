@@ -1,6 +1,8 @@
 // Screenshots and layout checks of the RUNNING app (not a mock-up).
 // Round 1.1: by default a PRODUCTION build – exactly what ships: no Dvar Torah (no approved content),
 // no community tab, no drafts; the build is checked for leaked internal content before any capture.
+// prodOnly: the internal build opens Home on a Dvar Torah instead of the learning card; the reader is
+// the same code in both builds, so it is captured from production only.
 // With --demo: an internal build (VITE_DEMO_CONTENT=true) for screens that need content that does not
 // exist in production yet (the marked TEST_ONLY Dvar Torah) – written to a separate, labelled folder.
 // The browser storage is seeded with synthetic states made by the app's own reducer; each scenario
@@ -166,11 +168,11 @@ const SCENARIOS = [
   { name: '33-mitzvot', state: active, go: async (p) => { await tab(p, 'מסלולים'); await p.locator('button', { hasText: 'לימוד מצווה ביום' }).first().click(); await settle(p); } },
   { name: '34-siddur-ashkenaz-preference', state: ashkenaz, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.getByRole('button', { name: 'סידור', exact: true }).click(); await p.locator('[data-testid="siddur-nusach"]').waitFor(); await settle(p); } },
   { name: '35-profile-nusach', state: ashkenaz, go: async (p) => { await tab(p, 'אני'); await p.locator('[data-testid="nusach-availability"]').scrollIntoViewIfNeeded(); await settle(p); } },
-  { name: '36-learning-reader', state: withTracks, sefaria: true, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('.reader-text').first().waitFor(); await settle(p); }, viewportOnly: true },
-  { name: '37-learning-reader-failure', state: withTracks, sefaria: 429, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('[role=alert]').waitFor({ timeout: 20000 }); await p.locator('summary', { hasText: 'פרטים טכניים' }).click(); await settle(p); }, viewportOnly: true },
-  { name: '38-learning-suggestions', state: fresh, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await settle(p); } },
+  { name: '36-learning-reader', prodOnly: true, state: withTracks, sefaria: true, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('.reader-text').first().waitFor(); await settle(p); }, viewportOnly: true },
+  { name: '37-learning-reader-failure', prodOnly: true, state: withTracks, sefaria: 429, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('[role=alert]').waitFor({ timeout: 20000 }); await p.locator('summary', { hasText: 'פרטים טכניים' }).click(); await settle(p); }, viewportOnly: true },
+  { name: '38-learning-suggestions', prodOnly: true, state: fresh, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await settle(p); } },
   { name: '39-siddur-ashkenaz-prayer', demoOnly: true, state: ashkenaz, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.getByRole('button', { name: 'סידור', exact: true }).click(); await p.locator('button', { hasText: 'מנחה לימות החול' }).click(); await p.locator('text=/Daat Siddur Ashkenaz|Metsudah/').first().waitFor(); await settle(p); }, viewportOnly: true },
-].filter((sc) => (DEMO || !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
+].filter((sc) => (DEMO ? !sc.prodOnly : !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
 
 const browser = await chromium.launch();
 const report = [];
