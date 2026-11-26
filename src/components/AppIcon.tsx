@@ -193,6 +193,12 @@ export function AppIcon({ name, size = 24, color = '#17324D', strokeWidth = 1.8 
         return <polyline points="15,5 8,12 15,19" {...common} />;
       case 'chevronRight':
         return <polyline points="9,5 16,12 9,19" {...common} />;
+      case 'chevronUp':
+        return <polyline points="5,15 12,8 19,15" {...common} />;
+      case 'chevronDown':
+        return <polyline points="5,9 12,16 19,9" {...common} />;
+      case 'minus':
+        return <line x1="5" y1="12" x2="19" y2="12" {...common} />;
       case 'close':
         return (
           <>

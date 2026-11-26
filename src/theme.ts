@@ -1,3 +1,28 @@
+/**
+ * Design round 1 (26.11.2026): the tokens of the new visual language (same values as @theme in
+ * src/index.css – use the Tailwind classes bg-brand, text-ink, … in markup; these are for SVG and
+ * icon colours). The older palette below stays for screens that were not redesigned yet.
+ */
+export const ds = {
+  brand: '#263A80',
+  brandPress: '#1C2B62',
+  brandSoft: '#E9EEFA',
+  onBrandMuted: '#C7D2F0',
+  lime: '#71E000',
+  limeDeep: '#4FA300',
+  limeSoft: '#E4F9C8',
+  limeInk: '#3D6B00',
+  ink: '#172344',
+  inkMuted: '#5F6D84',
+  canvas: '#F5F8FC',
+  surface: '#FFFFFF',
+  line: '#DCE4F0',
+  track: '#E4EAF5',
+  danger: '#C24A3D',
+  amberInk: '#8A5A00',
+  white: '#FFFFFF',
+} as const;
+
 export const colors = {
   background: '#F4F8FB',
   surface: '#FFFFFF',
