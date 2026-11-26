@@ -1,6 +1,6 @@
 {
   "build": "production",
-  "commit": "2966509b5a89e27aea11d4bf8a4dc8dea9e0aadb",
+  "commit": "4d2b6648e55ad410b1ad813e0f069285e65631f0",
   "captures": [
     {
       "scenario": "01-home-new-user",
