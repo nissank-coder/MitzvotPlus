@@ -164,7 +164,9 @@ class Phone {
       },
       remote: this.server.remote(),
       gate: { enabled: true, consent: { cloudBackup: this.server.consent } },
-      now: () => at,
+      // Entries are queued with the real clock: the run happens after them (the floor is compared
+      // with the time each entry was recorded, `at` of act()).
+      now: () => Math.max(at, Date.now() + 1000),
     };
   }
   sync(at = NOW) {

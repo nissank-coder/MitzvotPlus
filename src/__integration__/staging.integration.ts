@@ -7,6 +7,7 @@ import { SqlExecutor } from '../storage/migrations';
 import { createFreshState, reducer } from '../store/state';
 import { scoreLogs } from '../lib/metrics';
 import { syncNow, SyncStatus } from '../sync/engine';
+import { goalWireOf } from '../sync/goals';
 import type { AppState } from '../types';
 // @ts-expect-error – plain .mjs test server
 import { prepareDatabase, startGateway } from '../../scripts/gateway/local-supabase.mjs';
@@ -79,7 +80,6 @@ class Phone {
   async sync(): Promise<SyncStatus> {
     // Like the app: the last consent the server confirmed is kept; a failed read does not change it.
     const consent = await this.api.consent().then((c) => (this.lastConsent = c), () => this.lastConsent);
-    let hash = this.state.sync?.goalsHash ?? null;
     const s = await syncNow({
       listOutbox: () => this.storage.listOutbox(),
       saveOutbox: (i) => this.storage.saveOutbox(i),
@@ -93,12 +93,28 @@ class Phone {
         await this.storage.save(this.state);
         return true;
       },
-      goals: { current: () => this.state.goalHistory.map((g) => ({ from: g.from, blessingGoal: g.blessingGoal })), sent: () => hash, markSent: (h) => void (hash = h) },
+      goals: {
+        wire: () => goalWireOf(this.state.goalHistory),
+        known: () => ({ fingerprint: this.state.sync?.goalsHash ?? null, version: this.state.sync?.goalsVersion ?? 0 }),
+        adopt: (wire) => {
+          this.state = reducer(this.state, { type: 'goalsAdopted', payload: { wire } });
+        },
+        markSynced: (fingerprint, version) => {
+          this.state = reducer(this.state, { type: 'goalsSynced', payload: { fingerprint, version } });
+        },
+      },
+      backup: {
+        local: () => ({ epoch: this.state.sync?.backupEpoch ?? 1, floor: this.state.sync?.backupFloor ?? null }),
+        rebuild: async (next) => {
+          await this.storage.rebuildOutbox(next.floor);
+          this.state = reducer(this.state, { type: 'backupGenerationApplied', payload: next });
+          await this.storage.save(this.state);
+        },
+      },
       remote: this.api.remote(),
       gate: { enabled: true, consent: { cloudBackup: consent.cloudBackup } },
       now: () => Date.now() + 1000,
     });
-    if (hash) this.state = reducer(this.state, { type: 'syncGoalsSent', payload: { hash } });
     return s;
   }
 }
@@ -272,5 +288,119 @@ describe('staging rehearsal: sign-out', () => {
     expect(second.state.logs).toHaveLength(0);
     expect(await second.sync()).toMatchObject({ state: 'ok', pulled: 0 });
     expect(await phone.spaces.count(userSpace(phone.userId))).toBe(1);
+  });
+});
+
+describe('round 13: deleting the backup and turning it on again – two phones, through the real API (review B1)', () => {
+  const email = 'backup-phones@test.invalid';
+  const one = new Phone();
+  const two = new Phone();
+  const live = async (uid: string) =>
+    (await gw.query(
+      "select e.action_type from public.activity_events e where e.user_id = $1 and e.operation = 'create' and not exists (select 1 from public.activity_events v where v.user_id = e.user_id and v.operation = 'void' and v.target_event_id = e.event_id) order by 1",
+      [uid],
+    )).map((r: { action_type: string }) => r.action_type);
+
+  it('"only from now" holds for the phone that was offline during the deletion: its old entry stays on it, new ones are backed up', async () => {
+    await one.signIn(email);
+    await one.api.setConsent({ cloudBackup: true, social: false });
+    await one.act('shacharit');
+    expect(await one.sync()).toMatchObject({ state: 'ok', pushed: 1 });
+    await sleep(1100);
+    await two.signIn(email);
+    expect(await two.sync()).toMatchObject({ state: 'ok', pulled: 1 });
+    const oldOnTwo = await two.act('mincha'); // phone 2 goes offline with it
+
+    await one.api.setConsent({ cloudBackup: false, social: false }, true);
+    await one.api.setConsent({ cloudBackup: true, social: false });
+    expect(await one.sync()).toEqual({ state: 'decision-needed' });
+    const pending = await one.api.backupState();
+    expect(pending).toMatchObject({ epoch: 2, decisionPending: true, floor: null });
+    expect((await one.api.setBackupScope(pending.epoch, false)).floor).not.toBeNull();
+    await sleep(20);
+    await one.act('arvit');
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    expect(await live(one.userId)).toEqual(['arvit']);
+
+    // Phone 2 comes back: its old queue is not uploaded; the server would refuse it anyway.
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    expect(await live(one.userId)).toEqual(['arvit']);
+    expect((await two.storage.listOutbox()).find((o) => o.eventId === oldOnTwo.id)).toMatchObject({ status: 'rejected', reasonCode: 'before_backup_floor' });
+    expect(two.state.logs.some((l) => l.id === oldOnTwo.id)).toBe(true); // still on the phone
+    await two.act('torahStudy');
+    expect(await two.sync()).toMatchObject({ state: 'ok', pushed: 1 });
+    expect(await live(one.userId)).toEqual(['arvit', 'torahStudy']);
+  });
+
+  it('"all history" uploads the live entries of both phones – also those that came from the other phone – and never a deleted one', async () => {
+    const removed = await one.act('chesed');
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    await one.remove(removed.id);
+    await one.api.setConsent({ cloudBackup: false, social: false }, true);
+    await one.api.setConsent({ cloudBackup: true, social: false });
+    const st = await one.api.backupState();
+    expect(st).toMatchObject({ epoch: 3, decisionPending: true });
+    // Phone 2 answers late, after phone 1: the first answer stands.
+    expect((await one.api.setBackupScope(st.epoch, true)).floor).toBeNull();
+    expect((await two.api.setBackupScope(st.epoch, false)).floor).toBeNull();
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    const expected = [...new Set([...one.state.logs, ...two.state.logs].filter((l) => l.actionKey !== 'charity').map((l) => l.actionKey!))].sort();
+    expect(await live(one.userId)).toEqual(expected);
+    expect(expected).not.toContain('chesed');
+    expect(expected).toEqual(expect.arrayContaining(['shacharit', 'mincha', 'arvit', 'torahStudy']));
+  });
+});
+
+describe('round 13: blessing goals on two phones (review B2)', () => {
+  const email = 'goal-phones@test.invalid';
+  const one = new Phone();
+  const two = new Phone();
+  const serverGoals = async (uid: string) =>
+    (await gw.query("select case when from_date = '-infinity' then '0000-00-00' else from_date::text end as d, blessing_goal from public.blessing_goal_history where user_id = $1 order by from_date", [uid])).map(
+      (r: { d: string; blessing_goal: number }) => `${r.d}:${r.blessing_goal}`,
+    );
+
+  it('phone 1 changes the goal to 50; phone 2, which still holds 100, takes the change instead of undoing it', async () => {
+    await one.signIn(email);
+    await one.api.setConsent({ cloudBackup: true, social: false });
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    await sleep(1100);
+    await two.signIn(email);
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    one.state = reducer(one.state, { type: 'updateGoals', payload: { blessingGoal: 50 }, dateKey: '2099-01-01' });
+    await one.storage.save(one.state);
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    expect(await serverGoals(one.userId)).toEqual(['0000-00-00:100', '2099-01-01:50']);
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    expect(await serverGoals(one.userId)).toEqual(['0000-00-00:100', '2099-01-01:50']);
+    expect(two.state.blessingGoal).toBe(50);
+    expect(goalWireOf(two.state.goalHistory).map((g) => `${g.from}:${g.blessingGoal}`)).toEqual(['0000-00-00:100', '2099-01-01:50']);
+  });
+
+  it('both phones changed the goal before syncing: the second to write merges, and both end with the same history', async () => {
+    one.state = reducer(one.state, { type: 'updateGoals', payload: { blessingGoal: 30 }, dateKey: '2099-02-01' });
+    await one.storage.save(one.state);
+    two.state = reducer(two.state, { type: 'updateGoals', payload: { blessingGoal: 70 }, dateKey: '2099-03-01' });
+    await two.storage.save(two.state);
+    expect(await two.sync()).toMatchObject({ state: 'ok' }); // phone 2 writes first this time
+    expect(await one.sync()).toMatchObject({ state: 'ok' }); // phone 1 finds a newer version: merge
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    const expected = ['0000-00-00:100', '2099-01-01:50', '2099-02-01:30', '2099-03-01:70'];
+    expect(await serverGoals(one.userId)).toEqual(expected);
+    for (const p of [one, two]) expect(goalWireOf(p.state.goalHistory).map((g) => `${g.from}:${g.blessingGoal}`)).toEqual(expected);
+  });
+
+  it('the same start day changed on both phones: the later choice wins on both', async () => {
+    one.state = reducer(one.state, { type: 'updateGoals', payload: { blessingGoal: 40 }, dateKey: '2099-04-01' });
+    await one.storage.save(one.state);
+    await sleep(5);
+    two.state = reducer(two.state, { type: 'updateGoals', payload: { blessingGoal: 90 }, dateKey: '2099-04-01' });
+    await two.storage.save(two.state);
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    expect(await two.sync()).toMatchObject({ state: 'ok' });
+    expect(await one.sync()).toMatchObject({ state: 'ok' });
+    expect((await serverGoals(one.userId)).at(-1)).toBe('2099-04-01:90');
+    expect(goalWireOf(one.state.goalHistory).at(-1)).toMatchObject({ from: '2099-04-01', blessingGoal: 90 });
   });
 });

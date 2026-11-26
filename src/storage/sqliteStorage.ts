@@ -1,7 +1,7 @@
 import { ActivityLog } from '../types';
 import { runMigrations, SqlExecutor } from './migrations';
 import { DB_ENCRYPTION } from '../config/features';
-import { newCreateItem, OutboxItem, syncPolicy, undoPlan, voidEventPayload } from '../sync/outbox';
+import { createEventPayload, newCreateItem, OutboxItem, syncPolicy, undoPlan, voidEventPayload } from '../sync/outbox';
 import { LEGACY_STORAGE_KEY, StateStorage } from './persistence';
 
 const STATE_KEY = 'app_state';
@@ -52,8 +52,16 @@ export type SqlStateStorage = StateStorage & {
   listOutbox: () => Promise<OutboxItem[]>;
   /** Persists sync results (receipts) for existing outbox items in one transaction. */
   saveOutbox: (items: OutboxItem[]) => Promise<void>;
-  /** After the cloud copy was deleted and the user agreed to upload again: every create is due again. */
-  requeueAccepted: () => Promise<number>;
+  /**
+   * A new backup generation (round 13, B1 – the cloud copy was deleted, here or on another device):
+   * the queue is rebuilt from the live entries in one transaction. Every live entry that may be
+   * backed up is due again – also one that came from another device (B1.3) – and nothing else:
+   * the create of a deleted entry and every void are dropped (B1.2). With a floor ("only from
+   * now"), entries recorded before it are kept as terminal 'rejected' rows ('before_backup_floor'),
+   * so neither a restart nor the queue repair at start-up can revive them (B1.1). Private actions
+   * are never queued.
+   */
+  rebuildOutbox: (floor: number | null) => Promise<{ queued: number; excluded: number; dropped: number }>;
 };
 
 function newInstallationId(): string {
@@ -219,17 +227,50 @@ export function createSqlStorage(db: SqlExecutor, legacy?: () => string | null, 
       );
       for (const i of items) outboxState.set(i.eventId, { status: i.status, attempts: i.attempts });
     },
-    async requeueAccepted() {
+    async rebuildOutbox(floor) {
       await init();
-      const rows = await db.query<{ event_id: string }>("SELECT event_id FROM outbox WHERE space = ? AND operation = 'create' AND status = 'accepted';", [space]);
+      const rows = await db.query<Row>('SELECT id, payload FROM activities WHERE space = ?;', [space]);
+      const creates = new Map((await db.query<OutboxRow>("SELECT * FROM outbox WHERE space = ? AND operation = 'create';", [space])).map((r) => [r.event_id, fromRow(r)]));
       const now = Date.now();
-      await db.transaction([
-        { sql: "UPDATE outbox SET status = 'pending', next_attempt_at = ?, updated_at = ? WHERE space = ? AND operation = 'create' AND status = 'accepted';", values: [now, now, space] },
-        // Deletions of entries that no longer exist in the cloud have nothing to delete.
+      const statements: Array<{ sql: string; values?: unknown[] }> = [
+        // The cloud copy is new: there is nothing in it to delete.
         { sql: "DELETE FROM outbox WHERE space = ? AND operation = 'void';", values: [space] },
-      ]);
-      for (const r of rows) outboxState.set(r.event_id, { status: 'pending', attempts: outboxState.get(r.event_id)?.attempts ?? 1 });
-      return rows.length;
+      ];
+      const next = new Map<string, Pick<OutboxItem, 'status' | 'attempts'>>();
+      let queued = 0;
+      let excluded = 0;
+      for (const r of rows) {
+        const log = JSON.parse(r.payload) as ActivityLog;
+        if (syncPolicy(log) === 'local-only') continue;
+        const before = floor !== null && (log.recordedAt ?? log.createdAt) < floor;
+        const prev = creates.get(log.id);
+        // Encoded again from the live entry (schema v2, minimal context): the new copy has no
+        // earlier version of it. attempts ≥ 1: once due, a later deletion is sent as a void.
+        const item: OutboxItem = {
+          eventId: log.id,
+          operation: 'create',
+          payload: createEventPayload(log, installation),
+          status: before ? 'rejected' : 'pending',
+          attempts: Math.max(prev?.attempts ?? 0, 1),
+          nextAttemptAt: now,
+          ...(before ? { reasonCode: 'before_backup_floor' } : {}),
+          updatedAt: now,
+        };
+        statements.push({
+          sql: `${OUTBOX_INSERT.replace(' DO NOTHING;', '')} DO UPDATE SET payload = excluded.payload, status = excluded.status, attempts = excluded.attempts, next_attempt_at = excluded.next_attempt_at, reason_code = excluded.reason_code, accepted_score_delta = NULL, updated_at = excluded.updated_at;`,
+          values: outboxValues(space, item),
+        });
+        next.set(log.id, { status: item.status, attempts: item.attempts });
+        if (before) excluded += 1;
+        else queued += 1;
+      }
+      // Creates of entries that no longer exist (deleted here, or by another device): never again.
+      const dropped = [...creates.keys()].filter((id) => !next.has(id));
+      for (const id of dropped) statements.push({ sql: 'DELETE FROM outbox WHERE space = ? AND event_id = ?;', values: [space, id] });
+      await db.transaction(statements);
+      for (const id of [...outboxState.keys()]) if (!next.has(id)) outboxState.delete(id);
+      for (const [id, st] of next) outboxState.set(id, st);
+      return { queued, excluded, dropped: dropped.length };
     },
   };
 }

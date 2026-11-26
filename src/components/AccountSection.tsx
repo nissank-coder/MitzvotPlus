@@ -26,6 +26,7 @@ const STATUS_TEXT: Record<SyncStatus['state'], string> = {
   error: 'לא סונכרן',
   cancelled: 'הסנכרון הופסק',
   'account-deleted': 'החשבון נמחק',
+  'decision-needed': 'ממתין לבחירה שלך: מה לגבות',
 };
 const ERROR_TEXT: Record<SyncErrorCode, string> = {
   offline: 'אין חיבור לשרת. הנתונים שמורים במכשיר וישלחו בפעם הבאה.',
@@ -34,6 +35,9 @@ const ERROR_TEXT: Record<SyncErrorCode, string> = {
   account_deleted: 'החשבון נמחק.',
   rate_limited: 'יותר מדי בקשות. ננסה שוב מאוחר יותר.',
   local_save_failed: 'השמירה במכשיר נכשלה, ולכן לא נשלח ולא התקבל דבר.',
+  backup_changed: 'הגיבוי נמחק בטלפון אחר. התור נבנה מחדש לפי הבחירה שחלה על החשבון.',
+  backup_decision_required: 'הגיבוי נמחק. לפני שליחה צריך לבחור מה לגבות.',
+  goals_conflict: 'היעדים שונו בטלפון אחר באותו זמן. ננסה שוב בסנכרון הבא.',
   unknown: 'שגיאה בסנכרון. הנתונים שמורים במכשיר.',
 };
 
@@ -45,7 +49,9 @@ const AUTH_TEXT: Record<string, string> = {
 type Dialog = 'transfer' | 'logout' | 'logout-wipe' | 'delete' | 'revoke' | 'reupload' | null;
 
 export default function AccountSection() {
-  const { runSync, cancelSync, space, spaceCount, switchSpace, state, decideReupload, markCloudDeleted, flush } = useAppStore();
+  const { runSync, cancelSync, space, spaceCount, switchSpace, markCloudDeleted, flush } = useAppStore();
+  /** Round 13 (B1): the backup generation that waits for the user's choice after a deletion. */
+  const [decisionEpoch, setDecisionEpoch] = useState<number | null>(null);
   const [api, setApi] = useState<AccountApi | null>(null);
   const [user, setUser] = useState<AccountUser | null>(null);
   const [pendingUser, setPendingUser] = useState<AccountUser | null>(null);
@@ -116,7 +122,25 @@ export default function AccountSection() {
     const s = await runSync(api.remote(), consent.cloudBackup);
     setStatus(s);
     if (s.state === 'account-deleted') setUser(null);
+    // The cloud copy was deleted (here or on another phone): the choice is the user's, once for all phones.
+    if (s.state === 'decision-needed') {
+      const b = await api.backupState().catch(() => null);
+      if (b?.decisionPending) {
+        setDecisionEpoch(b.epoch);
+        setDialog('reupload');
+      }
+    }
   }, [api, user, space, consent.cloudBackup, runSync]);
+
+  /** "All history" or "only from now" – stored on the server, so every phone of the account follows it. */
+  const decide = (all: boolean) =>
+    run(async () => {
+      if (!api || decisionEpoch === null) return;
+      await api.setBackupScope(decisionEpoch, all);
+      setDecisionEpoch(null);
+      setNotice(all ? 'הגיבוי יכלול את כל מה שקיים בטלפונים, בלי מה שנמחק.' : 'יגובה רק מה שיירשם מעכשיו, בכל הטלפונים בחשבון.');
+      await sync();
+    });
 
   const leave = async (wipe: boolean) => {
     if (!api || !user) return;
@@ -215,7 +239,11 @@ export default function AccountSection() {
                   ? run(async () => {
                       await api.setConsent({ ...consent, cloudBackup: true });
                       setConsentState({ ...consent, cloudBackup: true });
-                      if (state.sync?.cloudDeletedAt) setDialog('reupload');
+                      const b = await api.backupState();
+                      if (b.decisionPending) {
+                        setDecisionEpoch(b.epoch);
+                        setDialog('reupload');
+                      }
                     })
                   : setDialog('revoke')
               }
@@ -273,12 +301,14 @@ export default function AccountSection() {
       />
       <ConfirmDialog
         open={dialog === 'reupload'}
-        title="להעלות שוב את ההיסטוריה?"
-        message="הגיבוי שבשרת נמחק קודם. אפשר להעלות שוב את כל מה שבמכשיר, או לגבות רק מה שיירשם מעכשיו."
-        confirmLabel="להעלות את כל ההיסטוריה"
+        title="מה לגבות מעכשיו?"
+        message="הגיבוי שבשרת נמחק קודם, בטלפון הזה או בטלפון אחר. אפשר לגבות שוב את כל מה שקיים בטלפונים (בלי מה שנמחק), או רק מה שיירשם מעכשיו. הבחירה חלה על כל הטלפונים בחשבון. עד שתבחרו, לא נשלח דבר."
+        confirmLabel="כל ההיסטוריה"
         cancelLabel="רק מעכשיו"
-        onConfirm={onConfirmOf(() => void run(async () => { await decideReupload(true); }))}
-        onClose={onCancelOf(() => void decideReupload(false))}
+        onConfirm={() => void decide(true)}
+        onCancel={() => void decide(false)}
+        // Closing without a choice decides nothing: the backup waits, and nothing is sent.
+        onClose={() => setDialog(null)}
       />
       <ConfirmDialog
         open={dialog === 'logout'}

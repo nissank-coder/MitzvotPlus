@@ -8,6 +8,7 @@ import { goalsOn, withGoals } from '../lib/metrics';
 import { cleanHabits } from '../lib/habits';
 import { challengeById, challengeWindow } from '../lib/challenges';
 import { logFromRemote, RemoteEvent } from '../sync/engine';
+import { GoalWire, withBlessingGoals } from '../sync/goals';
 import { emptyTimer, resetTimer, SpeechTimer, startTimer, undoReset } from '../lib/speechTimer';
 import { ActivityLog, AppSettings, AppState, Award, BlessingCategory, GoalSnapshot, HabitSelection, IconName, LogKind, UserProfile } from '../types';
 
@@ -253,6 +254,12 @@ export type Action =
   | { type: 'applyRemoteEvents'; payload: RemoteEvent[] }
   | { type: 'resetSyncCursor' }
   | { type: 'syncGoalsSent'; payload: { hash: string } }
+  /** Round 13 (B2): the goal history this device and the server agree on (fingerprint + server version). */
+  | { type: 'goalsSynced'; payload: { fingerprint: string; version: number } }
+  /** Round 13 (B2): blessing goals from the server (another device changed them). */
+  | { type: 'goalsAdopted'; payload: { wire: GoalWire[] } }
+  /** Round 13 (B1): the queue was rebuilt for a new backup generation; the cursor starts over. */
+  | { type: 'backupGenerationApplied'; payload: { epoch: number; floor: number | null } }
   | { type: 'cloudDataDeleted'; payload: { at: number } }
   | { type: 'cloudReuploadDecided' }
   | { type: 'addAction'; payload: ActionInput }
@@ -283,6 +290,15 @@ function carryHabits(state: AppState): Partial<GoalSnapshot> {
 }
 
 const clampGoal = (value: number, min: number, max: number) => Math.round(Math.min(max, Math.max(min, value)));
+
+/** When the blessing goal in force from `dateKey` was set: now if it changes, else the time it had. */
+function blessingSetAtOf(state: AppState, dateKey: string, blessingGoal: number): Pick<GoalSnapshot, 'blessingSetAt'> {
+  const current = goalsOn(state.goalHistory, dateKey);
+  if (current.blessingGoal !== blessingGoal) return { blessingSetAt: Date.now() };
+  return current.blessingSetAt !== undefined ? { blessingSetAt: current.blessingSetAt } : {};
+}
+
+const EMPTY_SYNC = { cursor: 0, remoteRemoved: [] as string[], lastSyncAt: null as number | null };
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -405,8 +421,13 @@ export function reducer(state: AppState, action: Action): AppState {
         userName: p.userName !== undefined ? p.userName.trim() || state.userName : state.userName,
         ...goals,
         // A goal change applies from today on; past days keep the goals they were measured with.
+        // The time of a blessing-goal change is kept: two phones are merged by it (round 13, B2).
         goalHistory: changed
-          ? withGoals(state.goalHistory, action.dateKey ?? localDateKey(Date.now()), { ...carryHabits(state), ...goals })
+          ? withGoals(state.goalHistory, action.dateKey ?? localDateKey(Date.now()), {
+              ...carryHabits(state),
+              ...goals,
+              ...blessingSetAtOf(state, action.dateKey ?? localDateKey(Date.now()), goals.blessingGoal),
+            })
           : state.goalHistory,
       };
     }
@@ -423,6 +444,8 @@ export function reducer(state: AppState, action: Action): AppState {
           dailyGoal: current.dailyGoal,
           weeklyGoal: current.weeklyGoal,
           blessingGoal: current.blessingGoal,
+          // A habits change is not a blessing-goal change: its time stays the goal's own.
+          ...(current.blessingSetAt !== undefined ? { blessingSetAt: current.blessingSetAt } : {}),
           habits,
           habitTarget: target,
         }),
@@ -513,6 +536,33 @@ export function reducer(state: AppState, action: Action): AppState {
 
     case 'syncGoalsSent':
       return { ...state, sync: { ...(state.sync ?? { cursor: 0, remoteRemoved: [], lastSyncAt: null }), goalsHash: action.payload.hash } };
+
+    case 'goalsSynced':
+      return { ...state, sync: { ...(state.sync ?? EMPTY_SYNC), goalsHash: action.payload.fingerprint, goalsVersion: action.payload.version } };
+
+    case 'goalsAdopted': {
+      const goalHistory = withBlessingGoals(state.goalHistory, action.payload.wire);
+      const last = goalHistory[goalHistory.length - 1];
+      return { ...state, goalHistory, blessingGoal: last?.blessingGoal ?? state.blessingGoal };
+    }
+
+    // A new backup generation (the cloud copy was deleted, on this phone or another): the queue was
+    // rebuilt by the storage; the cursor and the goals start over (the server's copy is new).
+    case 'backupGenerationApplied':
+      return {
+        ...state,
+        sync: {
+          ...(state.sync ?? EMPTY_SYNC),
+          cursor: 0,
+          remoteRemoved: [],
+          lastSyncAt: null,
+          goalsHash: null,
+          goalsVersion: 0,
+          cloudDeletedAt: null,
+          backupEpoch: action.payload.epoch,
+          backupFloor: action.payload.floor,
+        },
+      };
 
     // The cloud copy is gone: start the cursor over; the goals must be sent again.
     case 'cloudDataDeleted':

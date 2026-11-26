@@ -7,6 +7,7 @@ import { createFreshState, loadState, reducer } from '../store/state';
 import { RemoteEvent, SyncError, syncNow, SyncDeps, SyncRemote } from '../sync/engine';
 import { createSyncCoordinator } from '../sync/coordinator';
 import { EventReceipt } from '../sync/outbox';
+import { goalWireOf, GoalWire } from '../sync/goals';
 import type { AppState } from '../types';
 
 /**
@@ -408,26 +409,45 @@ describe('sync: races, failures and durability', () => {
     const d = new Device(createSqlStorage(sqlite(), undefined, A), server);
     d.state = reducer(add(createFreshState(NOW), 'blessing', 0, { category: 'other' }), { type: 'updateGoals', payload: { blessingGoal: 50 }, dateKey: DAY });
     await d.storage.save(d.state);
-    let hash: string | null = null;
-    const goals = { current: () => d.state.goalHistory.map((g) => ({ from: g.from, blessingGoal: g.blessingGoal })), sent: () => hash, markSent: (h: string) => void (hash = h) };
-    const remote = { ...server.remote(), setBlessingGoals: async (g: unknown) => void sent.push(g) };
+    let version = 0;
+    let serverGoals: GoalWire[] = [];
+    let known = { fingerprint: null as string | null, version: 0 };
+    const goals = { wire: () => goalWireOf(d.state.goalHistory), known: () => known, adopt: () => undefined, markSynced: (fingerprint: string, v: number) => void (known = { fingerprint, version: v }) };
+    const order: string[] = [];
+    const base = server.remote();
+    const remote: SyncRemote = {
+      ...base,
+      submit: async (b, e) => {
+        order.push('events');
+        return base.submit(b, e);
+      },
+      getBlessingGoals: async () => ({ version, goals: serverGoals }),
+      setBlessingGoals: async (g, baseVersion) => {
+        expect(baseVersion).toBe(version);
+        order.push('goals');
+        sent.push(g.map(({ from, blessingGoal }) => ({ from, blessingGoal })));
+        serverGoals = g;
+        return (version += 1);
+      },
+    };
     await syncNow(d.deps({ remote, goals }));
     await syncNow(d.deps({ remote, goals }));
     expect(sent).toEqual([[{ from: '0000-00-00', blessingGoal: 100 }, { from: DAY, blessingGoal: 50 }]]);
+    expect(order[0]).toBe('goals');
   });
 
-  it('after the cloud copy was deleted, re-uploading the history happens only when the user agrees', async () => {
+  it('after the cloud copy was deleted, re-uploading the history happens only when the user agrees (details: backupGeneration.test.ts)', async () => {
     const server = new Server();
     const d = new Device(createSqlStorage(sqlite(), undefined, A), server);
     d.state = add(add(createFreshState(NOW), 'chesed', 0), 'shacharit', 1);
     await d.storage.save(d.state);
     await syncNow(d.deps());
     server.events = []; // set_consent(false, delete) on the server
-    // Backup turned on again without agreeing to re-upload: nothing old is sent.
+    // Backup turned on again without a choice: nothing old is sent.
     expect(await syncNow(d.deps())).toMatchObject({ state: 'ok', pushed: 0 });
     expect(server.events).toHaveLength(0);
-    // The user agrees: everything is queued again and sent once.
-    expect(await d.storage.requeueAccepted()).toBe(2);
+    // The user agrees ("all history"): the live entries are queued again and sent once.
+    expect(await d.storage.rebuildOutbox(null)).toEqual({ queued: 2, excluded: 0, dropped: 0 });
     expect(await syncNow(d.deps())).toMatchObject({ state: 'ok', pushed: 2 });
     expect(server.events).toHaveLength(2);
   });

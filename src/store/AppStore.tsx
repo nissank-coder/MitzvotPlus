@@ -18,6 +18,7 @@ import {
 } from '../lib/jewishCalendar';
 import { ActionInput, buildLog } from '../lib/scoring';
 import { syncNow, SyncRemote, SyncStatus } from '../sync/engine';
+import { goalWireOf, withBlessingGoals } from '../sync/goals';
 import { createSyncCoordinator } from '../sync/coordinator';
 import type { SpaceManager, SqlStateStorage } from '../storage/sqliteStorage';
 import { restRuleFor } from '../lib/restRule';
@@ -110,7 +111,6 @@ type StoreValue = {
    */
   switchSpace: (space: string, options?: { transferFrom?: string; deleteSpace?: string }) => Promise<void>;
   /** After the cloud copy was deleted: queue every entry again (user agreed), or keep it local. */
-  decideReupload: (upload: boolean) => Promise<number>;
   markCloudDeleted: () => void;
   /** Saves / unsaves a specific content item (id@version). */
   toggleSavedContent: (ref: string) => void;
@@ -206,10 +206,12 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   // Every change is handed to the save controller; a failed load leaves it unset, so stored data is
   // never overwritten.
   const requestedCursor = useRef(0);
+  const requestedEpoch = useRef(1);
   useEffect(() => {
     if (!hydrated) return;
     saverRef.current?.request(state);
     requestedCursor.current = state.sync?.cursor ?? 0;
+    requestedEpoch.current = state.sync?.backupEpoch ?? 1;
   }, [hydrated, state]);
 
   // One rest-day rule for every streak: Shabbat and Yom Tov for the selected city (cached per day).
@@ -348,7 +350,9 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
           if (!storage || storage.kind !== 'sqlite' || !('listOutbox' in storage)) return { state: 'error', code: 'unknown', at: Date.now(), pending: 0 };
           const logs = state.logs;
           let cursor = state.sync?.cursor ?? 0;
-          let goalsHash = state.sync?.goalsHash ?? null;
+          let goalsKnown = { fingerprint: state.sync?.goalsHash ?? null, version: state.sync?.goalsVersion ?? 0 };
+          let goalHistory = state.goalHistory;
+          let backupLocal = { epoch: state.sync?.backupEpoch ?? 1, floor: state.sync?.backupFloor ?? null };
           return syncNow({
             listOutbox: () => storage.listOutbox(),
             saveOutbox: (i) => storage.saveOutbox(i),
@@ -363,16 +367,36 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
             persist: async () => {
               // Wait until the state holding the applied events reached the save controller, then
               // write it: entries and cursor in one transaction, before "synced" is shown.
-              for (let i = 0; i < 200 && requestedCursor.current < cursor; i += 1) await new Promise((r) => setTimeout(r, 10));
-              return isCurrent() && requestedCursor.current >= cursor && (await flush());
+              // A new backup generation is written with them (round 13, B1).
+              const ready = () => requestedCursor.current >= cursor && requestedEpoch.current === backupLocal.epoch;
+              for (let i = 0; i < 200 && !ready(); i += 1) await new Promise((r) => setTimeout(r, 10));
+              return isCurrent() && ready() && (await flush());
             },
             isCurrent,
             goals: {
-              current: () => state.goalHistory.map((g) => ({ from: g.from, blessingGoal: g.blessingGoal })),
-              sent: () => goalsHash,
-              markSent: (hash) => {
-                goalsHash = hash;
-                if (isCurrent()) dispatch({ type: 'syncGoalsSent', payload: { hash } });
+              wire: () => goalWireOf(goalHistory),
+              known: () => goalsKnown,
+              adopt: (wire) => {
+                if (!isCurrent()) return;
+                goalHistory = withBlessingGoals(goalHistory, wire);
+                dispatch({ type: 'goalsAdopted', payload: { wire } });
+              },
+              markSynced: (fingerprint, version) => {
+                goalsKnown = { fingerprint, version };
+                if (isCurrent()) dispatch({ type: 'goalsSynced', payload: { fingerprint, version } });
+              },
+            },
+            backup: {
+              local: () => backupLocal,
+              // A new backup generation: the queue is rebuilt on the device first (one transaction),
+              // then the state records it; until that state is saved, the next start rebuilds again.
+              rebuild: async (next) => {
+                if (!isCurrent()) return;
+                await storage.rebuildOutbox(next.floor);
+                backupLocal = next;
+                cursor = 0;
+                goalsKnown = { fingerprint: null, version: 0 };
+                dispatch({ type: 'backupGenerationApplied', payload: next });
               },
             },
             remote,
@@ -415,12 +439,6 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
         } finally {
           setHydrated(true);
         }
-      },
-      decideReupload: async (upload) => {
-        dispatch({ type: 'cloudReuploadDecided' });
-        const storage = storageRef.current as SqlStateStorage | null;
-        if (!upload || !storage || !('requeueAccepted' in storage)) return 0;
-        return storage.requeueAccepted();
       },
       markCloudDeleted: () => dispatch({ type: 'cloudDataDeleted', payload: { at: Date.now() } }),
       addAction,
