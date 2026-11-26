@@ -62,6 +62,16 @@ describe('feedback after saved entries', () => {
     let s = add(add(base(), { key: 'shacharit' }), { key: 'mincha', now: NOW + 10 });
     expect(run(s, (s = add(s, { key: 'arvit', now: NOW + 20 })))).toMatchObject({ kind: 'habit', title: 'הרגל הושלם: שלוש תפילות', detail: '1/2 הרגלים היום' });
   });
+  it('entries pulled from another device of the account are not "just recorded": no toast, never undone', () => {
+    const s0 = base();
+    const local = add(s0, { key: 'mincha' });
+    const fromOtherDevice = (s: AppState, id: string): AppState => ({ ...s, logs: [{ ...local.logs[0]!, id, remote: true }, ...s.logs] });
+    expect(run(s0, fromOtherDevice(s0, 'remote-1'))).toBeNull();
+    const mixed = fromOtherDevice(local, 'remote-2');
+    const f = run(s0, mixed)!;
+    expect(f.logIds).toEqual([local.logs[0]!.id]);
+    expect(f.title).toBe('נרשם: מנחה');
+  });
   it('nothing added – no feedback', () => {
     const s = base();
     expect(run(s, s)).toBeNull();

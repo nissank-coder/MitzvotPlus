@@ -43,9 +43,13 @@ export function snapshotOf(state: Pick<AppState, 'logs'>, derived: Derived): Fee
   };
 }
 
-/** The entries added since the snapshot (newest first). */
+/**
+ * The entries recorded on this device since the snapshot (newest first). Entries that arrived from
+ * another device of the account (sync, `remote`) are not something the user just did: no toast, and
+ * "ביטול" must never offer to remove them.
+ */
 export function addedSince(prev: FeedbackSnapshot, logs: ActivityLog[]): ActivityLog[] {
-  return logs.filter((l) => !prev.ids.has(l.id)).sort((a, b) => b.createdAt - a.createdAt);
+  return logs.filter((l) => !prev.ids.has(l.id) && !l.remote).sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export function feedbackFor(prev: FeedbackSnapshot, added: ActivityLog[], state: Pick<AppState, 'blessingGoal'>, derived: Derived): Feedback | null {
