@@ -28,6 +28,11 @@ const forbidden = [
   ['רק להציץ', 'demo-data loader on onboarding'],
   ['טעינת נתוני הדגמה', 'demo-data loader in profile'],
   ['fonts.googleapis.com', 'remote font (privacy/offline)'],
+  // Round 14: content packs not approved for distribution (the nusach Ashkenaz siddur, pending the
+  // owner's approval of the edition and a rabbinic check) – internal builds only.
+  ['NOT_APPROVED', 'content pack not approved for distribution'],
+  ['siddur-ashkenaz', 'nusach Ashkenaz pack (internal review only)'],
+  ['Daat Siddur Ashkenaz', 'nusach Ashkenaz pack text (internal review only)'],
 ];
 
 const problems = [];

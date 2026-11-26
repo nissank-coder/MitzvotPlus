@@ -1,0 +1,138 @@
+{
+  "fetchedAt": "2026-11-26T19:00:06.403Z",
+  "editions": {
+    "The Metsudah siddur, 1981 (CC-BY)": 219,
+    "Daat Siddur Ashkenaz (Public Domain)": 210
+  },
+  "missing": [
+    "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Prayers for Welfare of the People",
+    "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Vidui and 13 Middot",
+    "Siddur Ashkenaz, Weekday, Maariv, Additions for Motza'ei Shabbat, Veyiten Lekha",
+    "Siddur Ashkenaz, Shabbat, Kabbalat Shabbat, Bameh Madlikin",
+    "Siddur Ashkenaz, Shabbat, Shacharit, Pesukei Dezimra, Mizmor Letoda",
+    "Siddur Ashkenaz, Shabbat, Shacharit, Amidah, Holiness of God",
+    "Siddur Ashkenaz, Shabbat, Shacharit, Torah Reading, Reading from Sefer, Mi Sheberach, Bat Mitzvah"
+  ],
+  "prayers": [
+    {
+      "id": "upon-arising",
+      "sections": 7,
+      "segments": 25
+    },
+    {
+      "id": "shacharit",
+      "sections": 95,
+      "segments": 533
+    },
+    {
+      "id": "mincha",
+      "sections": 29,
+      "segments": 182
+    },
+    {
+      "id": "maariv",
+      "sections": 36,
+      "segments": 221
+    },
+    {
+      "id": "bedtime-shema",
+      "sections": 1,
+      "segments": 37
+    },
+    {
+      "id": "birkat-hamazon",
+      "sections": 1,
+      "segments": 89
+    },
+    {
+      "id": "blessings-after",
+      "sections": 2,
+      "segments": 15
+    },
+    {
+      "id": "tefillat-haderech",
+      "sections": 1,
+      "segments": 6
+    },
+    {
+      "id": "kabbalat-shabbat",
+      "sections": 13,
+      "segments": 42
+    },
+    {
+      "id": "shabbat-maariv",
+      "sections": 25,
+      "segments": 133
+    },
+    {
+      "id": "shabbat-night-meal",
+      "sections": 12,
+      "segments": 231
+    },
+    {
+      "id": "shabbat-shacharit",
+      "sections": 63,
+      "segments": 273
+    },
+    {
+      "id": "shabbat-torah-reading",
+      "sections": 25,
+      "segments": 104
+    },
+    {
+      "id": "shabbat-musaf",
+      "sections": 24,
+      "segments": 117
+    },
+    {
+      "id": "shabbat-day-meal",
+      "sections": 7,
+      "segments": 173
+    },
+    {
+      "id": "shabbat-mincha",
+      "sections": 31,
+      "segments": 166
+    },
+    {
+      "id": "seuda-shlishit",
+      "sections": 3,
+      "segments": 22
+    },
+    {
+      "id": "havdalah",
+      "sections": 1,
+      "segments": 13
+    },
+    {
+      "id": "rosh-chodesh",
+      "sections": 17,
+      "segments": 84
+    },
+    {
+      "id": "yom-tov",
+      "sections": 19,
+      "segments": 212
+    },
+    {
+      "id": "tal-geshem",
+      "sections": 2,
+      "segments": 100
+    },
+    {
+      "id": "sukkah-lulav",
+      "sections": 4,
+      "segments": 24
+    },
+    {
+      "id": "hoshanot",
+      "sections": 8,
+      "segments": 289
+    },
+    {
+      "id": "chanukah",
+      "sections": 3,
+      "segments": 33
+    }
+  ]
+}
