@@ -23,11 +23,15 @@ export function startTimer(t: SpeechTimer, now: number): SpeechTimer {
   return t.since === null ? { ...t, since: now, undo: null } : t;
 }
 
+/** A screen clock may lag the stored instant by a moment (e.g. right after a reset): not a clock problem. */
+export const CLOCK_TOLERANCE_MS = 5_000;
+
 /** Elapsed time; a device clock set back before the start yields 0 and a flag, never a negative value. */
 export function elapsed(t: SpeechTimer, now: number): { ms: number; clockMovedBack: boolean } {
   if (t.since === null) return { ms: 0, clockMovedBack: false };
   const diff = now - t.since;
-  return diff < 0 ? { ms: 0, clockMovedBack: true } : { ms: diff, clockMovedBack: false };
+  if (diff >= 0) return { ms: diff, clockMovedBack: false };
+  return { ms: 0, clockMovedBack: diff < -CLOCK_TOLERANCE_MS };
 }
 
 /** Ends the current period and starts a new one. */

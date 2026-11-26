@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens (design round 1, 26.11.2026) – direction inspired by Clalit active+: deep blue,
+ * lime for progress, light surfaces. Original identity for מצוות+; these are NOT Clalit's colours.
+ * Measured contrast (WCAG): ink/canvas 14.5, muted/canvas 4.9, white/brand 10.5, ink/lime 9.1,
+ * lime/brand 6.2 (fills on blue), lime-deep/white 3.2 (progress fills on light surfaces, always
+ * with the number next to them). Small text never sits on lime; text on lime is ink.
+ */
+@theme {
+  --color-brand: #263a80;
+  --color-brand-press: #1c2b62;
+  --color-brand-soft: #e9eefa;
+  --color-brand-line: #c9d4f0;
+  --color-on-brand: #ffffff;
+  --color-on-brand-muted: #c7d2f0;
+  --color-lime: #71e000;
+  --color-lime-deep: #4fa300;
+  --color-lime-soft: #e4f9c8;
+  --color-lime-ink: #3d6b00;
+  --color-ink: #172344;
+  --color-ink-muted: #5f6d84;
+  --color-canvas: #f5f8fc;
+  --color-surface: #ffffff;
+  --color-line: #dce4f0;
+  --color-track: #e4eaf5;
+  --color-danger: #c24a3d;
+  --color-danger-soft: #fcedea;
+  --color-amber-ink: #8a5a00;
+  --color-amber-soft: #fff4d6;
+  --font-sans: 'Heebo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-card: 22px;
+  --radius-hero: 28px;
+}
+
 /* Safe areas: Capacitor injects --safe-area-inset-* on Android; iOS and browsers provide env(). */
 :root {
   --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
@@ -57,4 +90,25 @@ body {
 @keyframes toast {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Numbers: same width digits, isolated from the surrounding right-to-left text. */
+.num {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+
+/* Elevation of the design round: one soft shadow for surfaces, one for the floating add button. */
+.ds-shadow {
+  box-shadow: 0 1px 2px rgba(23, 35, 68, 0.04), 0 8px 24px rgba(23, 35, 68, 0.06);
+}
+.ds-shadow-strong {
+  box-shadow: 0 10px 28px rgba(38, 58, 128, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

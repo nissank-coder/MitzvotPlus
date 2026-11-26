@@ -217,37 +217,51 @@ export function AchievementBadge({ view }: { view: AchievementView }) {
 /* ------------------------------- Celebration ------------------------------- */
 
 /**
- * Quiet feedback after a SAVED change. No confetti, no sound; respects reduced motion.
- * Shown 3 seconds; screen readers hear it once (role="status").
+ * Quiet feedback after a SAVED change (design round 1). No confetti, no sound; respects reduced
+ * motion; nothing waits for it. An entry can be undone right here ("ביטול") – the same removal as
+ * in the day's list (an entry already sent becomes a deletion, never an edit).
  */
 export function CelebrationToast() {
-  const { celebration, dismissCelebration } = useAppStore();
+  const { celebration, dismissCelebration, removeLog } = useAppStore();
   useEffect(() => {
     if (!celebration) return;
-    const t = window.setTimeout(dismissCelebration, celebration.kind === 'award' || celebration.kind === 'challenge' ? 4500 : 2600);
+    const t = window.setTimeout(dismissCelebration, celebration.kind === 'award' || celebration.kind === 'challenge' ? 4500 : 4000);
     return () => window.clearTimeout(t);
   }, [celebration, dismissCelebration]);
   if (!celebration) return null;
   const strong = celebration.kind !== 'saved';
   return (
-    <div className="fixed inset-x-0 bottom-[92px] z-40 flex justify-center px-4 pointer-events-none">
+    <div className="fixed inset-x-0 bottom-[96px] z-40 flex justify-center px-4 pointer-events-none">
       <div
         key={celebration.id}
         role="status"
         dir="rtl"
-        className={`pointer-events-auto max-w-[420px] w-full rounded-[18px] px-4 py-3 flex flex-row items-center gap-3 shadow-lg animate-[toast_.25s_ease-out] motion-reduce:animate-none ${
-          strong ? 'bg-[#17324D] text-white' : 'bg-white text-[#17324D] border border-[#DDE8EE]'
+        className={`pointer-events-auto max-w-[420px] w-full rounded-[18px] pr-3 pl-1.5 py-2 flex flex-row items-center gap-3 ds-shadow-strong animate-[toast_.2s_ease-out] motion-reduce:animate-none ${
+          strong ? 'bg-brand text-on-brand' : 'bg-ink text-white'
         }`}
       >
-        <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${strong ? 'bg-[#2AAE9B]' : 'bg-[#E3F4F1]'}`}>
-          <AppIcon name={celebration.kind === 'award' ? 'trophy' : 'check'} size={18} color={strong ? colors.white : '#1E8C7C'} strokeWidth={2.6} />
+        <span className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-lime" aria-hidden="true">
+          <AppIcon name={celebration.kind === 'award' ? 'trophy' : 'check'} size={18} color="#172344" strokeWidth={2.8} />
         </span>
-        <span className="flex-1 flex flex-col">
-          <span className="text-[14px] font-black">{celebration.title}</span>
-          {celebration.detail ? <span className={`text-[12px] ${strong ? 'text-[#C9D6E0]' : 'text-[#5C6F82]'}`}>{celebration.detail}</span> : null}
+        <span className="flex-1 min-w-0 flex flex-col">
+          <span className="text-[14px] font-extrabold truncate">{celebration.title}</span>
+          {celebration.detail ? <span className="text-[12px] text-on-brand-muted">{celebration.detail}</span> : null}
         </span>
-        <button type="button" onClick={dismissCelebration} aria-label="סגירה" className="w-9 h-9 flex items-center justify-center">
-          <AppIcon name="close" size={16} color={strong ? colors.white : '#5C6F82'} />
+        {celebration.logId ? (
+          <button
+            type="button"
+            onClick={() => {
+              removeLog(celebration.logId!);
+              dismissCelebration();
+            }}
+            aria-label={`ביטול הרישום: ${celebration.logTitle ?? ''}`}
+            className="min-h-[44px] px-3 rounded-[12px] text-[14px] font-extrabold text-lime active:bg-white/10"
+          >
+            ביטול
+          </button>
+        ) : null}
+        <button type="button" onClick={dismissCelebration} aria-label="סגירה" className="w-11 h-11 flex items-center justify-center rounded-full active:bg-white/10">
+          <AppIcon name="close" size={16} color="#FFFFFF" />
         </button>
       </div>
     </div>

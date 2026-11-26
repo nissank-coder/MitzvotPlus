@@ -29,7 +29,15 @@ import { createFreshState, loadState, reducer } from './state';
 export type ActionOptions = Omit<ActionInput, 'key' | 'now'>;
 
 /** Feedback after a SAVED change: an entry, a habit, the daily goal, an achievement, a challenge. */
-export type Celebration = { id: number; kind: 'saved' | 'habit' | 'goal' | 'award' | 'challenge'; title: string; detail?: string };
+export type Celebration = {
+  id: number;
+  kind: 'saved' | 'habit' | 'goal' | 'award' | 'challenge';
+  title: string;
+  detail?: string;
+  /** The entry this feedback is about (saved / habit / goal): the toast offers to undo it. */
+  logId?: string;
+  logTitle?: string;
+};
 
 export type CalendarState = {
   now: Date;
@@ -211,8 +219,8 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
     if (derived.todayGoalMet && !prev.goal) next = { kind: 'goal', title: 'היעד היומי הושלם', detail: 'יישר כוח' };
     else if (derived.habitsDoneToday > prev.habits)
       next = { kind: 'habit', title: 'הרגל הושלם', detail: `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` };
-    else next = { kind: 'saved', title: 'נרשם', detail: derived.hasHabits ? `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים` : undefined };
-    setCelebration({ id: Date.now(), ...next });
+    else next = { kind: 'saved', title: `נרשם: ${latest.title}`, detail: derived.hasHabits ? `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` : undefined };
+    setCelebration({ id: Date.now(), ...next, logId: latest.id, logTitle: latest.title });
   }, [hydrated, state.logs.length, derived, todayKey, isLogSaved, saveStatus]);
 
   // The first evaluation after loading records past achievements quietly ("earned before"),

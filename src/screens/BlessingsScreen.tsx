@@ -1,18 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
-import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { CitySilhouette, HillDecoration } from '../components/Decorations';
-import { FeatureHeader } from '../components/FeatureHeader';
-import { ProgressRing } from '../components/ProgressRing';
-import { SectionHeader } from '../components/SectionHeader';
+import { Button, Num, Ring, ScreenHeader, SectionTitle, Surface } from '../components/ds';
+import { UnsavedMark } from '../components/SaveStatusBanner';
 import { blessingCategoryMeta } from '../data';
 import { ACTIONS, BLESSING_GOAL_BONUS } from '../data/actions';
 import { formatTime } from '../lib/dates';
-import { UnsavedMark } from '../components/SaveStatusBanner';
 import { useAppStore } from '../store/AppStore';
-import { colors } from '../theme';
+import { ds } from '../theme';
 import { BlessingCategory } from '../types';
 
 type Props = {
@@ -30,237 +25,189 @@ function inPeriod(timestamp: number, period: Period): boolean {
   return true;
 }
 
-const periodItems: Array<{ key: Period; label: string; icon: 'sun' | 'moon' | 'calendar' }> = [
-  { key: 'morning', label: 'בוקר', icon: 'sun' },
-  { key: 'noon', label: 'צהריים', icon: 'sun' },
-  { key: 'evening', label: 'ערב', icon: 'moon' },
-  { key: 'all', label: 'כל היום', icon: 'calendar' },
+const PERIODS: Array<{ key: Period; label: string }> = [
+  { key: 'all', label: 'כל היום' },
+  { key: 'morning', label: 'בוקר' },
+  { key: 'noon', label: 'צהריים' },
+  { key: 'evening', label: 'ערב' },
 ];
+/** The tradition's 100 blessings a day; the personal goal (state.blessingGoal) may differ. */
+const TRADITION = 100;
 
-export function BlessingsScreen({ onBack, onOpenProfile }: Props) {
+/**
+ * "100 ברכות" – design round 1. The count is the focus: a large number, a ring that supports it
+ * (the number keeps counting past the goal while the ring stays full). One tap records ONE blessing
+ * (never a bundle or a whole prayer). Every entry can be corrected: "ביטול האחרונה" or the × in the
+ * list – the same removal as everywhere (Home is updated from the same log).
+ */
+export function BlessingsScreen({ onBack }: Props) {
   const { state, derived, addBlessing, removeLog, isLogSaved, saveStatus } = useAppStore();
-  const blessingTotal = derived.blessingTotal;
+  const total = derived.blessingTotal;
+  const goal = state.blessingGoal;
   const [period, setPeriod] = useState<Period>('all');
-  const [dialog, setDialog] = useState<{ title: string; message: string } | null>(null);
   const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
-  const progress = Math.min(1, blessingTotal / state.blessingGoal);
-  const remaining = Math.max(0, state.blessingGoal - blessingTotal);
+  const remaining = Math.max(0, goal - total);
+  const latest = derived.todayBlessings[0];
 
-  const latestLogs = useMemo(
-    () => derived.todayBlessings.filter((log) => inPeriod(log.createdAt, period)).slice(0, 7),
-    [derived.todayBlessings, period],
-  );
+  const shown = useMemo(() => derived.todayBlessings.filter((log) => inPeriod(log.createdAt, period)), [derived.todayBlessings, period]);
 
-  // The goal message is shown only once the blessing that reached the goal is stored on the device
-  // (never for an entry that failed to save), and once per day.
+  // The goal message appears once the blessing that reached the goal is stored on the device
+  // (never for an entry that failed to save), once per day, inline – it does not block anything.
   const [celebrate, setCelebrate] = useState(false);
+  const [reached, setReached] = useState(false);
   const celebratedDay = useRef<string | null>(null);
-  const latestId = derived.todayBlessings[0]?.id;
   useEffect(() => {
-    if (!celebrate || !latestId || blessingTotal < state.blessingGoal) return;
+    if (!celebrate || !latest || total < goal) return;
     if (celebratedDay.current === derived.todayKey) return;
-    if (!isLogSaved(latestId)) return;
+    if (!isLogSaved(latest.id)) return;
     celebratedDay.current = derived.todayKey;
     setCelebrate(false);
-    setDialog({ title: `${state.blessingGoal} ברכות`, message: 'השלמת את היעד היומי. יישר כוח!' });
-  }, [celebrate, latestId, blessingTotal, state.blessingGoal, derived.todayKey, isLogSaved, saveStatus]);
+    setReached(true);
+    const t = window.setTimeout(() => setReached(false), 6000);
+    return () => window.clearTimeout(t);
+  }, [celebrate, latest, total, goal, derived.todayKey, isLogSaved, saveStatus]);
 
-  const handleAdd = (category: BlessingCategory) => {
+  const add = (category: BlessingCategory) => {
     // No cap at the goal: every additional blessing is still counted.
     addBlessing(category);
-    if (blessingTotal + 1 === state.blessingGoal) setCelebrate(true);
+    if (total + 1 === goal) setCelebrate(true);
   };
 
   return (
-    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
-      <AppHeader onProfilePress={onOpenProfile} />
-      <FeatureHeader
-        title="100 ברכות"
-        subtitle="סופרים בשקט, מתקדמים בשמחה"
-        icon="star"
-        onBack={onBack}
-      />
+    <div dir="rtl" className="flex-1 bg-canvas px-4 pb-10 pt-3 flex flex-col gap-4">
+      <ScreenHeader title="100 ברכות" subtitle="סופרים בשקט, מתקדמים בשמחה" onBack={onBack} />
 
-      <div className="relative min-h-[184px] rounded-[28px] overflow-hidden border border-[#D5E8EC] p-4 mb-4 bg-gradient-to-b from-[#F8FDFF] to-[#E8F7F5] card-shadow flex items-center">
-        <CitySilhouette opacity={0.22} />
-        <div className="relative z-10 w-full flex flex-row-reverse items-center justify-between gap-4">
-          <ProgressRing progress={progress} size={132} strokeWidth={12}>
-            <AppIcon name="cup" size={25} color={colors.teal} />
-            <span className="text-[#17324D] text-[17px] font-black mt-0.5">{blessingTotal}/{state.blessingGoal}</span>
-          </ProgressRing>
-          <div className="flex-1 flex flex-col items-end">
-            <div className="flex flex-row-reverse items-center gap-1">
-              <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-extrabold">
-                היעד היומי
-              </span>
-              <AppIcon name="target" size={18} color={colors.teal} />
-            </div>
-            <h2 dir="rtl" className="text-[#17324D] text-[27px] font-black mt-2 leading-tight">
-              {state.blessingGoal} ברכות
-            </h2>
-            <p dir="rtl" className="text-[#718397] text-[13px] text-right mt-1">
-              {remaining === 0
-                ? blessingTotal > state.blessingGoal
-                  ? `היעד הושלם, ועוד ${blessingTotal - state.blessingGoal} ברכות מעבר`
-                  : 'היעד הושלם להיום'
-                : `עוד ${remaining} ברכות להשלמת היעד`}
-            </p>
-            <div className="mt-3 px-2.5 py-[5px] rounded-full bg-[#FFF5DB] flex flex-row-reverse items-center gap-1">
-              <AppIcon name="coin" size={15} color={colors.gold} />
-              <span dir="rtl" className="text-[#946300] text-[11px] font-extrabold">
-                {`${ACTIONS.blessing.points} נק׳ לברכה · ${BLESSING_GOAL_BONUS} נק׳ ביעד`}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-row-reverse gap-2 mb-5">
-        {periodItems.map((item) => {
-          const active = period === item.key;
-          return (
-            <button
-              key={item.key}
-              type="button"
-              onClick={() => setPeriod(item.key)}
-              className={`flex-1 min-h-[44px] rounded-full border flex flex-row-reverse items-center justify-center gap-1 transition-colors ${
-                active
-                  ? 'bg-[#2AAE9B] border-[#2AAE9B] text-white'
-                  : 'bg-white border-[#DDE8EE] text-[#17324D] hover:bg-[#EAF4FB]'
-              }`}
-            >
-              <AppIcon name={item.icon} size={17} color={active ? colors.white : colors.primary} />
-              <span className={`text-[13px] font-extrabold ${active ? 'text-white' : 'text-[#17324D]'}`}>
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      <SectionHeader title="הוספת ברכה" icon="plus" />
-      <div className="grid grid-cols-2 gap-3 mb-5" dir="rtl">
-        {(Object.keys(blessingCategoryMeta) as BlessingCategory[]).map((key) => {
-          const meta = blessingCategoryMeta[key];
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => handleAdd(key)}
-              className="min-h-[154px] bg-white rounded-[22px] border border-[#DDE8EE] flex flex-col items-center justify-center p-3 hover:border-[#2AAE9B] active:scale-[0.98] transition-all"
-            >
-              <div
-                className="w-11 h-11 rounded-[16px] flex items-center justify-center"
-                style={{ backgroundColor: meta.background }}
-              >
-                <AppIcon name={meta.icon} size={23} color={meta.color} />
-              </div>
-              <span className="text-[#17324D] text-[23px] font-black mt-2">
-                {derived.blessingCounts[key]}
-              </span>
-              <span dir="rtl" className="text-[#718397] text-[13px] font-bold mt-0.5 text-center">
-                {meta.title}
-              </span>
-              <div className="mt-2 flex flex-row-reverse items-center gap-0.5">
-                <AppIcon name="plus" size={14} color={colors.teal} strokeWidth={2.2} />
-                <span className="text-[#2AAE9B] text-[11px] font-black">הוספה</span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      <Card className="p-4 mb-4">
-        <SectionHeader title="הברכות שלי" icon="calendar" actionLabel={`${blessingTotal} היום`} />
-        {latestLogs.length === 0 ? (
-          <div className="flex flex-col items-center py-5">
-            <AppIcon name="cup" size={34} color={colors.teal} />
-            <span className="mt-2 text-[#17324D] text-[17px] font-black">{blessingTotal > 0 ? 'אין ברכות בחלק זה של היום' : 'הברכה הראשונה מחכה לך'}
-            </span>
-            <span dir="rtl" className="mt-1 text-[#718397] text-[13px]">
-              {blessingTotal > 0 ? 'בחרו "כל היום" כדי לראות הכל' : 'בחרו קטגוריה למעלה כדי להתחיל'}
-            </span>
-          </div>
-        ) : (
-          latestLogs.map((item, index) => {
-            const meta = blessingCategoryMeta[item.category ?? 'other'];
-            return (
-              <div
-                key={item.id}
-                className={`min-h-[62px] flex flex-row items-center justify-between py-2 ${
-                  index < latestLogs.length - 1 ? 'border-b border-[#EAF0F4]' : ''
-                }`}
-              >
-                <div className="flex flex-row items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPendingRemove({ id: item.id, title: item.title })}
-                    aria-label={`ביטול הרישום: ${item.title}`}
-                    className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[#FDECEC] transition-colors"
-                  >
-                    <AppIcon name="close" size={15} color={colors.textMuted} />
-                  </button>
-                  <AppIcon name="check" size={20} color={colors.green} />
-                  <span className="text-[#718397] text-[13px] font-bold">{formatTime(item.createdAt)}</span>
-                  <UnsavedMark logId={item.id} />
-                </div>
-                <div className="flex-1 flex flex-row-reverse items-center gap-3">
-                  <div className="flex-1 flex flex-col items-end">
-                    <span dir="rtl" className="text-[#17324D] text-[15px] font-extrabold">
-                      {item.title}
-                    </span>
-                    <span dir="rtl" className="text-[#718397] text-[11px] mt-0.5">
-                      {meta.title}
-                    </span>
-                  </div>
-                  <div
-                    className="w-[38px] h-[38px] rounded-[16px] flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: meta.background }}
-                  >
-                    <AppIcon name={meta.icon} size={19} color={meta.color} />
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </Card>
-
-      <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 overflow-hidden">
-        <HillDecoration />
-        <div className="flex-1 flex flex-col items-end">
-          <div className="flex flex-row-reverse items-center gap-2">
-            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
-              {remaining === 0 ? 'איזה יופי!' : 'ממשיכים בקצב שלך'}
-            </span>
-            <AppIcon name="trophy" size={22} color={colors.gold} />
-          </div>
-          <span dir="rtl" className="text-[#718397] text-[13px] mt-1">
-            {remaining === 0 ? 'השלמת את היעד היומי' : `עוד ${remaining} ברכות להשלמת היעד`}
+      {/* The count */}
+      <Surface tone="brand" as="section" aria-label="הברכות שלי היום" className="p-5 flex flex-col items-center gap-4 rounded-[var(--radius-hero)]">
+        <Ring value={total} max={goal} size={188} stroke={14} onBrand>
+          <span className="num text-[60px] font-extrabold leading-none" aria-label={`${total} ברכות היום`}>
+            {total}
           </span>
-          <div className="w-full h-2 rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-[#2AAE9B] transition-all duration-300"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
+          <span className="text-[14px] font-bold text-on-brand-muted mt-1">ברכות היום</span>
+        </Ring>
+        <div className="flex flex-col items-center gap-1 text-center" role="status">
+          {total >= goal ? (
+            <span className="inline-flex flex-row items-center gap-1.5 rounded-full bg-lime text-ink px-3 min-h-[32px] text-[14px] font-extrabold">
+              <AppIcon name="check" size={16} color={ds.ink} strokeWidth={3} />
+              {total > goal ? (
+                <>
+                  היעד הושלם · <Num>+{total - goal}</Num> מעבר
+                </>
+              ) : (
+                'היעד היומי הושלם'
+              )}
+            </span>
+          ) : (
+            <span className="text-[17px] font-extrabold">
+              עוד <Num>{remaining}</Num> ליעד היומי שלך
+            </span>
+          )}
+          <span className="text-[13px] text-on-brand-muted">
+            היעד האישי: <Num>{goal}</Num> ברכות ביום{goal !== TRADITION ? ` · המנהג: ${TRADITION} ברכות` : ''}
+          </span>
+          {reached ? <span className="text-[15px] font-extrabold text-lime mt-1">השלמת את היעד היומי. יישר כוח!</span> : null}
         </div>
-      </Card>
+        <div className="w-full flex flex-col gap-1">
+          <Button variant="lime" size="lg" icon="plus" className="w-full" onClick={() => add('other')} aria-label="+ ברכה – רישום ברכה אחת">
+            ברכה
+          </Button>
+          {latest ? (
+            <Button
+              variant="ghostOnBrand"
+              size="sm"
+              icon="reset"
+              className="self-center"
+              onClick={() => setPendingRemove({ id: latest.id, title: latest.title })}
+              aria-label={`ביטול הברכה האחרונה (${formatTime(latest.createdAt)})`}
+            >
+              ביטול הברכה האחרונה
+            </Button>
+          ) : null}
+        </div>
+      </Surface>
 
-      <ConfirmDialog
-        open={Boolean(dialog)}
-        title={dialog?.title ?? ''}
-        message={dialog?.message ?? ''}
-        confirmLabel="מעולה"
-        onClose={() => setDialog(null)}
-      />
+      {/* By kind */}
+      <Surface as="section" aria-label="רישום לפי סוג" className="p-4 flex flex-col gap-3">
+        <SectionTitle title="רישום לפי סוג" />
+        <div className="grid grid-cols-2 gap-2">
+          {(Object.keys(blessingCategoryMeta) as BlessingCategory[]).map((key) => {
+            const meta = blessingCategoryMeta[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => add(key)}
+                aria-label={`הוספת ברכה: ${meta.title} (${derived.blessingCounts[key]} היום)`}
+                className="min-h-[72px] rounded-[18px] bg-canvas border border-line px-3 flex flex-row items-center gap-2.5 text-right active:bg-brand-soft"
+              >
+                <span className="flex-1 min-w-0 flex flex-col">
+                  <span className="text-[14px] font-extrabold text-ink leading-tight">{meta.title}</span>
+                  <span className="text-[13px] text-ink-muted">
+                    <Num>{derived.blessingCounts[key]}</Num> היום
+                  </span>
+                </span>
+                <span className="w-10 h-10 rounded-full bg-brand flex items-center justify-center shrink-0" aria-hidden="true">
+                  <AppIcon name="plus" size={20} color={ds.white} strokeWidth={2.6} />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </Surface>
+
+      {/* Today's blessings – with correction */}
+      <Surface as="section" aria-label="הברכות שנרשמו היום" className="px-4 pt-3 pb-2 flex flex-col gap-2">
+        <SectionTitle title="נרשמו היום" />
+        <div role="radiogroup" aria-label="חלק היום" className="flex flex-row gap-1 rounded-full bg-canvas p-1">
+          {PERIODS.map((pItem) => (
+            <button
+              key={pItem.key}
+              type="button"
+              role="radio"
+              aria-checked={period === pItem.key}
+              onClick={() => setPeriod(pItem.key)}
+              className={`flex-1 min-h-[44px] rounded-full text-[13px] font-bold ${period === pItem.key ? 'bg-surface text-brand ds-shadow' : 'text-ink-muted'}`}
+            >
+              {pItem.label}
+            </button>
+          ))}
+        </div>
+        {shown.length === 0 ? (
+          <p className="py-4 text-[14px] text-ink-muted text-center">{total > 0 ? 'אין ברכות בחלק זה של היום.' : 'הברכה הראשונה של היום מחכה לך.'}</p>
+        ) : (
+          <ul className="flex flex-col">
+            {shown.slice(0, 12).map((item) => (
+              <li key={item.id} className="flex flex-row items-center gap-2 min-h-[52px] border-t border-line first:border-t-0">
+                <span className="num text-[13px] text-ink-muted w-12">{formatTime(item.createdAt)}</span>
+                <span className="flex-1 min-w-0 text-[15px] font-bold text-ink truncate">
+                  {blessingCategoryMeta[item.category ?? 'other'].title}
+                  {item.bundleOf ? <span className="text-[12px] font-bold text-ink-muted"> · מתוך תפילה</span> : null} <UnsavedMark logId={item.id} />
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPendingRemove({ id: item.id, title: item.title })}
+                  aria-label={`ביטול הרישום: ${item.title} ${formatTime(item.createdAt)}`}
+                  className="w-11 h-11 rounded-full flex items-center justify-center active:bg-canvas"
+                >
+                  <AppIcon name="close" size={16} color={ds.inkMuted} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {shown.length > 12 ? <p className="text-[12px] text-ink-muted pb-1">ועוד {shown.length - 12} ברכות</p> : null}
+      </Surface>
+
+      <p className="text-[12px] text-ink-muted px-1">
+        <Num>{ACTIONS.blessing.points}</Num> נקודות התמדה לברכה, <Num>{BLESSING_GOAL_BONUS}</Num> בהשלמת היעד היומי. הנקודות הן כלי לתיעוד ולהתמדה, לא מדד לערך.
+      </p>
 
       <ConfirmDialog
         open={pendingRemove !== null}
         title="ביטול רישום"
-        message={pendingRemove ? `להסיר את "${pendingRemove.title}" מהיומן? הנקודות יופחתו.` : ''}
+        message={pendingRemove ? `להסיר את "${pendingRemove.title}" מהיומן? הספירה והנקודות יתעדכנו גם במסך הבית.` : ''}
         confirmLabel="הסרה"
-        cancelLabel="ביטול"
+        cancelLabel="השארה"
         destructive
         onConfirm={() => pendingRemove && removeLog(pendingRemove.id)}
         onClose={() => setPendingRemove(null)}

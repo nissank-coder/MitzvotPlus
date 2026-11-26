@@ -1,98 +1,166 @@
-import React, { useEffect, useState } from 'react';
-import { ActionKey, actionDef, categoryStyle } from '../data/actions';
-import { quickActions } from '../lib/scoring';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ActionKey, actionDef } from '../data/actions';
+import { quickAddGroups, QuickAddItem } from '../lib/quickAdd';
 import { useAppStore } from '../store/AppStore';
-import { colors } from '../theme';
+import { ds } from '../theme';
 import { AppIcon } from './AppIcon';
+import { Num } from './ds';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
 };
 
+/**
+ * The shared add sheet (design round 1). Exact action names, grouped by category; points are a
+ * secondary line. An action that needs one more choice (a prayer: in a minyan or not) asks first;
+ * everything else is recorded with one tap. One tap = one entry: further taps while the sheet
+ * closes are ignored. The saved confirmation (with "ביטול") comes from the toast once the entry
+ * is stored on the device; a failed save shows the save banner instead.
+ */
 export function QuickAddSheet({ visible, onClose }: Props) {
-  const { state, addAction, addBlessing, previewPoints } = useAppStore();
-  const [minyan, setMinyan] = useState(false);
+  const { state, derived, addAction, addBlessing, previewPoints } = useAppStore();
+  const [detail, setDetail] = useState<QuickAddItem | null>(null);
+  const [recorded, setRecorded] = useState<{ key: ActionKey; minyan: boolean } | null>(null);
+  const busy = useRef(false);
+  const groups = useMemo(() => quickAddGroups(state.profile.gender), [state.profile.gender]);
 
-  // The minyan choice is per opening of the sheet, never carried over to the next one (A15).
+  // Every opening starts fresh: no detail step, no carried-over minyan choice (A15).
   useEffect(() => {
-    if (!visible) setMinyan(false);
+    if (visible) busy.current = false;
+    else {
+      setDetail(null);
+      setRecorded(null);
+    }
   }, [visible]);
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [visible, onClose]);
 
   if (!visible) return null;
 
-  const items = quickActions.filter((key) => !actionDef(key).menOnly || state.profile.gender === 'male');
-
-  const add = (key: ActionKey) => {
+  const doneToday = new Set(derived.todayLogs.map((l) => l.actionKey));
+  const record = (key: ActionKey, minyan = false) => {
+    if (busy.current) return; // a double tap records once
+    busy.current = true;
     if (key === 'blessing') addBlessing('other');
-    else addAction(key, { minyan: Boolean(minyan && actionDef(key).minyanBonus) });
-    onClose();
+    else addAction(key, { minyan });
+    // The sheet stays a moment with the tapped item marked: a second tap of a double tap lands here
+    // (and is ignored) instead of on whatever is underneath the sheet.
+    setRecorded({ key, minyan });
+    window.setTimeout(onClose, 350);
   };
+  const isRecorded = (key: ActionKey, minyan?: boolean) => recorded?.key === key && (minyan === undefined || recorded.minyan === minyan);
+  const choose = (item: QuickAddItem) => (item.detail === 'minyan' ? setDetail(item) : record(item.key));
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="הוספת מצווה"
-    >
-      <div
-        className="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
-
-        <div className="flex flex-row items-center justify-between mb-5">
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="סגירה"
-            className="w-[38px] h-[38px] rounded-full bg-[#F4F8FB] flex items-center justify-center hover:bg-[#EAF0F4] transition-colors"
-          >
-            <AppIcon name="close" size={19} color={colors.textMuted} />
-          </button>
-          <div className="flex flex-col items-end">
-            <h2 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
-              הוספת מצווה
-            </h2>
-            <p dir="rtl" className="text-[#718397] text-[13px] mt-0.5">
-              בחרו פעולה והיא תתווסף להיום
-            </p>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45" onClick={() => !recorded && onClose()} role="dialog" aria-modal="true" aria-label={detail ? `פרטי הרישום: ${detail.title}` : 'הוספת פעולה'}>
+      <div dir="rtl" aria-busy={recorded ? true : undefined} className={`w-full max-w-[460px] max-h-[88dvh] flex flex-col bg-canvas rounded-t-[28px] sheet-safe ${recorded ? '[&_button]:pointer-events-none' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <div className="px-4 pt-2.5">
+          <span aria-hidden="true" className="block w-12 h-[5px] rounded-full bg-line mx-auto mb-3" />
+          <div className="flex flex-row items-start gap-3 mb-3">
+            {detail ? (
+              <button type="button" onClick={() => setDetail(null)} aria-label="חזרה לרשימה" className="w-12 h-12 rounded-full bg-surface border border-line flex items-center justify-center shrink-0">
+                <AppIcon name="chevronRight" size={22} color={ds.brand} />
+              </button>
+            ) : null}
+            <div className="flex-1 min-w-0">
+              <h2 className="text-[22px] font-extrabold text-ink leading-tight">{detail ? detail.title : 'מה רשמת?'}</h2>
+              <p className="text-[14px] text-ink-muted mt-0.5">{detail ? 'עוד פרט אחד, והתפילה נרשמת' : 'בחרו פעולה שכבר עשיתם. היא נרשמת להיום.'}</p>
+            </div>
+            <button type="button" onClick={onClose} aria-label="סגירה" className="w-12 h-12 rounded-full bg-surface border border-line flex items-center justify-center shrink-0">
+              <AppIcon name="close" size={20} color={ds.inkMuted} />
+            </button>
           </div>
         </div>
 
-        <label dir="rtl" className="flex flex-row items-center gap-2 mb-3 text-[13px] font-extrabold text-[#17324D] cursor-pointer">
-          <input type="checkbox" checked={minyan} onChange={(e) => setMinyan(e.target.checked)} className="accent-[#2AAE9B] w-5 h-5" />
-          תפילה במניין (בונוס לשחרית, מנחה וערבית)
-        </label>
-
-        <div className="grid grid-cols-3 gap-2 max-h-[55dvh] overflow-y-auto" dir="rtl">
-          {items.map((key) => {
-            const item = { ...actionDef(key), ...categoryStyle[actionDef(key).category] };
-            const points = previewPoints(key, { minyan: Boolean(minyan && item.minyanBonus) });
-            return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => add(key)}
-              className="min-h-[112px] rounded-[22px] border border-[#DDE8EE] bg-white flex flex-col items-center justify-center p-3 hover:border-[#2AAE9B] hover:bg-[#F7FCFF] transition-colors"
-            >
-              <div
-                className="w-[46px] h-[46px] rounded-[16px] flex items-center justify-center mb-2"
-                style={{ backgroundColor: item.background }}
-              >
-                <AppIcon name={item.icon} size={24} color={item.color} />
-              </div>
-              <span dir="rtl" className="text-[#17324D] text-[13px] font-extrabold text-center">
-                {item.title}
-              </span>
-              <div className="mt-2 px-2 py-1 rounded-full bg-[#FFF5DB]">
-                <span className="text-[#9A6A00] text-[11px] font-extrabold">{points > 0 ? `+${points} נק׳` : 'ללא נקודות'}</span>
-              </div>
-            </button>
-            );
-          })}
+        <div className="overflow-y-auto px-4 pb-2 flex flex-col gap-4">
+          {detail ? (
+            <div className="flex flex-col gap-2.5">
+              {[
+                { minyan: true, label: 'במניין', note: 'כולל תוספת למניין' },
+                { minyan: false, label: 'ביחידות', note: 'תפילה ללא מניין' },
+              ].map((o) => {
+                const pts = previewPoints(detail.key, { minyan: o.minyan });
+                return (
+                  <button
+                    key={o.label}
+                    type="button"
+                    onClick={() => record(detail.key, o.minyan)}
+                    className="min-h-[68px] rounded-[18px] bg-surface border border-line ds-shadow px-4 flex flex-row items-center gap-3 text-right active:bg-brand-soft"
+                  >
+                    <span className="flex-1 flex flex-col">
+                      <span className="text-[17px] font-extrabold text-ink">
+                        {detail.title} {o.label}
+                      </span>
+                      <span className="text-[13px] text-ink-muted">{o.note}</span>
+                    </span>
+                    <span className="text-[13px] font-bold text-brand">
+                      {isRecorded(detail.key, o.minyan) ? (
+                        'נרשם ✓'
+                      ) : pts > 0 ? (
+                        <>
+                          <Num>+{pts}</Num> נק׳
+                        </>
+                      ) : (
+                        'ללא נקודות'
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            groups.map((g) => (
+              <section key={g.category} aria-label={g.title} className="flex flex-col gap-2">
+                <h3 className="text-[13px] font-bold text-ink-muted">{g.title}</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {g.items.map((item) => {
+                    const def = actionDef(item.key);
+                    const isDone = (item.oncePerDay && doneToday.has(item.key)) || isRecorded(item.key);
+                    const pts = isDone ? 0 : previewPoints(item.key, {});
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        disabled={isDone}
+                        onClick={() => choose(item)}
+                        aria-label={isDone ? `${item.title} – נרשם היום` : item.title}
+                        className={`min-h-[76px] rounded-[18px] border px-3 py-2.5 flex flex-row items-center gap-2.5 text-right ${
+                          isDone ? 'bg-lime-soft border-transparent' : 'bg-surface border-line ds-shadow active:bg-brand-soft'
+                        }`}
+                      >
+                        <span className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isDone ? 'bg-lime' : 'bg-brand-soft'}`} aria-hidden="true">
+                          <AppIcon name={isDone ? 'check' : def.icon} size={20} color={isDone ? ds.ink : ds.brand} strokeWidth={isDone ? 3 : 2} />
+                        </span>
+                        <span className="flex-1 min-w-0 flex flex-col">
+                          <span className="text-[15px] font-extrabold text-ink leading-tight">{item.title}</span>
+                          <span className={`text-[12px] font-bold mt-0.5 ${isDone ? 'text-lime-ink' : 'text-ink-muted'}`}>
+                            {isRecorded(item.key) ? (
+                              'נרשם ✓'
+                            ) : isDone ? (
+                              'נרשם היום ✓'
+                            ) : item.detail ? (
+                              'במניין או ביחידות'
+                            ) : pts > 0 ? (
+                              <>
+                                <Num>+{pts}</Num> נק׳
+                              </>
+                            ) : (
+                              'נרשם, ללא נקודות נוספות'
+                            )}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))
+          )}
         </div>
       </div>
     </div>

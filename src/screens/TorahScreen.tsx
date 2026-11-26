@@ -1,14 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
-import { Card } from '../components/Card';
-import { CitySilhouette, HillDecoration } from '../components/Decorations';
-import { FeatureHeader } from '../components/FeatureHeader';
-import { ProgressRing } from '../components/ProgressRing';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { Button, Num, PrivacyBadge, ScreenHeader, Surface } from '../components/ds';
 import { contentRef, dvarTorahFor } from '../content/registry';
 import { useAppStore } from '../store/AppStore';
 import { actionDef } from '../data/actions';
-import { colors } from '../theme';
+import { ds } from '../theme';
 import { NO_HEBREW_VOICE_HELP, shareText as shareTextNative, speak, SpeechSupport, speechSupport, stopSpeaking } from '../native/shareSpeech';
 
 type Props = {
@@ -18,31 +15,36 @@ type Props = {
 
 function todayHebrewLabel(): string {
   try {
-    return new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date());
+    return new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
   } catch {
     return new Intl.DateTimeFormat('he-IL', { dateStyle: 'full' }).format(new Date());
   }
 }
 
-export function TorahScreen({ onBack, onOpenProfile }: Props) {
-  const { state, derived, toggleSavedContent, addAction, setReflection } = useAppStore();
+/** Rough reading time (Hebrew prose ~170 words a minute), never less than one minute. */
+export function readingMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 170));
+}
+
+/**
+ * "דבר תורה" – design round 1. A reading screen: title, the source as the registry has it (or a
+ * clear "demo text – not approved" label for the TEST_ONLY placeholder of internal builds), a
+ * comfortable serif text, and ONE explicit button to record learning. Opening or scrolling records
+ * nothing. The daily item and the weekly parasha content stay separate (src/content/registry.ts).
+ */
+export function TorahScreen({ onBack }: Props) {
+  const { state, derived, toggleSavedContent, addAction, removeLog, setReflection } = useAppStore();
   const item = dvarTorahFor(derived.todayKey);
   const text = item?.body ?? '';
-  const completeTorah = () => item && addAction('dailyTorah', { content: { id: item.id, version: item.version } });
-  // Saving and completion belong to this specific item (id + version), not to "the Dvar Torah" in general.
   const saved = item ? state.savedContent.includes(contentRef(item)) : false;
-  const itemDoneToday = item
-    ? derived.todayLogs.some((l) => l.actionKey === 'dailyTorah' && l.content?.id === item.id && l.content.version === item.version)
-    : false;
+  const doneLog = item ? derived.todayLogs.find((l) => l.actionKey === 'dailyTorah' && l.content?.id === item.id && l.content.version === item.version) : undefined;
+  const [undoOpen, setUndoOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const dateLabel = useMemo(todayHebrewLabel, []);
-  const streakProgress = Math.min(1, derived.torahStreak / 30);
+  const minutes = readingMinutes(text);
+  const approved = item?.approval === 'APPROVED';
 
   // Read-aloud only with a Hebrew voice on the device; otherwise a clear alternative (round 11 §4).
   const [speech, setSpeech] = useState<SpeechSupport | null>(null);
@@ -55,17 +57,12 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
     };
   }, []);
   const canSpeak = speech !== null && (speech.available || speech.reason === 'no-hebrew-voice');
-  const canShare = true;
   const flash = (msg: string, ms = 2500) => {
-    setShareFeedback(msg);
-    setTimeout(() => setShareFeedback(null), ms);
+    setFeedback(msg);
+    window.setTimeout(() => setFeedback(null), ms);
   };
-
   const toggleSpeech = () => {
-    if (!speech?.available) {
-      flash(NO_HEBREW_VOICE_HELP, 6000);
-      return;
-    }
+    if (!speech?.available) return flash(NO_HEBREW_VOICE_HELP, 6000);
     if (isSpeaking) {
       void stopSpeaking();
       setIsSpeaking(false);
@@ -74,8 +71,7 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
     setIsSpeaking(true);
     void speak(text, () => setIsSpeaking(false));
   };
-
-  const shareText = async () => {
+  const share = async () => {
     const message = `${item?.title ?? 'דבר תורה'} – מצוות+\n\n${text}${item?.source ? `\n\n${item.source.title}${item.source.ref ? ` ${item.source.ref}` : ''}` : ''}`;
     const r = await shareTextNative('דבר תורה – מצוות+', message);
     if (r === 'copied') flash('הטקסט הועתק ללוח לשיתוף');
@@ -85,268 +81,145 @@ export function TorahScreen({ onBack, onOpenProfile }: Props) {
   // No approved content (production without D08 content): say so plainly, no actions.
   if (!item) {
     return (
-      <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
-        <AppHeader onProfilePress={onOpenProfile} />
-        <FeatureHeader title="דבר תורה" subtitle="רגע קצר של לימוד ומשמעות" icon="book" onBack={onBack} />
-        <div dir="rtl" role="status" className="rounded-[22px] bg-white border border-[#DDE8EE] p-5 text-right">
-          <p className="text-[#17324D] text-[17px] font-black">דבר תורה יומי יתווסף בקרוב</p>
-          <p className="text-[#718397] text-[13px] mt-2 leading-6">
+      <div dir="rtl" className="flex-1 bg-canvas px-4 pb-10 pt-3 flex flex-col gap-4">
+        <ScreenHeader title="דבר תורה" subtitle="רגע קצר של לימוד ומשמעות" onBack={onBack} />
+        <Surface className="p-5" role="status">
+          <p className="text-ink text-[17px] font-extrabold">דבר תורה יומי יתווסף בקרוב</p>
+          <p className="text-ink-muted text-[14px] mt-2 leading-6">
             התכנים יופיעו אחרי שיעברו בדיקת מקור, רישיון ואישור. בינתיים אפשר ללמוד בסידור, בתהילים ובלימוד היומי.
           </p>
-        </div>
+        </Surface>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
-      <AppHeader onProfilePress={onOpenProfile} />
-      <FeatureHeader
-        title="דבר תורה"
-        subtitle="רגע קצר של לימוד ומשמעות"
-        icon="book"
-        onBack={onBack}
-      />
+    <div dir="rtl" className="flex-1 bg-canvas px-4 pb-10 pt-3 flex flex-col gap-4">
+      <ScreenHeader title="דבר תורה" subtitle="לימוד יומי קצר" onBack={onBack} />
 
-      <div className="relative min-h-[126px] rounded-[28px] bg-[#E8F4F7] border border-[#D5E8EC] overflow-hidden flex flex-col justify-center mb-4 card-shadow">
-        <CitySilhouette opacity={0.28} />
-        <div className="relative z-10 flex flex-col items-end px-5">
-          <h2 dir="rtl" className="text-[#17324D] text-[24px] font-black leading-tight">
-            דבר תורה יומי
-          </h2>
-          <p dir="rtl" className="text-[#718397] text-[13px] mt-1">
-            כמה דקות שמאירות את היום
-          </p>
-        </div>
-      </div>
-
-      <Card className="p-5 mb-4">
-        <div className="flex flex-row-reverse items-center justify-center gap-2">
-          <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+      <Surface as="article" aria-label={item.title} className="p-5 flex flex-col gap-4">
+        <div className="flex flex-row flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-muted">
+          <span className="flex flex-row items-center gap-1">
+            <AppIcon name="calendar" size={15} color={ds.inkMuted} />
             {dateLabel}
           </span>
-          <AppIcon name="calendar" size={18} color={colors.primary} />
+          <span className="flex flex-row items-center gap-1">
+            <AppIcon name="clock" size={15} color={ds.inkMuted} />
+            {minutes === 1 ? 'כדקה של קריאה' : `כ־${minutes} דקות קריאה`}
+          </span>
         </div>
-
-        <div className="flex flex-row items-center gap-2 my-4">
-          <div className="flex-1 h-px bg-[#DDE8EE]" />
-          <AppIcon name="leaf" size={20} color={colors.teal} />
-          <div className="flex-1 h-px bg-[#DDE8EE]" />
-        </div>
-
-        <h3 dir="rtl" className="text-[#17324D] text-[25px] font-black text-center">
-          מחשבה יומית
-        </h3>
-        <p dir="rtl" className="text-[#17324D] text-[16px] leading-[28px] text-right mt-4">
-          {text}
-        </p>
-
-        <div className="flex justify-center mt-4">
-          <div className="px-3 py-2 rounded-full bg-[#F4F8FB]">
-            {/* Source and approval come from the content registry; a test item claims no source. */}
-            <span dir="rtl" className="text-[#718397] text-[13px] font-bold" data-content-ref={item ? contentRef(item) : undefined}>
-              {item?.approval === 'APPROVED' && item.source
-                ? `${item.source.title}${item.source.ref ? `, ${item.source.ref}` : ''}`
-                : 'טקסט זמני – ממתין לתוכן מאושר'}
+        <div className="flex flex-col gap-2">
+          {!approved ? (
+            <span className="self-start rounded-full bg-amber-soft text-amber-ink text-[12px] font-bold px-3 min-h-[28px] inline-flex items-center">
+              טקסט הדגמה · לא תוכן מאושר
             </span>
-          </div>
-        </div>
-
-        <div className="flex flex-row gap-2 mt-5">
-          {canSpeak ? (
-            <ActionButton
-              label={isSpeaking ? 'עצור' : 'האזן'}
-              icon={isSpeaking ? 'pause' : 'play'}
-              active={isSpeaking}
-              onPress={toggleSpeech}
-            />
           ) : null}
-          {canShare ? <ActionButton label="שתף" icon="share" onPress={shareText} /> : null}
-          <ActionButton
-            label={saved ? 'נשמר' : 'שמור'}
-            icon="bookmark"
-            active={saved}
-            onPress={() => toggleSavedContent(contentRef(item))}
-          />
+          <h2 className="text-[24px] font-extrabold text-ink leading-tight">{item.title}</h2>
         </div>
-
-        {shareFeedback ? (
-          <p dir="rtl" className="mt-2.5 text-center text-[12px] font-bold text-[#2AAE9B]">
-            {shareFeedback}
+        <p className="reader-text text-[19px] text-ink">{text}</p>
+        {/* Source and approval come from the content registry; a placeholder claims no source. */}
+        <div className="rounded-[16px] bg-canvas px-4 py-3 flex flex-row items-start gap-2" data-content-ref={contentRef(item)}>
+          <AppIcon name="bookmark" size={18} color={ds.brand} />
+          <span className="flex-1 text-[14px] text-ink leading-6">
+            {approved && item.source ? (
+              <>
+                <span className="font-bold">מקור: </span>
+                {item.source.title}
+                {item.source.ref ? `, ${item.source.ref}` : ''}
+                {item.author ? ` · ${item.author}` : ''}
+              </>
+            ) : (
+              <>
+                <span className="font-bold">אין מקור. </span>
+                טקסט זמני לבדיקת המסך בלבד, עד שיאושר תוכן אמיתי.
+              </>
+            )}
+          </span>
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
+          {canSpeak ? (
+            <Button variant="secondary" size="sm" icon={isSpeaking ? 'pause' : 'play'} onClick={toggleSpeech}>
+              {isSpeaking ? 'עצירה' : 'האזנה'}
+            </Button>
+          ) : null}
+          <Button variant="secondary" size="sm" icon="share" onClick={share}>
+            שיתוף
+          </Button>
+          <Button variant={saved ? 'ghost' : 'secondary'} size="sm" icon="bookmark" onClick={() => toggleSavedContent(contentRef(item))} aria-pressed={saved}>
+            {saved ? 'נשמר' : 'שמירה'}
+          </Button>
+        </div>
+        {feedback ? (
+          <p role="status" className="text-[13px] font-bold text-brand">
+            {feedback}
           </p>
         ) : null}
+      </Surface>
 
-        <button
-          type="button"
-          onClick={completeTorah}
-          disabled={itemDoneToday}
-          className={`w-full min-h-[50px] rounded-[16px] mt-3 flex flex-row-reverse items-center justify-center gap-2 px-3 transition-colors ${
-            itemDoneToday
-              ? 'bg-[#EAF7EF] border border-[#CFE8D8] cursor-default'
-              : 'bg-[#2AAE9B] hover:bg-[#239988]'
-          }`}
-        >
-          <AppIcon
-            name={itemDoneToday ? 'check' : 'book'}
-            size={20}
-            color={itemDoneToday ? colors.green : colors.white}
-          />
-          <span
-            dir="rtl"
-            className={`text-[13px] font-black ${
-              itemDoneToday ? 'text-[#4DAA78]' : 'text-white'
-            }`}
-          >
-            {itemDoneToday ? 'הלימוד נרשם להיום' : `סיימתי ללמוד - הוסף ${actionDef('dailyTorah').points} נקודות`}
-          </span>
-        </button>
-      </Card>
-
-      <Card className="min-h-[146px] p-4 flex flex-row items-center gap-3 overflow-hidden mb-4">
-        <HillDecoration />
-        <div className="flex-1 flex flex-col items-end">
-          <div className="flex flex-row-reverse items-center gap-2 mb-3">
-            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
-              איך זה פוגש אותי היום?
+      {/* Recording is explicit: reading is not learning until the user says so. */}
+      <Surface as="section" aria-label="רישום לימוד" className="p-4 flex flex-col gap-3">
+        {doneLog ? (
+          <div className="rounded-[18px] bg-lime-soft p-4 flex flex-row items-center gap-3" role="status">
+            <span className="w-10 h-10 rounded-full bg-lime flex items-center justify-center shrink-0" aria-hidden="true">
+              <AppIcon name="check" size={20} color={ds.ink} strokeWidth={3} />
             </span>
-            <AppIcon name="edit" size={20} color={colors.primary} />
+            <span className="flex-1 flex flex-col">
+              <span className="text-[16px] font-extrabold text-ink">הלימוד נרשם להיום</span>
+              <span className="text-[13px] text-lime-ink">
+                רצף לימוד: <Num>{derived.torahStreak}</Num> {derived.torahStreak === 1 ? 'יום' : 'ימים'}
+              </span>
+            </span>
+            <Button variant="ghost" size="sm" onClick={() => setUndoOpen(true)}>
+              ביטול
+            </Button>
           </div>
-          <p dir="rtl" className="text-[#718397] text-[13px] leading-[21px] text-right mt-1">
-            איזו מצווה קטנה אוכל להוסיף היום?
-          </p>
-          <p dir="rtl" className="text-[#718397] text-[13px] leading-[21px] text-right mt-1">
-            איך היא יכולה להוסיף אור ומשמעות ליום שלי?
-          </p>
-        </div>
-      </Card>
+        ) : (
+          <>
+            <p className="text-[14px] text-ink-muted leading-6">פתיחת הדף אינה נרשמת. כשסיימת ללמוד, רושמים כאן.</p>
+            <Button
+              variant="primary"
+              size="lg"
+              icon="check"
+              onClick={() => addAction('dailyTorah', { content: { id: item.id, version: item.version } })}
+              aria-describedby="torah-points"
+            >
+              למדתי – לרשום לימוד
+            </Button>
+            <span id="torah-points" className="text-[12px] text-ink-muted text-center">
+              <Num>+{actionDef('dailyTorah').points}</Num> נקודות התמדה · פעם אחת ביום
+            </span>
+          </>
+        )}
+      </Surface>
 
-      <Card className="p-4 mb-4">
-        <div className="flex flex-row-reverse items-center gap-2 mb-3">
-          <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
-            המחשבה שלי
-          </span>
-          <AppIcon name="edit" size={19} color={colors.teal} />
+      <Surface as="section" aria-label="הערה אישית" className="p-4 flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <label htmlFor="torah-note" className="text-[16px] font-extrabold text-ink">
+            הערה אישית
+          </label>
+          <PrivacyBadge>במכשיר בלבד</PrivacyBadge>
         </div>
+        <p className="text-[13px] text-ink-muted">איך זה פוגש אותי היום? מצווה קטנה שאוכל להוסיף?</p>
         <textarea
+          id="torah-note"
           value={derived.reflection}
           onChange={(e) => setReflection(e.target.value)}
-          dir="rtl"
-          rows={4}
-          placeholder="אפשר לכתוב כאן תזכורת קצרה לעצמך..."
-          className="w-full min-h-[100px] rounded-[16px] bg-[#F4F8FB] border border-[#DDE8EE] p-3 text-[#17324D] text-[15px] leading-[22px] text-right placeholder:text-[#718397] focus:outline-none focus:border-[#2AAE9B] resize-y"
+          rows={3}
+          placeholder="אפשר לכתוב כאן תזכורת קצרה לעצמך…"
+          className="w-full min-h-[96px] rounded-[14px] bg-canvas border border-line p-3 text-ink text-[16px] leading-6 placeholder:text-ink-muted focus:outline-none focus:border-brand resize-y"
         />
-      </Card>
+      </Surface>
 
-      <Card className="min-h-[132px] p-4 flex flex-row items-center gap-3 mb-4">
-        <div className="relative w-[92px] h-[82px] flex justify-end items-center shrink-0">
-          <div className="absolute w-[68px] h-[58px] rounded-[6px] bg-[#244A64] -rotate-7 bottom-[5px] left-[12px]" />
-          <div className="absolute w-[72px] h-[54px] rounded-[6px] bg-[#3F6E86] rotate-6 bottom-[6px] left-[10px]" />
-          <div className="relative z-10 w-[66px] h-[52px] rounded-[6px] bg-[#17324D] border-2 border-[#F4B942] mx-auto mt-auto" />
-        </div>
-        <div className="flex-1 flex flex-col items-end">
-          <div className="flex flex-row-reverse items-center gap-2">
-            <span dir="rtl" className="text-[#17324D] text-[17px] font-black">
-              רצף לימוד
-            </span>
-            <AppIcon name="flame" size={21} color={colors.coral} />
-          </div>
-          <span dir="rtl" className="text-[#718397] text-[13px] mt-1">
-            דברי תורה יומיים
-          </span>
-          <div className="w-full h-[7px] rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
-            <div
-              className="h-full bg-[#2AAE9B] rounded-full transition-all duration-300"
-              style={{ width: `${streakProgress * 100}%` }}
-            />
-          </div>
-        </div>
-        <ProgressRing progress={streakProgress} size={82} strokeWidth={8}>
-          <AppIcon name="book" size={18} color={colors.teal} />
-          <span className="text-[#17324D] text-[11px] font-black mt-0.5">{derived.torahStreak}/30</span>
-        </ProgressRing>
-      </Card>
-
-      <div className="flex flex-row gap-3">
-        <RelatedCard
-          title="שיעור קצר"
-          subtitle="3-5 דקות"
-          icon="play"
-          color={colors.primary}
-          background={colors.blueSoft}
-          onPress={toggleSpeech}
-        />
-        <RelatedCard
-          title="מחשבה נוספת"
-          subtitle="עוד רעיון להשראה"
-          icon="leaf"
-          color={colors.green}
-          background={colors.greenSoft}
-        />
-      </div>
+      <ConfirmDialog
+        open={undoOpen}
+        title="ביטול רישום הלימוד"
+        message="להסיר את רישום הלימוד של היום? אפשר לרשום שוב בכל עת."
+        confirmLabel="הסרה"
+        cancelLabel="השארה"
+        destructive
+        onConfirm={() => doneLog && removeLog(doneLog.id)}
+        onClose={() => setUndoOpen(false)}
+      />
     </div>
-  );
-}
-
-function ActionButton({
-  label,
-  icon,
-  active = false,
-  onPress,
-}: {
-  label: string;
-  icon: 'play' | 'pause' | 'share' | 'bookmark';
-  active?: boolean;
-  onPress: () => void | Promise<void>;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onPress}
-      className={`flex-1 min-h-[46px] rounded-[16px] border flex flex-row-reverse items-center justify-center gap-1 transition-colors ${
-        active
-          ? 'bg-[#E8F8F4] border-[#BDECE3]'
-          : 'bg-[#EAF4FB] border-[#DDE8EE] hover:bg-[#D9EEF7]'
-      }`}
-    >
-      <AppIcon name={icon} size={19} color={active ? colors.teal : colors.primary} />
-      <span className={`text-[13px] font-extrabold ${active ? 'text-[#2AAE9B]' : 'text-[#1B6F8F]'}`}>
-        {label}
-      </span>
-    </button>
-  );
-}
-
-function RelatedCard({
-  title,
-  subtitle,
-  icon,
-  color,
-  background,
-  onPress,
-}: {
-  title: string;
-  subtitle: string;
-  icon: 'play' | 'leaf';
-  color: string;
-  background: string;
-  onPress?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onPress}
-      className="flex-1 min-h-[118px] rounded-[22px] p-4 flex flex-col items-end border border-[#DDE8EE] hover:opacity-90 transition-opacity"
-      style={{ backgroundColor: background }}
-    >
-      <div className="w-[38px] h-[38px] rounded-full bg-white flex items-center justify-center mb-2">
-        <AppIcon name={icon} size={22} color={color} />
-      </div>
-      <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
-        {title}
-      </span>
-      <span dir="rtl" className="text-[#718397] text-[11px] mt-0.5">
-        {subtitle}
-      </span>
-    </button>
   );
 }
