@@ -77,7 +77,7 @@ export function Meter({ value, max, onBrand = false, label, className = '' }: { 
   );
 }
 
-type ButtonVariant = 'primary' | 'lime' | 'secondary' | 'ghost' | 'danger' | 'onBrand';
+type ButtonVariant = 'primary' | 'lime' | 'secondary' | 'ghost' | 'danger' | 'onBrand' | 'ghostOnBrand';
 const VARIANT: Record<ButtonVariant, string> = {
   primary: 'bg-brand text-on-brand active:bg-brand-press disabled:bg-[#A9B3CC]',
   lime: 'bg-lime text-ink active:brightness-95 disabled:opacity-60',
@@ -85,6 +85,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   ghost: 'bg-transparent text-brand active:bg-brand-soft',
   danger: 'bg-surface text-danger border border-[#F0C9C3] active:bg-danger-soft',
   onBrand: 'bg-white/12 text-on-brand border border-white/25 active:bg-white/20',
+  ghostOnBrand: 'bg-transparent text-on-brand underline underline-offset-4 decoration-white/40 active:bg-white/10',
 };
 export function Button({
   variant = 'primary',
@@ -95,7 +96,7 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: 'sm' | 'md' | 'lg'; icon?: IconName }) {
   const sizeCls = size === 'lg' ? 'min-h-[56px] px-6 text-[16px] rounded-[18px]' : size === 'sm' ? 'min-h-[44px] px-4 text-[14px] rounded-full' : 'min-h-[48px] px-5 text-[15px] rounded-[16px]';
-  const iconColor = variant === 'primary' || variant === 'onBrand' ? ds.white : variant === 'lime' ? ds.ink : variant === 'danger' ? ds.danger : ds.brand;
+  const iconColor = variant === 'primary' || variant === 'onBrand' || variant === 'ghostOnBrand' ? ds.white : variant === 'lime' ? ds.ink : variant === 'danger' ? ds.danger : ds.brand;
   return (
     <button type="button" className={`inline-flex flex-row items-center justify-center gap-2 font-bold transition-colors ${sizeCls} ${VARIANT[variant]} ${className}`} {...rest}>
       {icon ? <AppIcon name={icon} size={size === 'sm' ? 18 : 20} color={iconColor} strokeWidth={2.2} /> : null}

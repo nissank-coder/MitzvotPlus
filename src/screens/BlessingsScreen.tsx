@@ -107,13 +107,20 @@ export function BlessingsScreen({ onBack }: Props) {
           </span>
           {reached ? <span className="text-[15px] font-extrabold text-lime mt-1">השלמת את היעד היומי. יישר כוח!</span> : null}
         </div>
-        <div className="w-full flex flex-row gap-2">
-          <Button variant="lime" size="lg" icon="plus" className="flex-1" onClick={() => add('other')} aria-label="+ ברכה – רישום ברכה אחת">
+        <div className="w-full flex flex-col gap-1">
+          <Button variant="lime" size="lg" icon="plus" className="w-full" onClick={() => add('other')} aria-label="+ ברכה – רישום ברכה אחת">
             ברכה
           </Button>
           {latest ? (
-            <Button variant="onBrand" size="lg" icon="reset" onClick={() => setPendingRemove({ id: latest.id, title: latest.title })} aria-label={`ביטול הברכה האחרונה (${formatTime(latest.createdAt)})`}>
-              ביטול האחרונה
+            <Button
+              variant="ghostOnBrand"
+              size="sm"
+              icon="reset"
+              className="self-center"
+              onClick={() => setPendingRemove({ id: latest.id, title: latest.title })}
+              aria-label={`ביטול הברכה האחרונה (${formatTime(latest.createdAt)})`}
+            >
+              ביטול הברכה האחרונה
             </Button>
           ) : null}
         </div>
