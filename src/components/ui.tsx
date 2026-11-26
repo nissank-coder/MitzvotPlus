@@ -15,7 +15,7 @@ export function FeatureScreen({
   children,
 }: PropsWithChildren<{ title: string; subtitle?: string; icon: IconName; onBack: () => void; onOpenProfile?: () => void }>) {
   return (
-    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
+    <div className="flex-1 bg-canvas px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
       <FeatureHeader title={title} subtitle={subtitle} icon={icon} onBack={onBack} />
       {children}
@@ -52,7 +52,7 @@ export function ActionRow({
   return (
     <div
       dir="rtl"
-      className={`min-h-[62px] flex flex-row items-center gap-3 py-2 ${last ? '' : 'border-b border-[#EAF0F4]'}`}
+      className={`min-h-[62px] flex flex-row items-center gap-3 py-2 ${last ? '' : 'border-b border-line'}`}
     >
       <div
         className="w-[40px] h-[40px] rounded-[14px] flex items-center justify-center shrink-0"
@@ -61,10 +61,10 @@ export function ActionRow({
         <AppIcon name={done ? 'check' : icon} size={20} color={done ? colors.green : color} />
       </div>
       <div className="flex-1 min-w-0 flex flex-col items-start">
-        <span className={`text-[15px] font-extrabold ${done ? 'text-[#718397] line-through decoration-1' : 'text-[#17324D]'}`}>
+        <span className={`text-[15px] font-extrabold ${done ? 'text-ink-muted line-through decoration-1' : 'text-ink'}`}>
           {title}
         </span>
-        {subtitle ? <span className="text-[#718397] text-[11px] mt-0.5 leading-4">{subtitle}</span> : null}
+        {subtitle ? <span className="text-ink-muted text-[11px] mt-0.5 leading-4">{subtitle}</span> : null}
       </div>
       {trailing}
       {onPress ? (
@@ -75,10 +75,10 @@ export function ActionRow({
           aria-label={done ? `${title} – בוצע` : `סימון: ${title}`}
           className={`min-w-[64px] min-h-[44px] px-3 rounded-full text-[12px] font-black transition-colors shrink-0 ${
             done
-              ? 'bg-[#EAF7EF] text-[#4DAA78]'
+              ? 'bg-lime-soft text-lime-ink'
               : disabled
-                ? 'bg-[#F4F8FB] text-[#A7B4C0]'
-                : 'bg-[#2AAE9B] text-white hover:bg-[#239988]'
+                ? 'bg-canvas text-ink-muted'
+                : 'bg-brand text-white hover:bg-brand-press'
           }`}
         >
           {done ? 'בוצע' : points !== undefined ? `+${points}` : 'סימון'}
@@ -95,7 +95,7 @@ export function Chip({ children, active, onPress }: PropsWithChildren<{ active?:
       onClick={onPress}
       aria-pressed={active}
       className={`min-h-[44px] px-3 rounded-full border text-[13px] font-extrabold whitespace-nowrap transition-colors ${
-        active ? 'bg-[#2AAE9B] border-[#2AAE9B] text-white' : 'bg-white border-[#DDE8EE] text-[#17324D] hover:bg-[#EAF4FB]'
+        active ? 'bg-brand border-brand text-white' : 'bg-white border-line text-ink hover:bg-brand-soft'
       }`}
     >
       {children}
@@ -109,7 +109,7 @@ export function ExternalLink({ href, children }: PropsWithChildren<{ href: strin
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex flex-row items-center gap-1 text-[#1B6F8F] text-[13px] font-extrabold hover:underline"
+      className="inline-flex flex-row items-center gap-1 min-h-[44px] px-1 text-brand text-[13px] font-extrabold hover:underline"
     >
       {children}
       <AppIcon name="chevronLeft" size={14} color={colors.primary} />
@@ -119,7 +119,7 @@ export function ExternalLink({ href, children }: PropsWithChildren<{ href: strin
 
 export function Notice({ children }: PropsWithChildren) {
   return (
-    <p dir="rtl" className="text-[#718397] text-[11px] leading-5 text-right mt-3 px-1">
+    <p dir="rtl" className="text-ink-muted text-[11px] leading-5 text-right mt-3 px-1">
       {children}
     </p>
   );

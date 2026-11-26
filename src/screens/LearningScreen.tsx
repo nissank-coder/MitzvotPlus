@@ -297,7 +297,7 @@ function FailureView({ error, onRetry, url }: { error: Error; onRetry: () => voi
       {/* The technical reason, so a failure on a phone can be diagnosed from the screen (no personal data). */}
       <details className="text-[12px] text-ink-muted">
         <summary className="min-h-[44px] flex items-center cursor-pointer">פרטים טכניים</summary>
-        <p dir="ltr" className="text-left font-mono break-all">
+        <p dir="ltr" className="text-left font-mono [overflow-wrap:anywhere]">
           {known
             ? `${error.kind} · ${error.ref} · HTTP ${error.detail.status ?? '—'} · ${error.detail.ms} ms · attempts ${error.detail.attempts}${error.detail.message ? ` · ${error.detail.message}` : ''}`
             : error.message}

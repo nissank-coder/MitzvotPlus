@@ -30,11 +30,11 @@ export function TextReader({ segments }: { segments: Segment[] }) {
     <div dir="rtl" lang="he" className="flex flex-col gap-3">
       {segments.map((seg, i) =>
         seg.note ? (
-          <p key={i} className="reader-text text-[#718397]" style={{ fontSize: Math.round(size * 0.72) }}>
+          <p key={i} className="reader-text text-ink-muted" style={{ fontSize: Math.round(size * 0.72) }}>
             {seg.text}
           </p>
         ) : (
-          <p key={i} className="reader-text text-[#17324D] whitespace-pre-line" style={{ fontSize: size }}>
+          <p key={i} className="reader-text text-ink whitespace-pre-line" style={{ fontSize: size }}>
             {seg.text}
           </p>
         ),

@@ -290,7 +290,8 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
         ? { ...prev, detail: prev.detail ? `${prev.detail} · ${extra}` : extra }
         : first
           ? { id: at, kind: 'award', title: extra, detail: first.def.explanation }
-          : { id: at, kind: 'challenge', title: extra, detail: 'נשמר בהיסטוריית המסלולים' },
+          : // Round 14: what was actually done, and what next (review v4 §5).
+            { id: at, kind: 'challenge', title: extra, detail: `${done[0]!.value} מתוך ${done[0]!.target} · אפשר לבחור אתגר נוסף במסלולים` },
     );
   }, [hydrated, derived, saveStatus, isLogSaved]);
 

@@ -134,7 +134,7 @@ try {
   await p.locator('[role=dialog] button', { hasText: 'מנחה ביחידות' }).click(); // round 13 (U5): the minyan choice
     await p.waitForTimeout(900);
     const t = await toastText(p);
-    check(/שלוש תפילות: 1 מתוך 3/.test(t), 'P1: the toast reports partial progress of the habit', t);
+    check(/תפילה אחת מתוך שלוש היום/.test(t), 'P1: the toast reports partial progress of the habit (round 14: in everyday words)', t);
     check((await p.locator('[aria-label="שלוש תפילות: 1 מתוך 3"]').count()) === 1, 'P1: the habit row shows its partial progress (1 of 3)');
     await ctx.close();
   }

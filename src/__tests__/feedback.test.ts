@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeDerived } from '../store/derived';
-import { addedSince, feedbackFor, snapshotOf } from '../store/feedback';
+import { addedSince, feedbackFor, partialPhrase, snapshotOf } from '../store/feedback';
 import { createFreshState, reducer } from '../store/state';
 import type { AppState } from '../types';
 
@@ -56,11 +56,11 @@ describe('feedback after saved entries', () => {
   });
   it('partial progress: one prayer of "three prayers" says how far the habit is', () => {
     const s0 = base();
-    expect(run(s0, add(s0, { key: 'mincha' }))).toMatchObject({ kind: 'saved', title: 'נרשם: מנחה', detail: 'שלוש תפילות: 1 מתוך 3 · עוד 2' });
+    expect(run(s0, add(s0, { key: 'mincha' }))).toMatchObject({ kind: 'saved', title: 'נרשם: מנחה', detail: 'תפילה אחת מתוך שלוש היום · עוד 2' });
   });
   it('the entry that completes a habit says so', () => {
     let s = add(add(base(), { key: 'shacharit' }), { key: 'mincha', now: NOW + 10 });
-    expect(run(s, (s = add(s, { key: 'arvit', now: NOW + 20 })))).toMatchObject({ kind: 'habit', title: 'הרגל הושלם: שלוש תפילות', detail: '1/2 הרגלים היום' });
+    expect(run(s, (s = add(s, { key: 'arvit', now: NOW + 20 })))).toMatchObject({ kind: 'habit', title: 'הרגל הושלם: שלוש תפילות', detail: 'נרשם: ערבית · 1/2 הרגלים היום' });
   });
   it('entries pulled from another device of the account are not "just recorded": no toast, never undone', () => {
     const s0 = base();
@@ -71,6 +71,19 @@ describe('feedback after saved entries', () => {
     const f = run(s0, mixed)!;
     expect(f.logIds).toEqual([local.logs[0]!.id]);
     expect(f.title).toBe('נרשם: מנחה');
+  });
+  it('round 14: partial progress in everyday words; a completion always names what was recorded', () => {
+    const s0 = base();
+    const one = add(s0, { key: 'shacharit' });
+    expect(run(s0, one)).toMatchObject({ title: 'נרשם: שחרית', detail: 'תפילה אחת מתוך שלוש היום · עוד 2' });
+    const two = add(one, { key: 'mincha', now: NOW + 10 });
+    expect(run(one, two)?.detail).toBe('שתי תפילות מתוך שלוש היום · עוד 1');
+    expect(partialPhrase({ sel: { id: 'blessings-20' }, title: '20 ברכות ביום', value: 12, needed: 20 })).toBe('12 ברכות מתוך 20 היום');
+    expect(partialPhrase({ sel: { id: 'other' }, title: 'משהו', value: 2, needed: 3 })).toBe('משהו: 2 מתוך 3');
+    const three = add(two, { key: 'arvit', now: NOW + 20 });
+    const f = run(three, add(three, { key: 'torahStudy', now: NOW + 30 }))!;
+    expect(f).toMatchObject({ kind: 'goal', title: 'היעד היומי הושלם' });
+    expect(f.detail).toContain('נרשם: לימוד תורה');
   });
   it('nothing added – no feedback', () => {
     const s = base();

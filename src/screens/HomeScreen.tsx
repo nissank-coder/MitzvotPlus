@@ -13,6 +13,7 @@ import { DVAR_TORAH_AVAILABLE } from '../content/registry';
 import { formatTime } from '../lib/dates';
 import { habitById, recordPlan } from '../lib/habits';
 import { useAppStore } from '../store/AppStore';
+import { partialPhrase } from '../store/feedback';
 import { ds } from '../theme';
 import { FeatureKey } from '../types';
 
@@ -105,6 +106,8 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
               ? 'עוד הרגל אחד להשלמת היום'
               : `עוד ${target - done} הרגלים להשלמת היום`;
   const todayShown = allToday ? derived.todayLogs : derived.todayLogs.slice(0, TODAY_ROWS);
+  // Round 14 (review v4 §5): the leading figure counts whole habits; partial progress is said too.
+  const inProgress = habits.find((h) => !h.done && h.needed > 1 && h.value > 0);
 
   return (
     <div dir="rtl" className="flex-1 bg-canvas px-4 pb-10 pt-3 flex flex-col gap-3.5">
@@ -153,10 +156,16 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
             <div className="flex-1 min-w-0 flex flex-col gap-1">
               <span className="text-[12px] font-bold text-on-brand-muted">היעד שלי היום</span>
               <span className="text-[17px] font-extrabold leading-snug">{headline}</span>
+              {inProgress && !derived.todayGoalMet ? (
+                <span className="text-[13px] font-bold text-lime" data-testid="hero-partial">
+                  בדרך: {partialPhrase(inProgress)}
+                </span>
+              ) : null}
               <span className="flex flex-row flex-wrap items-center gap-x-3 text-[12px] text-on-brand-muted">
                 <span className="flex flex-row items-center gap-1">
                   <span aria-hidden="true" className="w-2 h-2 rounded-full bg-lime" />
-                  {derived.goalStreak > 0 ? `רצף ${derived.goalStreak} ימים` : 'רצף מתחיל היום'}
+                  {/* After a break: an invitation, never a reproach (review v4 §5) */}
+                  {derived.goalStreak > 0 ? `רצף ${derived.goalStreak} ימים` : derived.bestGoalStreak > 0 ? 'חוזרים לקצב – כל יום נספר' : 'רצף מתחיל היום'}
                 </span>
                 {derived.bestGoalStreak > 0 ? <span>שיא {derived.bestGoalStreak}</span> : null}
               </span>

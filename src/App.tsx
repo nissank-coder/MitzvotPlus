@@ -108,7 +108,7 @@ function MitzvotApp() {
 
   const content = (() => {
     const common = { onBack: back, onOpenProfile: openProfile };
-    const lazyFallback = <p dir="rtl" className="p-6 text-center text-[#718397]">טוען…</p>;
+    const lazyFallback = <p dir="rtl" className="p-6 text-center text-ink-muted">טוען…</p>;
     const openSiddur = (id?: string) => openFeature('siddur', id);
     const openTehillim = () => openFeature('tehillim');
     switch (feature) {
@@ -124,7 +124,7 @@ function MitzvotApp() {
         return <BlessingGuideScreen {...common} onOpenSiddur={openSiddur} />;
       case 'learning':
         return (
-          <Suspense fallback={<p dir="rtl" className="p-6 text-center text-[#718397]">טוען…</p>}>
+          <Suspense fallback={<p dir="rtl" className="p-6 text-center text-ink-muted">טוען…</p>}>
             <LearningScreen {...common} onOpenTehillim={openTehillim} />
           </Suspense>
         );
@@ -181,11 +181,11 @@ function MitzvotApp() {
 
   if (!hydrated) {
     return (
-      <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col items-center justify-center bg-[#F4F8FB]">
-        <div dir="rtl" className="text-[#17324D] text-[34px] font-black">
-          מצוות<span className="text-[#2AAE9B]">+</span>
+      <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col items-center justify-center bg-canvas">
+        <div dir="rtl" className="text-ink text-[34px] font-black">
+          מצוות<span className="text-brand">+</span>
         </div>
-        <p dir="rtl" className="text-[#718397] text-[14px] mt-2">
+        <p dir="rtl" className="text-ink-muted text-[14px] mt-2">
           מכינים את היום שלך...
         </p>
       </div>
@@ -194,9 +194,9 @@ function MitzvotApp() {
 
   if (storageError) {
     return (
-      <div dir="rtl" role="alert" className="min-h-dvh max-w-[460px] mx-auto flex flex-col items-center justify-center bg-[#F4F8FB] px-6 text-center">
-        <p className="text-[#17324D] text-[20px] font-black">לא הצלחנו לקרוא את הנתונים שבמכשיר</p>
-        <p className="text-[#718397] text-[14px] mt-2">הנתונים לא נמחקו. סגרו את האפליקציה ופתחו אותה שוב.</p>
+      <div dir="rtl" role="alert" className="min-h-dvh max-w-[460px] mx-auto flex flex-col items-center justify-center bg-canvas px-6 text-center">
+        <p className="text-ink text-[20px] font-black">לא הצלחנו לקרוא את הנתונים שבמכשיר</p>
+        <p className="text-ink-muted text-[14px] mt-2">הנתונים לא נמחקו. סגרו את האפליקציה ופתחו אותה שוב.</p>
       </div>
     );
   }
@@ -206,7 +206,7 @@ function MitzvotApp() {
   }
 
   return (
-    <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] sm:border-x sm:border-[#DDE8EE] sm:shadow-xl">
+    <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-canvas sm:border-x sm:border-line sm:shadow-xl">
       <SaveStatusBanner />
       <RecordFlowProvider openQuickAdd={(focus) => openQuickAdd(focus ?? null)}>
         <main className="flex-1 flex flex-col">{content}</main>

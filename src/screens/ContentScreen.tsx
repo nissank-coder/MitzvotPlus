@@ -28,11 +28,11 @@ export function ContentScreen({ onOpenFeature, onOpenProfile }: { onOpenFeature:
   ];
 
   return (
-    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
+    <div className="flex-1 bg-canvas px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
       <div dir="rtl" className="mb-4">
-        <h1 className="text-[#17324D] text-[24px] font-black leading-tight">סידור ותוכן</h1>
-        <p className="text-[#718397] text-[13px] mt-1">כל מה שצריך כדי להוסיף עוד מצווה</p>
+        <h1 className="text-ink text-[24px] font-black leading-tight">סידור ותוכן</h1>
+        <p className="text-ink-muted text-[13px] mt-1">כל מה שצריך כדי להוסיף עוד מצווה</p>
       </div>
       <div dir="rtl" className="grid grid-cols-2 gap-3">
         {tiles.filter((t) => t.key !== 'torah' || DVAR_TORAH_AVAILABLE).map((t) => (
@@ -40,13 +40,13 @@ export function ContentScreen({ onOpenFeature, onOpenProfile }: { onOpenFeature:
             key={t.key}
             type="button"
             onClick={() => onOpenFeature(t.key)}
-            className="min-h-[132px] rounded-[22px] bg-white border border-[#DDE8EE] card-shadow p-4 flex flex-col items-start text-right hover:border-[#2AAE9B] transition-colors"
+            className="min-h-[132px] rounded-[22px] bg-white border border-line card-shadow p-4 flex flex-col items-start text-right hover:border-brand transition-colors"
           >
             <div className="w-11 h-11 rounded-[16px] flex items-center justify-center" style={{ backgroundColor: t.background }}>
               <AppIcon name={t.icon} size={22} color={t.color} />
             </div>
-            <span className="text-[#17324D] text-[15px] font-black mt-3">{t.title}</span>
-            <span className="text-[#718397] text-[11px] mt-1 leading-4">{t.subtitle}</span>
+            <span className="text-ink text-[15px] font-black mt-3">{t.title}</span>
+            <span className="text-ink-muted text-[11px] mt-1 leading-4">{t.subtitle}</span>
           </button>
         ))}
       </div>
