@@ -24,7 +24,7 @@ const { createFreshState, reducer } = require('../../src/store/state.ts');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
 const DEMO = process.argv.includes('--demo');
-const OUT = args.out ?? (DEMO ? 'docs/design/round-13/shots-internal-build' : 'docs/design/round-13/shots');
+const OUT = args.out ?? (DEMO ? 'docs/design/round-14/shots-internal-build' : 'docs/design/round-14/shots');
 const WIDTHS = (args.widths ?? '360,390,430').split(',').map(Number);
 const NOW = new Date('2026-11-24T18:30:00+02:00').getTime(); // Tuesday evening, Jerusalem
 const PORT = 4176;
@@ -117,6 +117,9 @@ const shabbatHabits = () =>
     type: 'completeOnboarding',
     payload: { userName: 'דניאל', dailyGoal: 5, profile: { gender: 'male', cityId: 'jerusalem' }, dateKey: '2026-11-15', habits: [{ id: 'learn-daily', perWeek: 7 }, { id: 'tefillin', perWeek: 7 }, { id: 'gratitude', perWeek: 3 }] },
   });
+const withChallenge = () => reducer(active(), { type: 'joinChallenge', payload: { definitionId: 'C01', now: NOW - 2 * 86400000 }, dateKey: '2026-11-22' });
+const ashkenaz = () => ({ ...base(), profile: { ...base().profile, nusach: 'ashkenaz' } });
+const withTracks = () => ({ ...base(), learningTracks: ['dailyHalacha', 'chofetzchaim'], learningTracksChosen: true });
 const speechStarted = () => ({ ...base(), speech: { since: NOW - (3 * 86400000 + 4 * 3600000 + 12 * 60000), bestMs: 9 * 86400000, resets: 2, completedMs: 14 * 86400000, undo: null } });
 
 /* ----------------------------------- scenarios ----------------------------------- */
@@ -155,6 +158,18 @@ const SCENARIOS = [
   { name: '26-habit-editor-shabbat', state: shabbatHabits, now: SHABBAT, go: async (p) => { await p.locator('[aria-label="ההרגלים שלי"] button', { hasText: 'שינוי' }).click(); await settle(p); }, viewportOnly: true },
   { name: '27-learning', state: active, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await settle(p); } },
   { name: '28-prayer-times', state: fresh, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.locator('button', { hasText: 'זמני תפילה' }).click(); await settle(p); } },
+  // Round 14: the screens brought into the design language, honest content, the reader.
+  { name: '29-onboarding', state: () => null, go: async () => {} },
+  { name: '30-onboarding-habits', state: () => null, go: async (p) => { await p.fill('#onboarding-name', 'דניאל'); await p.click('text=המשך'); await settle(p); } },
+  { name: '31-progress', state: active, go: async (p) => { await tab(p, 'התקדמות'); await settle(p); } },
+  { name: '32-tracks-active-challenge', state: withChallenge, go: async (p) => { await tab(p, 'מסלולים'); await settle(p); } },
+  { name: '33-mitzvot', state: active, go: async (p) => { await tab(p, 'מסלולים'); await p.locator('button', { hasText: 'לימוד מצווה ביום' }).first().click(); await settle(p); } },
+  { name: '34-siddur-ashkenaz-preference', state: ashkenaz, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.getByRole('button', { name: 'סידור', exact: true }).click(); await p.locator('[data-testid="siddur-nusach"]').waitFor(); await settle(p); } },
+  { name: '35-profile-nusach', state: ashkenaz, go: async (p) => { await tab(p, 'אני'); await p.locator('[data-testid="nusach-availability"]').scrollIntoViewIfNeeded(); await settle(p); } },
+  { name: '36-learning-reader', state: withTracks, sefaria: true, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('.reader-text').first().waitFor(); await settle(p); }, viewportOnly: true },
+  { name: '37-learning-reader-failure', state: withTracks, sefaria: 429, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await p.click('[aria-label="קריאה: הלכה יומית"]'); await p.locator('[role=alert]').waitFor({ timeout: 20000 }); await p.locator('summary', { hasText: 'פרטים טכניים' }).click(); await settle(p); }, viewportOnly: true },
+  { name: '38-learning-suggestions', state: fresh, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await settle(p); } },
+  { name: '39-siddur-ashkenaz-prayer', demoOnly: true, state: ashkenaz, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.getByRole('button', { name: 'סידור', exact: true }).click(); await p.locator('button', { hasText: 'מנחה לימות החול' }).click(); await p.locator('text=/Daat Siddur Ashkenaz|Metsudah/').first().waitFor(); await settle(p); }, viewportOnly: true },
 ].filter((sc) => (DEMO || !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
 
 const browser = await chromium.launch();
@@ -166,13 +181,22 @@ for (const width of WIDTHS) {
     const p = await ctx.newPage();
     const errors = [];
     p.on('pageerror', (e) => errors.push(e.message));
-    p.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    // A scenario that simulates a failing server expects the browser's own "failed to load" line.
+    p.on('console', (m) => m.type() === 'error' && !(sc.sefaria === 429 && /Failed to load resource.*429/.test(m.text())) && errors.push(m.text()));
     await p.addInitScript({ path: 'scripts/e2e/fakedate.js' });
+    // Sefaria is answered locally in captures (deterministic text, or a 429 for the failure view).
+    if (sc.sefaria) {
+      await ctx.route('https://www.sefaria.org/api/texts/**', (route) =>
+        sc.sefaria === 429
+          ? route.fulfill({ status: 429, body: 'busy', headers: { 'access-control-allow-origin': '*' } })
+          : route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ he: ['מִצְוַת תְּפִלִּין הִיא גַם כֵּן מִצְוָה יְקָרָה מְאֹד, שֶׁכָּל הַתּוֹרָה הוּקְשָׁה לַתְּפִלִּין.', 'וּמִי שֶׁמֵּנִּיחַ תְּפִלִּין, מַאֲרִיךְ יָמִים.', 'צָרִיךְ לִזָּהֵר מְאֹד בִּקְדֻשַּׁת הַתְּפִלִּין.'], heVersionTitle: 'Torat Emet 357', heLicense: 'Public Domain' }) }),
+      );
+    }
     await p.goto(url);
     await p.evaluate(([n, s]) => {
       localStorage.clear();
       localStorage.setItem('__fakeNow', String(n));
-      localStorage.setItem('mitzvot_plus_state_v1', JSON.stringify(s));
+      if (s) localStorage.setItem('mitzvot_plus_state_v1', JSON.stringify(s));
     }, [sc.now ?? NOW, sc.state()]);
     await p.reload();
     await settle(p, 700);

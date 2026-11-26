@@ -1,0 +1,15 @@
+{
+  "file": "MitzvotPlus-0.1.0-r14-ca6fed8.apk",
+  "kind": "debug (internal; not signed for release, not for distribution)",
+  "build": "production web bundle (no VITE_DEMO_CONTENT, no backend variables)",
+  "versionName": "0.1.0",
+  "versionCode": 140,
+  "commit": "ca6fed87cb74ee13fe18a13bbc63921ee8ccc654",
+  "buildId": "fp=c6fb694bc905b01b;cfg=debug+backend=none+dbenc=off;sha256=8189d1ac8550c331",
+  "embeddedBuildInfo": "assets/public: commit ca6fed8…, source fingerprint dc7bfbe32e25, dirty=false, mode Production",
+  "sha256": "8189d1ac8550c3317a8faea1f2cecc9f2eae4b9ec353884de85c139305c24ff4",
+  "sizeBytes": 14701639,
+  "internalContent": "none – 0 files for every release-check marker: TEST-ONLY, DRAFT, mock community, supabase-js, gateway, auth/callback, NOT_APPROVED, siddur-ashkenaz",
+  "pageSize16k": "OK – zipalign -P 16: libsqlcipher.so for all four ABIs",
+  "verifyOnPhone": "אני → אודות האפליקציה: גרסה 0.1.0, קומיט ca6fed8, טביעת קוד dc7bfbe32e25"
+}
