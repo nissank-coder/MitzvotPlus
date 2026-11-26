@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -11,6 +11,7 @@ type ConfirmDialogProps = {
   onClose: () => void;
 };
 
+/** Confirmation dialog (design round 1 tokens). Escape and the backdrop close it; focus starts on cancel. */
 export function ConfirmDialog({
   open,
   title,
@@ -21,44 +22,42 @@ export function ConfirmDialog({
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
+  const first = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    first.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0C1F30]/40 px-5"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="w-full max-w-[340px] rounded-[24px] bg-white p-6 border border-[#DDE8EE] card-shadow"
-        onClick={(e) => e.stopPropagation()}
-        dir="rtl"
-      >
-        <h3 className="text-[19px] font-black text-[#17324D] text-right">{title}</h3>
-        <p className="mt-2 text-[14px] leading-6 text-[#718397] text-right">{message}</p>
-        <div className="mt-5 flex items-center justify-end gap-2.5">
-          {cancelLabel ? (
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl border border-[#DDE8EE] bg-[#F4F8FB] px-4 py-2.5 text-[13px] font-extrabold text-[#17324D] hover:bg-[#EAF0F4] transition-colors"
-            >
-              {cancelLabel}
-            </button>
-          ) : null}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0E1630]/45 px-5" onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
+      <div className="w-full max-w-[360px] rounded-[24px] bg-surface p-6 ds-shadow" onClick={(e) => e.stopPropagation()} dir="rtl">
+        <h3 className="text-[19px] font-extrabold text-ink">{title}</h3>
+        <p className="mt-2 text-[15px] leading-6 text-ink-muted">{message}</p>
+        <div className="mt-6 flex flex-row items-center gap-2.5">
           <button
             type="button"
             onClick={() => {
               onConfirm?.();
               onClose();
             }}
-            className={`rounded-xl px-4 py-2.5 text-[13px] font-extrabold text-white transition-opacity hover:opacity-90 ${
-              destructive ? 'bg-[#C95B53]' : 'bg-[#2AAE9B]'
-            }`}
+            className={`flex-1 min-h-[48px] rounded-[14px] px-4 text-[15px] font-bold ${destructive ? 'bg-danger text-white' : 'bg-brand text-on-brand'}`}
           >
             {confirmLabel}
           </button>
+          {cancelLabel ? (
+            <button
+              ref={first}
+              type="button"
+              onClick={onClose}
+              className="flex-1 min-h-[48px] rounded-[14px] border border-line bg-surface px-4 text-[15px] font-bold text-ink"
+            >
+              {cancelLabel}
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

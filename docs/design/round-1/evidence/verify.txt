@@ -1,0 +1,7 @@
+ Test Files  24 passed (24)
+      Tests  251 passed (251)
+Release check passed (88 files scanned).
+Secret scan passed (377 tracked files).
+License check passed for 64 production packages (3 known exceptions).
+Version check passed: 0.1.0 (Android and iOS)
+Seed check passed: server rules and privacy match the app

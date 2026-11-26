@@ -1,0 +1,363 @@
+[
+  {
+    "scenario": "01-home-new-user",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "02-home-active",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "03-add-sheet",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "04-add-sheet-prayer-detail",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "05-blessings-zero",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "06-blessings-partial",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "07-blessings-goal",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "08-torah-reading",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "09-torah-recorded",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "10-speech-first",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "11-speech-running",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "12-speech-reset-confirm",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "13-speech-after-reset",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "14-record-before",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "15-record-toast",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "16-record-after",
+    "width": 360,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "01-home-new-user",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "02-home-active",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "03-add-sheet",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "04-add-sheet-prayer-detail",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "05-blessings-zero",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "06-blessings-partial",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "07-blessings-goal",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "08-torah-reading",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "09-torah-recorded",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "10-speech-first",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "11-speech-running",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "12-speech-reset-confirm",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "13-speech-after-reset",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "14-record-before",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "15-record-toast",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "16-record-after",
+    "width": 390,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "01-home-new-user",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "02-home-active",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "03-add-sheet",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "04-add-sheet-prayer-detail",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "05-blessings-zero",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "06-blessings-partial",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "07-blessings-goal",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "08-torah-reading",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "09-torah-recorded",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "10-speech-first",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "11-speech-running",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "12-speech-reset-confirm",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "13-speech-after-reset",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "14-record-before",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "15-record-toast",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "16-record-after",
+    "width": 430,
+    "overflowPx": 0,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "scenario": "01-home-new-user",
+    "width": "390 @130%",
+    "overflowPx": 0
+  },
+  {
+    "scenario": "02-home-active",
+    "width": "390 @130%",
+    "overflowPx": 0
+  },
+  {
+    "scenario": "06-blessings-partial",
+    "width": "390 @130%",
+    "overflowPx": 0
+  },
+  {
+    "scenario": "08-torah-reading",
+    "width": "390 @130%",
+    "overflowPx": 0
+  },
+  {
+    "scenario": "11-speech-running",
+    "width": "390 @130%",
+    "overflowPx": 0
+  }
+]

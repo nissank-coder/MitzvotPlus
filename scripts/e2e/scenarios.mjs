@@ -161,7 +161,7 @@ try {
   // 6c. Offline: recording works without a network and is kept after reconnecting
   await ctx.setOffline(true);
   await p.click('[aria-label="רשמתי: הכרת הטוב"]').catch(() => {});
-  await p.locator('button', { hasText: '+ ברכה' }).first().click();
+  await p.locator('[aria-label^="+ ברכה"]').first().click();
   await settle();
   check((await toast()).includes('נרשם') || (await toast()).includes('הישג'), '6c: saved feedback while offline', await toast());
   await ctx.setOffline(false);
@@ -188,6 +188,29 @@ try {
   check((await count('text=/^יומן · השבוע \\(2\\)$/')) === 1, '7: history kept (2 entries this week)');
   check((await text('text=/^\\d[\\d,]*$/ >> nth=0')) !== null, '7: screen renders');
 
+  // 7b. Design round 1 – the add sheet: exact names, one detail step for prayers, one tap = one entry
+  await tab('היום');
+  await settle();
+  await p.click('[aria-label="הוספת פעולה"]');
+  const tileNames = await p.locator('[role=dialog] section button').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') ?? ''));
+  check(['שחרית', 'מנחה', 'ערבית', 'הנחת תפילין', 'אמירת תהילים', 'ברכה', 'ברכת המזון'].every((n) => tileNames.includes(n)), '7b: the add sheet names every action', JSON.stringify(tileNames));
+  check(!tileNames.includes('תפילה') && !tileNames.includes('ברכות'), '7b: no tile is named by its category ("תפילה" / "ברכות")');
+  const entriesBefore = await p.evaluate(() => JSON.parse(localStorage.getItem('mitzvot_plus_state_v1')).logs.length);
+  await p.locator('[role=dialog] button', { hasText: 'ערבית' }).first().click();
+  check((await count('[role=dialog][aria-label="פרטי הרישום: ערבית"]')) === 1, '7b: a prayer asks "in a minyan or not" before recording');
+  const opt = p.locator('[role=dialog] button', { hasText: 'ערבית ביחידות' });
+  await opt.dblclick().catch(() => {});
+  await settle();
+  const entriesAfter = await p.evaluate(() => JSON.parse(localStorage.getItem('mitzvot_plus_state_v1')).logs.length);
+  check(entriesAfter === entriesBefore + 1, '7b: a double tap records once', `${entriesBefore} → ${entriesAfter}`);
+  check((await toast()).includes('נרשם: ערבית'), '7b: the toast names what was recorded', await toast());
+  check((await count('section[aria-label="נרשם היום"] li:has-text("ערבית")')) === 1, '7b: Home shows the entry at once');
+  await p.locator('[aria-label="ביטול הרישום: ערבית"]').click({ timeout: 3000 });
+  await settle();
+  check((await count('section[aria-label="נרשם היום"] li:has-text("ערבית")')) === 0, '7b: "ביטול" in the toast removes the entry from Home');
+  const entriesUndo = await p.evaluate(() => JSON.parse(localStorage.getItem('mitzvot_plus_state_v1')).logs.length);
+  check(entriesUndo === entriesBefore, '7b: and from the stored log');
+
   // 8. Navigation and reset
   for (const t of ['התקדמות', 'מסלולים', 'אני', 'היום']) {
     await tab(t);
@@ -200,7 +223,7 @@ try {
   await settle();
   check((await count('#onboarding-name')) === 1, '8: delete-all returns to onboarding');
 } catch (e) {
-  failures.push(`exception: ${e instanceof Error ? e.message.split('\n')[0] : String(e)}`);
+  failures.push(`exception: ${e instanceof Error ? (process.env.DEBUG_E2E ? e.message : e.message.split('\n')[0]) : String(e)}`);
 } finally {
   await browser.close();
   server.stop();
