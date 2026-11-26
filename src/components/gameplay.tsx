@@ -225,7 +225,7 @@ export function CelebrationToast() {
   const { celebration, dismissCelebration, removeLog } = useAppStore();
   useEffect(() => {
     if (!celebration) return;
-    const t = window.setTimeout(dismissCelebration, celebration.kind === 'award' || celebration.kind === 'challenge' ? 4500 : 4000);
+    const t = window.setTimeout(dismissCelebration, celebration.kind === 'saved' ? 4000 : 5000);
     return () => window.clearTimeout(t);
   }, [celebration, dismissCelebration]);
   if (!celebration) return null;
@@ -247,11 +247,12 @@ export function CelebrationToast() {
           <span className="text-[14px] font-extrabold truncate">{celebration.title}</span>
           {celebration.detail ? <span className="text-[12px] text-on-brand-muted">{celebration.detail}</span> : null}
         </span>
-        {celebration.logId ? (
+        {celebration.logIds && celebration.logIds.length > 0 ? (
           <button
             type="button"
             onClick={() => {
-              removeLog(celebration.logId!);
+              // Exactly the entries this toast is about – never another one (round 1.1, R1).
+              for (const id of celebration.logIds!) removeLog(id);
               dismissCelebration();
             }}
             aria-label={`ביטול הרישום: ${celebration.logTitle ?? ''}`}

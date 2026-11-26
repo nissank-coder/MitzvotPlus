@@ -1,0 +1,10 @@
+Round 1.1: 9 passed, 0 failed
+  PASS R5: every control of the Shabbat sheet (opened from Home) is at least 44px
+  PASS R1: the toast after a Shabbat entry does not name an unrelated entry of today
+  PASS R1: "ביטול" never removes an entry other than the one just recorded
+  PASS R2: reaching the goal on the blessings screen shows the message
+  PASS R2: the message disappears by itself (no permanent banner)
+  PASS R3: the 100th blessing from Home announces the goal
+  PASS P1: the toast reports partial progress of the habit
+  PASS P1: the habit row shows its partial progress (1 of 3)
+  PASS R4: general learning does not mark the Dvar Torah as read
