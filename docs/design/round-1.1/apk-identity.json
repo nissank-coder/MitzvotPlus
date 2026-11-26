@@ -1,0 +1,16 @@
+{
+  "file": "MitzvotPlus-0.1.0-design-1.1-095b1a8.apk",
+  "kind": "debug (internal; not signed for release, not for distribution)",
+  "build": "production web bundle (no VITE_DEMO_CONTENT, no backend variables)",
+  "versionName": "0.1.0",
+  "versionCode": 111,
+  "commit": "095b1a84c20dc9149bb3b2d0e32f1d95a02a80b2",
+  "sourceFingerprint": "e67cdea604a2",
+  "embeddedBuildInfo": "verified inside assets/public: commit 095b1a8…, fingerprint e67cdea604a2, dirty=false",
+  "sha256": "930841aae53d31820bc0369a6b71b724f6c55249ec7da28c3a479b54a2e121bd",
+  "sizeBytes": 14690339,
+  "internalContent": "none (TEST-ONLY / DRAFT markers and the community mock: 0 files)",
+  "pageSize16k": "OK – libsqlcipher.so p_align=16384 for all ABIs",
+  "builtOn": "Linux container, Android SDK 36, Gradle (local), 2026-11-26",
+  "verifyOnPhone": "אני → אודות האפליקציה: גרסה 0.1.0, קומיט 095b1a8, טביעת קוד e67cdea604a2"
+}

@@ -5,7 +5,7 @@
 // exist in production yet (the marked TEST_ONLY Dvar Torah) – written to a separate, labelled folder.
 // The browser storage is seeded with synthetic states made by the app's own reducer; each scenario
 // is captured at 360/390/430 px. Checks: no horizontal scrolling, no console error, targets < 44px.
-//   node scripts/design/shots.mjs [--demo] [--out dir] [--widths 360,390,430]
+//   node scripts/design/shots.mjs [--demo] [--only 08,09] [--out dir] [--widths 360,390,430]
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
@@ -129,7 +129,7 @@ const SCENARIOS = [
   { name: '19-shabbat-sheet', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await settle(p); }, viewportOnly: true },
   { name: '20-shabbat-recorded-toast', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await p.locator('[role=dialog] [role=checkbox]').first().click(); await p.locator('[role=dialog] button', { hasText: 'שמירה' }).click(); await settle(p, 900); }, viewportOnly: true },
   { name: '21-blessing-goal-from-home', state: ninetyNine, go: async (p) => { await p.locator('[aria-label^="+ ברכה"]').first().click(); await settle(p, 900); }, viewportOnly: true },
-].filter((sc) => DEMO || !sc.demoOnly);
+].filter((sc) => (DEMO || !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
 
 const browser = await chromium.launch();
 const report = [];
