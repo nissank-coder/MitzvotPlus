@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
 import { RecordFlowProvider, RecordFocus } from './components/RecordFlow';
@@ -36,9 +36,12 @@ function MitzvotApp() {
   const [tab, setTab] = useState<TabKey>('today');
   const [feature, setFeature] = useState<FeatureKey>(null);
   // The shared add sheet; opened for one habit it is narrowed to its actions (round 13, U5).
-  const [quickAdd, setQuickAdd] = useState<{ focus: RecordFocus | null } | null>(null);
+  // Each opening gets its own key: the sheet starts fresh, already on the right step (round 14).
+  const [quickAdd, setQuickAdd] = useState<{ focus: RecordFocus | null; n: number } | null>(null);
+  const openings = useRef(0);
   const quickAddVisible = quickAdd !== null;
-  const setQuickAddVisible = (open: boolean) => setQuickAdd(open ? { focus: null } : null);
+  const openQuickAdd = (focus: RecordFocus | null) => setQuickAdd({ focus, n: (openings.current += 1) });
+  const setQuickAddVisible = (open: boolean) => (open ? openQuickAdd(null) : setQuickAdd(null));
 
   // After "delete all data" the user goes through onboarding again and should land on the home tab.
   useEffect(() => {
@@ -205,11 +208,11 @@ function MitzvotApp() {
   return (
     <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] sm:border-x sm:border-[#DDE8EE] sm:shadow-xl">
       <SaveStatusBanner />
-      <RecordFlowProvider openQuickAdd={(focus) => setQuickAdd({ focus: focus ?? null })}>
+      <RecordFlowProvider openQuickAdd={(focus) => openQuickAdd(focus ?? null)}>
         <main className="flex-1 flex flex-col">{content}</main>
       </RecordFlowProvider>
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
-      <QuickAddSheet visible={quickAddVisible} focus={quickAdd?.focus ?? null} onClose={() => setQuickAddVisible(false)} />
+      <QuickAddSheet key={quickAdd?.n ?? 0} visible={quickAddVisible} focus={quickAdd?.focus ?? null} onClose={() => setQuickAddVisible(false)} />
       <CelebrationToast />
     </div>
   );

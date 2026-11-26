@@ -131,7 +131,8 @@ try {
     const { p, ctx } = await open(browser, NOW, onboarded(NOW));
     await p.click('[aria-label="רישום תפילה: שלוש תפילות"]');
     await p.locator('[role=dialog] button', { hasText: 'מנחה' }).click();
-    check((await p.locator('[role=dialog][aria-label="פרטי הרישום: מנחה"]').count()) === 1, 'U5: a prayer chosen from a habit asks "במניין או ביחידות"');
+    const askedHere = await p.locator('[role=dialog][aria-label="פרטי הרישום: מנחה"]').waitFor({ timeout: 5000 }).then(() => true, () => false);
+    check(askedHere, 'U5: a prayer chosen from a habit asks "במניין או ביחידות"');
     check((await stored(p)).logs.length === 0, 'U5: nothing is recorded before the choice');
     await p.locator('[role=dialog] button', { hasText: 'מנחה במניין' }).click();
     await p.waitForTimeout(900);
@@ -143,7 +144,9 @@ try {
     await p.locator('button', { hasText: 'זמני תפילה' }).click();
     await p.waitForTimeout(400);
     await p.click('[aria-label="סימון: ערבית"]');
-    check((await p.locator('[role=dialog][aria-label="פרטי הרישום: ערבית"]').count()) === 1, 'U5: the prayer-times screen asks the same choice');
+    // The sheet is rendered after the tap: wait for it (CI timing), do not count at once.
+    const asked = await p.locator('[role=dialog][aria-label="פרטי הרישום: ערבית"]').waitFor({ timeout: 5000 }).then(() => true, () => false);
+    check(asked, 'U5: the prayer-times screen asks the same choice');
     await ctx.close();
   });
   await block(async () => {

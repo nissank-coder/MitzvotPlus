@@ -3,6 +3,7 @@ import '@hebcal/learning';
 import { dateFromKey } from './dates';
 import { hebrewNumeral } from './dates';
 import { stripNikud } from './jewishCalendar';
+import { sefariaRef } from './sefaria';
 
 import { TrackDef, TRACKS } from '../data/tracks';
 export { TRACKS, DEFAULT_TRACKS } from '../data/tracks';
@@ -27,7 +28,33 @@ function hebrewize(text: string): string {
   return stripNikud(out.replace(/^Daf Yomi:\s*/, ''));
 }
 
-export type TrackItem = { track: TrackDef; label: string; url: string | null; refId: string };
+/**
+ * One day's portion of a track. `url` opens it on sefaria.org; `refs` are what the reader loads –
+ * the WHOLE portion the label names (round 14: the Chofetz Chaim and Daf Yomi links of hebcal
+ * cover only its start; a portion across two sections is two references).
+ */
+export type TrackItem = { track: TrackDef; label: string; url: string | null; refs: string[]; refId: string };
+
+/** The Sefaria references of a hebcal portion. */
+export function portionRefs(trackKey: string, url: string, ev: unknown): string[] {
+  const base = sefariaRef(url);
+  if (trackKey === 'chofetzchaim') {
+    const r = (ev as { reading?: { b?: string | number; e?: string | number } }).reading;
+    const b = r?.b !== undefined ? String(r.b) : null;
+    const e = r?.e !== undefined ? String(r.e) : null;
+    if (b && e && e !== b && base.endsWith(`_${b}`)) {
+      const [pb] = b.split('.');
+      const [pe, se] = e.split('.');
+      if (pb === pe && se) return [`${base}-${se}`];
+      // Across two sections (not in the current schedule): both parts, one after the other.
+      if (pe && se) return [base, `${base.slice(0, -b.length)}${pe}.1-${se}`];
+    }
+    return [base];
+  }
+  // Daf Yomi is the whole daf: both sides.
+  if (trackKey === 'dafyomi') return [base.replace(/\.(\d+)a$/, '.$1a-$1b')];
+  return [base];
+}
 
 const KITZUR_SIMANIM = 221;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -41,6 +68,7 @@ export function trackItem(track: TrackDef, dateKey: string, il: boolean): TrackI
       track,
       label: `קיצור שולחן ערוך, סימן ${hebrewNumeral(siman)}`,
       url: `https://www.sefaria.org/Kitzur_Shulchan_Arukh.${siman}?lang=he`,
+      refs: [`Kitzur_Shulchan_Arukh.${siman}`],
       refId,
     };
   }
@@ -50,7 +78,8 @@ export function trackItem(track: TrackDef, dateKey: string, il: boolean): TrackI
     if (!ev) return null;
     const brief = (ev as { renderBrief?: (l: string) => string }).renderBrief?.('he-x-NoNikud') ?? ev.render('he-x-NoNikud');
     const url = (ev as { url?: () => string | undefined }).url?.() ?? null;
-    return { track, label: hebrewize(brief), url: url ? url.replace('lang=bi', 'lang=he') : null, refId };
+    const he = url ? url.replace('lang=bi', 'lang=he') : null;
+    return { track, label: hebrewize(brief), url: he, refs: he ? portionRefs(track.key, he, ev) : [], refId };
   } catch {
     return null;
   }
@@ -61,32 +90,5 @@ export function trackByKey(key: string): TrackDef | undefined {
 }
 
 /* -------------------------- Sefaria text loading -------------------------- */
-
-function flatten(value: unknown, out: string[]): void {
-  if (typeof value === 'string') {
-    const clean = value.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
-    if (clean) out.push(clean);
-  } else if (Array.isArray(value)) {
-    for (const v of value) flatten(v, out);
-  }
-}
-
-/**
- * Loads the Hebrew text of a Sefaria link through the public Sefaria API.
- * Needs network access; callers must handle failure by offering the link instead.
- */
-export async function fetchSefariaText(url: string, signal?: AbortSignal): Promise<string[]> {
-  const { pathname } = new URL(url);
-  const ref = decodeURIComponent(pathname.replace(/^\//, ''));
-  const res = await fetch(
-    `https://www.sefaria.org/api/texts/${encodeURIComponent(ref)}?context=0&commentary=0&pad=0`,
-    { signal },
-  );
-  if (!res.ok) throw new Error(`Sefaria ${res.status}`);
-  const data = (await res.json()) as { he?: unknown; error?: string };
-  if (data.error) throw new Error(data.error);
-  const out: string[] = [];
-  flatten(data.he, out);
-  if (out.length === 0) throw new Error('empty');
-  return out.slice(0, 80);
-}
+// Round 14: see src/lib/sefaria.ts (time limit, retry, reasons, the whole text, the device copy).
+export { loadSefariaText, deviceTextCache, FAILURE_TEXT, SefariaError } from './sefaria';

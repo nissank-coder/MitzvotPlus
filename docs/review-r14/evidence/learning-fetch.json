@@ -1,0 +1,2346 @@
+{
+  "at": "2026-11-26T18:53:17.804Z",
+  "from": "2026-11-20",
+  "days": 14,
+  "summary": {
+    "ok": 98
+  },
+  "cutByOldCode": [
+    "2026-11-24 psalms (95)",
+    "2026-11-25 psalms (93)",
+    "2026-11-29 psalms (101)",
+    "2026-11-30 psalms (94)",
+    "2026-12-02 psalms (91)"
+  ],
+  "labelRangeNotFetched": [],
+  "rows": [
+    {
+      "dateKey": "2026-11-20",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ד׳",
+      "ref": "Kitzur_Shulchan_Arukh.4",
+      "oldRef": "Kitzur_Shulchan_Arukh.4",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 6,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ד׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 423
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 8.6-8.7",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.6-7",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.6",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.6-7"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_8.6-7?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ח ו׳-ז׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 233
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "psalms",
+      "label": "תהילים נ״ה-נ״ט",
+      "ref": "Psalms.55-59",
+      "oldRef": "Psalms.55-59",
+      "refs": [
+        "Psalms.55-59"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.55-59?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 80,
+      "cutByOldCode": false,
+      "heRef": "תהילים נ״ה-נ״ט",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 99
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י׳",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.10",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.10",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.10"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.10?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 24,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 89
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "mishnayomi",
+      "label": "נגעים 1:6-2:1",
+      "ref": "Mishnah_Negaim.1.6-2.1",
+      "oldRef": "Mishnah_Negaim.1.6-2.1",
+      "refs": [
+        "Mishnah_Negaim.1.6-2.1"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.1.6-2.1?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים א׳:ו׳-ב׳:א׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 63
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "dafyomi",
+      "label": "ערכין דף ג׳",
+      "ref": "Arakhin.3a-3b",
+      "oldRef": "Arakhin.3a",
+      "refs": [
+        "Arakhin.3a-3b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.3a-3b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 34,
+      "cutByOldCode": false,
+      "heRef": "ערכין ג׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 132
+    },
+    {
+      "dateKey": "2026-11-20",
+      "track": "nachyomi",
+      "label": "יחזקאל י״ז",
+      "ref": "Ezekiel.17",
+      "oldRef": "Ezekiel.17",
+      "refs": [
+        "Ezekiel.17"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.17?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 24,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל י״ז",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 77
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ה׳",
+      "ref": "Kitzur_Shulchan_Arukh.5",
+      "oldRef": "Kitzur_Shulchan_Arukh.5",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.5"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.5?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 17,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ה׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 77
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 8.8-8.9",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.8-9",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.8",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.8-9"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_8.8-9?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 5,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ח ח׳-ט׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 101
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "psalms",
+      "label": "תהילים ס׳-ס״ה",
+      "ref": "Psalms.60-65",
+      "oldRef": "Psalms.60-65",
+      "refs": [
+        "Psalms.60-65"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.60-65?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 73,
+      "cutByOldCode": false,
+      "heRef": "תהילים ס׳-ס״ה",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 89
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״א",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.11",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.11",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.11"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.11?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 26,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י״א",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 130
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "mishnayomi",
+      "label": "נגעים 2:2-3",
+      "ref": "Mishnah_Negaim.2.2-3",
+      "oldRef": "Mishnah_Negaim.2.2-3",
+      "refs": [
+        "Mishnah_Negaim.2.2-3"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.2.2-3?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ב׳:ב׳-ג׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 64
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "dafyomi",
+      "label": "ערכין דף ד׳",
+      "ref": "Arakhin.4a-4b",
+      "oldRef": "Arakhin.4a",
+      "refs": [
+        "Arakhin.4a-4b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.4a-4b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 48,
+      "cutByOldCode": false,
+      "heRef": "ערכין ד׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 137
+    },
+    {
+      "dateKey": "2026-11-21",
+      "track": "nachyomi",
+      "label": "יחזקאל י״ח",
+      "ref": "Ezekiel.18",
+      "oldRef": "Ezekiel.18",
+      "refs": [
+        "Ezekiel.18"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.18?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 32,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל י״ח",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 77
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ו׳",
+      "ref": "Kitzur_Shulchan_Arukh.6",
+      "oldRef": "Kitzur_Shulchan_Arukh.6",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 11,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ו׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 133
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 8.10-8.11",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.10-11",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.10",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.10-11"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_8.10-11?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ח י׳-י״א",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "psalms",
+      "label": "תהילים ס״ו-ס״ח",
+      "ref": "Psalms.66-68",
+      "oldRef": "Psalms.66-68",
+      "refs": [
+        "Psalms.66-68"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.66-68?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 64,
+      "cutByOldCode": false,
+      "heRef": "תהילים ס״ו-ס״ח",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 393
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״ב",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.12",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.12",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.12"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.12?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 29,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י״ב",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 86
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "mishnayomi",
+      "label": "נגעים 2:4-5",
+      "ref": "Mishnah_Negaim.2.4-5",
+      "oldRef": "Mishnah_Negaim.2.4-5",
+      "refs": [
+        "Mishnah_Negaim.2.4-5"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.2.4-5?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ב׳:ד׳-ה׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 157
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "dafyomi",
+      "label": "ערכין דף ה׳",
+      "ref": "Arakhin.5a-5b",
+      "oldRef": "Arakhin.5a",
+      "refs": [
+        "Arakhin.5a-5b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.5a-5b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 41,
+      "cutByOldCode": false,
+      "heRef": "ערכין ה׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 128
+    },
+    {
+      "dateKey": "2026-11-22",
+      "track": "nachyomi",
+      "label": "יחזקאל י״ט",
+      "ref": "Ezekiel.19",
+      "oldRef": "Ezekiel.19",
+      "refs": [
+        "Ezekiel.19"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.19?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 14,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל י״ט",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 182
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ז׳",
+      "ref": "Kitzur_Shulchan_Arukh.7",
+      "oldRef": "Kitzur_Shulchan_Arukh.7",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.7"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.7?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 8,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ז׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 83
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 8.12",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.12",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.12",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.12"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_8.12?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ח י״ב",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 100
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "psalms",
+      "label": "תהילים ס״ט-ע״א",
+      "ref": "Psalms.69-71",
+      "oldRef": "Psalms.69-71",
+      "refs": [
+        "Psalms.69-71"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.69-71?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 67,
+      "cutByOldCode": false,
+      "heRef": "תהילים ס״ט-ע״א",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 88
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״ג",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.13",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.13",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.13"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.13?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 28,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י״ג",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 146
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "mishnayomi",
+      "label": "נגעים 3:1-2",
+      "ref": "Mishnah_Negaim.3.1-2",
+      "oldRef": "Mishnah_Negaim.3.1-2",
+      "refs": [
+        "Mishnah_Negaim.3.1-2"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.3.1-2?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ג׳:א׳-ב׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 72
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "dafyomi",
+      "label": "ערכין דף ו׳",
+      "ref": "Arakhin.6a-6b",
+      "oldRef": "Arakhin.6a",
+      "refs": [
+        "Arakhin.6a-6b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.6a-6b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 34,
+      "cutByOldCode": false,
+      "heRef": "ערכין ו׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 115
+    },
+    {
+      "dateKey": "2026-11-23",
+      "track": "nachyomi",
+      "label": "יחזקאל כ׳",
+      "ref": "Ezekiel.20",
+      "oldRef": "Ezekiel.20",
+      "refs": [
+        "Ezekiel.20"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.20?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 44,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ׳",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 90
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ח׳",
+      "ref": "Kitzur_Shulchan_Arukh.8",
+      "oldRef": "Kitzur_Shulchan_Arukh.8",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.8"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.8?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 6,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ח׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 125
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 8.13-8.14",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.13-14",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.13",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_8.13-14"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_8.13-14?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 3,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ח י״ג-י״ד",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 91
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "psalms",
+      "label": "תהילים ע״ב-ע״ו",
+      "ref": "Psalms.72-76",
+      "oldRef": "Psalms.72-76",
+      "refs": [
+        "Psalms.72-76"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.72-76?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 95,
+      "cutByOldCode": true,
+      "heRef": "תהילים ע״ב-ע״ו",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 204
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״ד",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.14",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.14",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.14"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.14?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 19,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י״ד",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 418
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "mishnayomi",
+      "label": "נגעים 3:3-4",
+      "ref": "Mishnah_Negaim.3.3-4",
+      "oldRef": "Mishnah_Negaim.3.3-4",
+      "refs": [
+        "Mishnah_Negaim.3.3-4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.3.3-4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ג׳:ג׳-ד׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 87
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "dafyomi",
+      "label": "ערכין דף ז׳",
+      "ref": "Arakhin.7a-7b",
+      "oldRef": "Arakhin.7a",
+      "refs": [
+        "Arakhin.7a-7b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.7a-7b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 45,
+      "cutByOldCode": false,
+      "heRef": "ערכין ז׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 144
+    },
+    {
+      "dateKey": "2026-11-24",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״א",
+      "ref": "Ezekiel.21",
+      "oldRef": "Ezekiel.21",
+      "refs": [
+        "Ezekiel.21"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.21?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 37,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״א",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 108
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ט׳",
+      "ref": "Kitzur_Shulchan_Arukh.9",
+      "oldRef": "Kitzur_Shulchan_Arukh.9",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.9"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.9?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 21,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ט׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 155
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 9.1-9.2",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.1-2",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.1",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.1-2"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_9.1-2?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 4,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ט א׳-ב׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 95
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "psalms",
+      "label": "תהילים ע״ז-ע״ח",
+      "ref": "Psalms.77-78",
+      "oldRef": "Psalms.77-78",
+      "refs": [
+        "Psalms.77-78"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.77-78?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 93,
+      "cutByOldCode": true,
+      "heRef": "תהילים ע״ז-ע״ח",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 241
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק ט״ו",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.15",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.15",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.15"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.15?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 34,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות ט״ו",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 117
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "mishnayomi",
+      "label": "נגעים 3:5-6",
+      "ref": "Mishnah_Negaim.3.5-6",
+      "oldRef": "Mishnah_Negaim.3.5-6",
+      "refs": [
+        "Mishnah_Negaim.3.5-6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.3.5-6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ג׳:ה׳-ו׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 89
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "dafyomi",
+      "label": "ערכין דף ח׳",
+      "ref": "Arakhin.8a-8b",
+      "oldRef": "Arakhin.8a",
+      "refs": [
+        "Arakhin.8a-8b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.8a-8b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 31,
+      "cutByOldCode": false,
+      "heRef": "ערכין ח׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 106
+    },
+    {
+      "dateKey": "2026-11-25",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ב",
+      "ref": "Ezekiel.22",
+      "oldRef": "Ezekiel.22",
+      "refs": [
+        "Ezekiel.22"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.22?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 31,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ב",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 115
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י׳",
+      "ref": "Kitzur_Shulchan_Arukh.10",
+      "oldRef": "Kitzur_Shulchan_Arukh.10",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.10"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.10?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 26,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 115
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 9.3-9.4",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.3-4",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.3",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.3-4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_9.3-4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 6,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ט ג׳-ד׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 66
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "psalms",
+      "label": "תהילים ע״ט-פ״ב",
+      "ref": "Psalms.79-82",
+      "oldRef": "Psalms.79-82",
+      "refs": [
+        "Psalms.79-82"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.79-82?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 58,
+      "cutByOldCode": false,
+      "heRef": "תהילים ע״ט-פ״ב",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 174
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק ט״ז",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.16",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.16",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.16"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.16?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 35,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות ט״ז",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 114
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "mishnayomi",
+      "label": "נגעים 3:7-8",
+      "ref": "Mishnah_Negaim.3.7-8",
+      "oldRef": "Mishnah_Negaim.3.7-8",
+      "refs": [
+        "Mishnah_Negaim.3.7-8"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.3.7-8?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ג׳:ז׳-ח׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "dafyomi",
+      "label": "ערכין דף ט׳",
+      "ref": "Arakhin.9a-9b",
+      "oldRef": "Arakhin.9a",
+      "refs": [
+        "Arakhin.9a-9b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.9a-9b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 22,
+      "cutByOldCode": false,
+      "heRef": "ערכין ט׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 68
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ג",
+      "ref": "Ezekiel.23",
+      "oldRef": "Ezekiel.23",
+      "refs": [
+        "Ezekiel.23"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.23?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 49,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ג",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 135
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״א",
+      "ref": "Kitzur_Shulchan_Arukh.11",
+      "oldRef": "Kitzur_Shulchan_Arukh.11",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.11"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.11?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 25,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י״א",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 169
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 9.5-9.6",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.5-6",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.5",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.5-6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_9.5-6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 3,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל ט ה׳-ו׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 95
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "psalms",
+      "label": "תהילים פ״ג-פ״ז",
+      "ref": "Psalms.83-87",
+      "oldRef": "Psalms.83-87",
+      "refs": [
+        "Psalms.83-87"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.83-87?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 70,
+      "cutByOldCode": false,
+      "heRef": "תהילים פ״ג-פ״ז",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 200
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״ז",
+      "ref": "Mishneh_Torah,_Forbidden_Foods.17",
+      "oldRef": "Mishneh_Torah,_Forbidden_Foods.17",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.17"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Forbidden_Foods.17?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 32,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות מאכלות אסורות י״ז",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 121
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "mishnayomi",
+      "label": "נגעים 4:1-2",
+      "ref": "Mishnah_Negaim.4.1-2",
+      "oldRef": "Mishnah_Negaim.4.1-2",
+      "refs": [
+        "Mishnah_Negaim.4.1-2"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.1-2?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:א׳-ב׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 85
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "dafyomi",
+      "label": "ערכין דף י׳",
+      "ref": "Arakhin.10a-10b",
+      "oldRef": "Arakhin.10a",
+      "refs": [
+        "Arakhin.10a-10b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.10a-10b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 32,
+      "cutByOldCode": false,
+      "heRef": "ערכין י׳",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 129
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ד",
+      "ref": "Ezekiel.24",
+      "oldRef": "Ezekiel.24",
+      "refs": [
+        "Ezekiel.24"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.24?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 27,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ד",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 109
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ב",
+      "ref": "Kitzur_Shulchan_Arukh.12",
+      "oldRef": "Kitzur_Shulchan_Arukh.12",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.12"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.12?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 15,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י״ב",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 137
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.1-10.2",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.1-2",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.1",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.1-2"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.1-2?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 8,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י א׳-ב׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 97
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "psalms",
+      "label": "תהילים פ״ח-פ״ט",
+      "ref": "Psalms.88-89",
+      "oldRef": "Psalms.88-89",
+      "refs": [
+        "Psalms.88-89"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.88-89?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 72,
+      "cutByOldCode": false,
+      "heRef": "תהילים פ״ח-פ״ט",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 163
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק א׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.1",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.1",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.1"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.1?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 29,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה א׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 130
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "mishnayomi",
+      "label": "נגעים 4:3-4",
+      "ref": "Mishnah_Negaim.4.3-4",
+      "oldRef": "Mishnah_Negaim.4.3-4",
+      "refs": [
+        "Mishnah_Negaim.4.3-4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.3-4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:ג׳-ד׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 87
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "dafyomi",
+      "label": "ערכין דף י״א",
+      "ref": "Arakhin.11a-11b",
+      "oldRef": "Arakhin.11a",
+      "refs": [
+        "Arakhin.11a-11b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.11a-11b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 43,
+      "cutByOldCode": false,
+      "heRef": "ערכין י״א",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 135
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ה",
+      "ref": "Ezekiel.25",
+      "oldRef": "Ezekiel.25",
+      "refs": [
+        "Ezekiel.25"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.25?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 17,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ה",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 116
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ג",
+      "ref": "Kitzur_Shulchan_Arukh.13",
+      "oldRef": "Kitzur_Shulchan_Arukh.13",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.13"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.13?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 5,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י״ג",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 130
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.3",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.3",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.3",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.3"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.3?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 1,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י ג׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "psalms",
+      "label": "תהילים צ׳-צ״ו",
+      "ref": "Psalms.90-96",
+      "oldRef": "Psalms.90-96",
+      "refs": [
+        "Psalms.90-96"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.90-96?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 101,
+      "cutByOldCode": true,
+      "heRef": "תהילים צ׳-צ״ו",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 174
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ב׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.2",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.2",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.2"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.2?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 22,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה ב׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 123
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "mishnayomi",
+      "label": "נגעים 4:5-6",
+      "ref": "Mishnah_Negaim.4.5-6",
+      "oldRef": "Mishnah_Negaim.4.5-6",
+      "refs": [
+        "Mishnah_Negaim.4.5-6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.5-6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:ה׳-ו׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 108
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ב",
+      "ref": "Arakhin.12a-12b",
+      "oldRef": "Arakhin.12a",
+      "refs": [
+        "Arakhin.12a-12b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.12a-12b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 27,
+      "cutByOldCode": false,
+      "heRef": "ערכין י״ב",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 110
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ו",
+      "ref": "Ezekiel.26",
+      "oldRef": "Ezekiel.26",
+      "refs": [
+        "Ezekiel.26"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.26?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 21,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ו",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 142
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ד",
+      "ref": "Kitzur_Shulchan_Arukh.14",
+      "oldRef": "Kitzur_Shulchan_Arukh.14",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.14"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.14?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 8,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י״ד",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 144
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.4",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.4",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.4",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י ד׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 112
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "psalms",
+      "label": "תהילים צ״ז-ק״ג",
+      "ref": "Psalms.97-103",
+      "oldRef": "Psalms.97-103",
+      "refs": [
+        "Psalms.97-103"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.97-103?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 94,
+      "cutByOldCode": true,
+      "heRef": "תהילים צ״ז-ק״ג",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 437
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ג׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.3",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.3",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.3"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.3?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 25,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה ג׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 129
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "mishnayomi",
+      "label": "נגעים 4:7-8",
+      "ref": "Mishnah_Negaim.4.7-8",
+      "oldRef": "Mishnah_Negaim.4.7-8",
+      "refs": [
+        "Mishnah_Negaim.4.7-8"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.7-8?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:ז׳-ח׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ג",
+      "ref": "Arakhin.13a-13b",
+      "oldRef": "Arakhin.13a",
+      "refs": [
+        "Arakhin.13a-13b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.13a-13b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 32,
+      "cutByOldCode": false,
+      "heRef": "ערכין י״ג",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 113
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ז",
+      "ref": "Ezekiel.27",
+      "oldRef": "Ezekiel.27",
+      "refs": [
+        "Ezekiel.27"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.27?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 36,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ז",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 116
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ט״ו",
+      "ref": "Kitzur_Shulchan_Arukh.15",
+      "oldRef": "Kitzur_Shulchan_Arukh.15",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.15"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.15?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 13,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ט״ו",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 152
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.5-10.6",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.5-6",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.5",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.5-6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.5-6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י ה׳-ו׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 89
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "psalms",
+      "label": "תהילים ק״ד-ק״ה",
+      "ref": "Psalms.104-105",
+      "oldRef": "Psalms.104-105",
+      "refs": [
+        "Psalms.104-105"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.104-105?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 80,
+      "cutByOldCode": false,
+      "heRef": "תהילים ק״ד-ק״ה",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 179
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ד׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.4",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.4",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.4"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.4?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 18,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה ד׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 135
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "mishnayomi",
+      "label": "נגעים 4:9-10",
+      "ref": "Mishnah_Negaim.4.9-10",
+      "oldRef": "Mishnah_Negaim.4.9-10",
+      "refs": [
+        "Mishnah_Negaim.4.9-10"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.9-10?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:ט׳-י׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 99
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ד",
+      "ref": "Arakhin.14a-14b",
+      "oldRef": "Arakhin.14a",
+      "refs": [
+        "Arakhin.14a-14b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.14a-14b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 45,
+      "cutByOldCode": false,
+      "heRef": "ערכין י״ד",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 151
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ח",
+      "ref": "Ezekiel.28",
+      "oldRef": "Ezekiel.28",
+      "refs": [
+        "Ezekiel.28"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.28?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 26,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ח",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 118
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ט״ז",
+      "ref": "Kitzur_Shulchan_Arukh.16",
+      "oldRef": "Kitzur_Shulchan_Arukh.16",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.16"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.16?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 5,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך ט״ז",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 149
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.7-10.8",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.7-8",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.7",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.7-8"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.7-8?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י ז׳-ח׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 175
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "psalms",
+      "label": "תהילים ק״ו-ק״ז",
+      "ref": "Psalms.106-107",
+      "oldRef": "Psalms.106-107",
+      "refs": [
+        "Psalms.106-107"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.106-107?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 91,
+      "cutByOldCode": true,
+      "heRef": "תהילים ק״ו-ק״ז",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 180
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ה׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.5",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.5",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.5"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.5?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 12,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה ה׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 113
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "mishnayomi",
+      "label": "נגעים 4:11-5:1",
+      "ref": "Mishnah_Negaim.4.11-5.1",
+      "oldRef": "Mishnah_Negaim.4.11-5.1",
+      "refs": [
+        "Mishnah_Negaim.4.11-5.1"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.4.11-5.1?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ד׳:י״א-ה׳:א׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 102
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "dafyomi",
+      "label": "ערכין דף ט״ו",
+      "ref": "Arakhin.15a-15b",
+      "oldRef": "Arakhin.15a",
+      "refs": [
+        "Arakhin.15a-15b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.15a-15b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 48,
+      "cutByOldCode": false,
+      "heRef": "ערכין ט״ו",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 145
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ט",
+      "ref": "Ezekiel.29",
+      "oldRef": "Ezekiel.29",
+      "refs": [
+        "Ezekiel.29"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.29?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 21,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל כ״ט",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 179
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ז",
+      "ref": "Kitzur_Shulchan_Arukh.17",
+      "oldRef": "Kitzur_Shulchan_Arukh.17",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.17"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Kitzur_Shulchan_Arukh.17?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 10,
+      "cutByOldCode": false,
+      "heRef": "קיצור שלחן ערוך י״ז",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 156
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.9-10.10",
+      "ref": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.9-10",
+      "oldRef": "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.9",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.9-10"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Chofetz_Chaim%2C_Part_One%2C_The_Prohibition_Against_Lashon_Hara%2C_Principle_10.9-10?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "חפץ חיים, חלק ראשון: הלכות איסורי לשון הרע, כלל י ט׳-י׳",
+      "source": {
+        "version": "Chofetz Chaim",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%97%D7%A4%D7%A5_%D7%97%D7%99%D7%99%D7%9D"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "psalms",
+      "label": "תהילים ק״ח-קי״ב",
+      "ref": "Psalms.108-112",
+      "oldRef": "Psalms.108-112",
+      "refs": [
+        "Psalms.108-112"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Psalms.108-112?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 72,
+      "cutByOldCode": false,
+      "heRef": "תהילים ק״ח-קי״ב",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 279
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ו׳",
+      "ref": "Mishneh_Torah,_Ritual_Slaughter.6",
+      "oldRef": "Mishneh_Torah,_Ritual_Slaughter.6",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.6"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishneh_Torah%2C_Ritual_Slaughter.6?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 21,
+      "cutByOldCode": false,
+      "heRef": "משנה תורה, הלכות שחיטה ו׳",
+      "source": {
+        "version": "Torat Emet 363",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 112
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "mishnayomi",
+      "label": "נגעים 5:2-3",
+      "ref": "Mishnah_Negaim.5.2-3",
+      "oldRef": "Mishnah_Negaim.5.2-3",
+      "refs": [
+        "Mishnah_Negaim.5.2-3"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Mishnah_Negaim.5.2-3?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 2,
+      "cutByOldCode": false,
+      "heRef": "משנה נגעים ה׳:ב׳-ג׳",
+      "source": {
+        "version": "Torat Emet 357",
+        "license": "Public Domain",
+        "url": "http://www.toratemetfreeware.com/index.html?downloads"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 87
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "dafyomi",
+      "label": "ערכין דף ט״ז",
+      "ref": "Arakhin.16a-16b",
+      "oldRef": "Arakhin.16a",
+      "refs": [
+        "Arakhin.16a-16b"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Arakhin.16a-16b?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 47,
+      "cutByOldCode": false,
+      "heRef": "ערכין ט״ז",
+      "source": {
+        "version": "William Davidson Edition - Vocalized Aramaic",
+        "license": "CC-BY-NC",
+        "url": "https://korenpub.co.il/collections/the-noe-edition-koren-talmud-bavli-1"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 169
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "nachyomi",
+      "label": "יחזקאל ל׳",
+      "ref": "Ezekiel.30",
+      "oldRef": "Ezekiel.30",
+      "refs": [
+        "Ezekiel.30"
+      ],
+      "api": "https://www.sefaria.org/api/texts/Ezekiel.30?context=0&commentary=0&pad=0",
+      "status": 200,
+      "kind": "ok",
+      "segments": 26,
+      "cutByOldCode": false,
+      "heRef": "יחזקאל ל׳",
+      "source": {
+        "version": "Miqra according to the Masorah",
+        "license": "CC-BY-SA",
+        "url": "https://he.wikisource.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:Dovi/%D7%9E%D7%A7%D7%A8%D7%90_%D7%A2%D7%9C_%D7%A4%D7%99_%D7%94%D7%9E%D7%A1%D7%95%D7%A8%D7%94"
+      },
+      "rangeOfLabelCovered": true,
+      "ms": 111
+    }
+  ],
+  "burst": [
+    {
+      "i": 0,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 1,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 2,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 3,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 4,
+      "status": 429,
+      "json": false,
+      "bodyStart": "<!doctype html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 old"
+    },
+    {
+      "i": 5,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 6,
+      "status": 429,
+      "json": false,
+      "bodyStart": "<!doctype html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 old"
+    },
+    {
+      "i": 7,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 8,
+      "status": 429,
+      "json": false,
+      "bodyStart": "<!doctype html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 old"
+    },
+    {
+      "i": 9,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    },
+    {
+      "i": 10,
+      "status": 429,
+      "json": false,
+      "bodyStart": "<!doctype html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 old"
+    },
+    {
+      "i": 11,
+      "status": 200,
+      "json": true,
+      "bodyStart": "{\"ref\": \"Kitzur Shulchan Arukh 10\", \"heRef\": \"קיצור שלחן ערו"
+    }
+  ]
+}

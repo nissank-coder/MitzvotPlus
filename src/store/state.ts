@@ -38,7 +38,9 @@ export function createFreshState(now = Date.now()): AppState {
     settings: { ...defaultSettings },
     joinedGroups: {},
     profile: { gender: 'male', nusach: 'sefard', cityId: DEFAULT_CITY_ID },
-    learningTracks: [...DEFAULT_TRACKS],
+    // Round 14: no track is chosen for the user – the defaults are offered as suggestions.
+    learningTracks: [],
+    learningTracksChosen: false,
     backfilledRestDays: [],
   };
 }
@@ -209,7 +211,12 @@ export function loadState(raw: string | null, now = Date.now()): AppState {
     settings: { ...fresh.settings, ...(value.settings ?? {}) },
     joinedGroups: value.joinedGroups ?? {},
     profile: { ...fresh.profile, ...(value.profile ?? {}) },
-    learningTracks: Array.isArray(value.learningTracks) ? value.learningTracks : fresh.learningTracks,
+    learningTracks: Array.isArray(value.learningTracks) ? value.learningTracks : [...DEFAULT_TRACKS],
+    // Saved before round 14: exactly the old defaults = suggested, anything else = the user's choice.
+    learningTracksChosen:
+      typeof value.learningTracksChosen === 'boolean'
+        ? value.learningTracksChosen
+        : !(Array.isArray(value.learningTracks) ? sameTracks(value.learningTracks, DEFAULT_TRACKS) : true),
     backfilledRestDays: Array.isArray(value.backfilledRestDays) ? value.backfilledRestDays : [],
     speech: value.speech ?? legacySpeech(legacyFields),
     savedContent: Array.isArray(value.savedContent) ? value.savedContent : [],
@@ -260,6 +267,8 @@ export type Action =
   | { type: 'goalsAdopted'; payload: { wire: GoalWire[] } }
   /** Round 13 (B1): the queue was rebuilt for a new backup generation; the cursor starts over. */
   | { type: 'backupGenerationApplied'; payload: { epoch: number; floor: number | null } }
+  /** Round 14: the user keeps the suggested learning tracks as their own choice. */
+  | { type: 'keepTracks' }
   | { type: 'cloudDataDeleted'; payload: { at: number } }
   | { type: 'cloudReuploadDecided' }
   | { type: 'addAction'; payload: ActionInput }
@@ -297,6 +306,8 @@ function blessingSetAtOf(state: AppState, dateKey: string, blessingGoal: number)
   if (current.blessingGoal !== blessingGoal) return { blessingSetAt: Date.now() };
   return current.blessingSetAt !== undefined ? { blessingSetAt: current.blessingSetAt } : {};
 }
+
+const sameTracks = (a: string[], b: readonly string[]) => a.length === b.length && a.every((k) => b.includes(k));
 
 const EMPTY_SYNC = { cursor: 0, remoteRemoved: [] as string[], lastSyncAt: null as number | null };
 
@@ -590,10 +601,14 @@ export function reducer(state: AppState, action: Action): AppState {
       };
     }
 
+    case 'keepTracks':
+      return { ...state, learningTracksChosen: true };
+
     case 'toggleTrack': {
       const has = state.learningTracks.includes(action.payload.key);
       return {
         ...state,
+        learningTracksChosen: true,
         learningTracks: has
           ? state.learningTracks.filter((k) => k !== action.payload.key)
           : [...state.learningTracks, action.payload.key],

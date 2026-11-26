@@ -210,6 +210,12 @@ export type AppState = {
   profile: UserProfile;
   /** Daily learning tracks the user follows (see src/lib/learning.ts). */
   learningTracks: string[];
+  /**
+   * Round 14 (review v4 §2): whether the user chose the tracks. A new user starts with none and
+   * sees three suggestions; data saved before round 14 that holds exactly the old defaults is
+   * kept, marked as suggested (not chosen) until the user keeps or changes it.
+   */
+  learningTracksChosen?: boolean;
   /** Shabbat / Yom Tov days already filled in after the fact. */
   backfilledRestDays: string[];
 };
