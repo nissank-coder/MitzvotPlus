@@ -29,24 +29,21 @@ const itemOf = (key: ActionKey): QuickAddItem => {
  */
 export function QuickAddSheet({ visible, onClose, focus = null }: Props) {
   const { state, derived, addAction, addBlessing, previewPoints } = useAppStore();
-  const [detail, setDetail] = useState<QuickAddItem | null>(null);
+  // Opened for one prayer, the sheet starts at its minyan choice – from the first frame (round 14:
+  // no flash of the whole list first). The sheet is mounted afresh for every opening (App gives it
+  // a new key), so nothing is carried over from the last time (A15).
+  const single = focus && focus.actions.length === 1 ? itemOf(focus.actions[0]!) : null;
+  const [detail, setDetail] = useState<QuickAddItem | null>(() => (single?.detail === 'minyan' ? single : null));
   const [recorded, setRecorded] = useState<{ key: ActionKey; minyan: boolean } | null>(null);
   const busy = useRef(false);
   const groups = useMemo(() => quickAddGroups(state.profile.gender), [state.profile.gender]);
 
-  // Every opening starts fresh: no carried-over minyan choice (A15). Opened for one prayer, the
-  // sheet starts at its minyan choice.
-  const single = focus && focus.actions.length === 1 ? itemOf(focus.actions[0]!) : null;
   useEffect(() => {
-    if (visible) {
-      busy.current = false;
-      setDetail(single?.detail === 'minyan' ? single : null);
-    } else {
+    if (!visible) {
       setDetail(null);
       setRecorded(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, focus]);
+  }, [visible]);
 
   if (!visible) return null;
 
