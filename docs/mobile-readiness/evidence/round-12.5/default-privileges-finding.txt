@@ -1,0 +1,76 @@
+Round-12 migrations only (20261126000001..3) under Supabase default privileges – what the anon role (no login) could do:
+function (anon can execute) are_friends
+function (anon can execute) armor
+function (anon can execute) armor
+function (anon can execute) crypt
+function (anon can execute) dearmor
+function (anon can execute) decrypt
+function (anon can execute) decrypt_iv
+function (anon can execute) delete_my_account
+function (anon can execute) digest
+function (anon can execute) digest
+function (anon can execute) encrypt
+function (anon can execute) encrypt_iv
+function (anon can execute) export_my_data
+function (anon can execute) gen_random_bytes
+function (anon can execute) gen_random_uuid
+function (anon can execute) gen_salt
+function (anon can execute) gen_salt
+function (anon can execute) handle_new_user
+function (anon can execute) hit_rate_limit
+function (anon can execute) hmac
+function (anon can execute) hmac
+function (anon can execute) is_blocked_between
+function (anon can execute) is_group_member
+function (anon can execute) pgp_armor_headers
+function (anon can execute) pgp_key_id
+function (anon can execute) pgp_pub_decrypt
+function (anon can execute) pgp_pub_decrypt
+function (anon can execute) pgp_pub_decrypt
+function (anon can execute) pgp_pub_decrypt_bytea
+function (anon can execute) pgp_pub_decrypt_bytea
+function (anon can execute) pgp_pub_decrypt_bytea
+function (anon can execute) pgp_pub_encrypt
+function (anon can execute) pgp_pub_encrypt
+function (anon can execute) pgp_pub_encrypt_bytea
+function (anon can execute) pgp_pub_encrypt_bytea
+function (anon can execute) pgp_sym_decrypt
+function (anon can execute) pgp_sym_decrypt
+function (anon can execute) pgp_sym_decrypt_bytea
+function (anon can execute) pgp_sym_decrypt_bytea
+function (anon can execute) pgp_sym_encrypt
+function (anon can execute) pgp_sym_encrypt
+function (anon can execute) pgp_sym_encrypt_bytea
+function (anon can execute) pgp_sym_encrypt_bytea
+function (anon can execute) pull_events
+function (anon can execute) recompute_daily_score
+function (anon can execute) set_consent
+function (anon can execute) submit_events
+table action_privacy: INSERT,UPDATE,DELETE
+table activity_events: INSERT,UPDATE,DELETE
+table blocks: INSERT,UPDATE,DELETE
+table daily_scores: INSERT,UPDATE,DELETE
+table friendships: INSERT,UPDATE,DELETE
+table group_challenges: INSERT,UPDATE,DELETE
+table group_members: INSERT,UPDATE,DELETE
+table groups: INSERT,UPDATE,DELETE
+table invites: INSERT,UPDATE,DELETE
+table kudos: INSERT,UPDATE,DELETE
+table profiles: INSERT,UPDATE,DELETE
+table rate_counters: INSERT,UPDATE,DELETE
+table reports: INSERT,UPDATE,DELETE
+table scoring_rules: INSERT,UPDATE,DELETE
+table scoring_versions: INSERT,UPDATE,DELETE
+table shared_achievements: INSERT,UPDATE,DELETE
+table social_profiles: INSERT,UPDATE,DELETE
+
+After 20261127000001_hardening.sql:
+function (anon can execute) block_user
+function (anon can execute) create_invite
+function (anon can execute) give_kudos
+function (anon can execute) pull_events
+function (anon can execute) redeem_invite
+function (anon can execute) set_blessing_goals
+function (anon can execute) share_achievement
+function (anon can execute) submit_report
+(empty = nothing)

@@ -23,3 +23,18 @@ max_frequency = "60s"
 [auth.rate_limit]
 email_sent = 4
 token_verifications = 30
+
+# The e-mail carries the 6-digit code only (no link, no redirect, no deep link).
+[auth.email.template.magic_link]
+subject = "קוד הכניסה שלך למצוות+"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.confirmation]
+subject = "קוד הכניסה שלך למצוות+"
+content_path = "./supabase/templates/confirmation.html"
+
+# Only the "public" schema is exposed by the API; the helper schema "private" must never be added.
+[api]
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 500

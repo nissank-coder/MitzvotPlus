@@ -17,3 +17,13 @@ $$;
 grant usage on schema auth to anon, authenticated, service_role;
 grant execute on function auth.uid() to anon, authenticated, service_role;
 grant usage on schema public to anon, authenticated, service_role;
+-- As on Supabase, extensions live in their own schema (on the session search_path, not in public).
+create schema if not exists extensions;
+create extension if not exists pgcrypto schema extensions;
+grant usage on schema extensions to anon, authenticated, service_role;
+-- Supabase's default privileges (as on a hosted project): every new table, sequence and function in
+-- "public" is granted to anon, authenticated and service_role. The migrations must revoke what they
+-- do not want exposed – these defaults make the tests fail if they do not.
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to anon, authenticated, service_role;

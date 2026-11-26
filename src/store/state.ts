@@ -252,6 +252,9 @@ export type Action =
   | { type: 'grantAwards'; payload: Award[] }
   | { type: 'applyRemoteEvents'; payload: RemoteEvent[] }
   | { type: 'resetSyncCursor' }
+  | { type: 'syncGoalsSent'; payload: { hash: string } }
+  | { type: 'cloudDataDeleted'; payload: { at: number } }
+  | { type: 'cloudReuploadDecided' }
   | { type: 'addAction'; payload: ActionInput }
   | { type: 'addActions'; payload: ActionInput[]; markBackfilled?: string[] }
   | { type: 'removeLog'; payload: { id: string } }
@@ -502,11 +505,21 @@ export function reducer(state: AppState, action: Action): AppState {
         logs = logs.filter((l) => !voided.has(l.id) && !(l.bundleOf && voided.has(l.bundleOf)));
         for (const id of voided) removed.add(id);
       }
-      return { ...state, logs, sync: { cursor, remoteRemoved: [...removed].slice(-500), lastSyncAt: Date.now() } };
+      return { ...state, logs, sync: { ...sync, cursor, remoteRemoved: [...removed].slice(-500), lastSyncAt: Date.now() } };
     }
 
     case 'resetSyncCursor':
       return { ...state, sync: { cursor: 0, remoteRemoved: [], lastSyncAt: null } };
+
+    case 'syncGoalsSent':
+      return { ...state, sync: { ...(state.sync ?? { cursor: 0, remoteRemoved: [], lastSyncAt: null }), goalsHash: action.payload.hash } };
+
+    // The cloud copy is gone: start the cursor over; the goals must be sent again.
+    case 'cloudDataDeleted':
+      return { ...state, sync: { cursor: 0, remoteRemoved: [], lastSyncAt: null, goalsHash: null, cloudDeletedAt: action.payload.at } };
+
+    case 'cloudReuploadDecided':
+      return { ...state, sync: { ...(state.sync ?? { cursor: 0, remoteRemoved: [], lastSyncAt: null }), cloudDeletedAt: null } };
 
     case 'updateSettings':
       return { ...state, settings: { ...state.settings, ...action.payload } };

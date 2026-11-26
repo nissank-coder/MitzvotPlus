@@ -17,6 +17,7 @@ export function errorCode(e: unknown): SyncErrorCode {
   if (/consent_required/.test(msg)) return 'consent_required';
   if (/account_deleted/.test(msg)) return 'account_deleted';
   if (/rate_limited/.test(msg)) return 'rate_limited';
+  if (/local_save_failed/.test(msg)) return 'local_save_failed';
   if (/not_authenticated|JWT|401/.test(msg)) return 'not_authenticated';
   if (/fetch|network|Failed to fetch|timeout|offline/i.test(msg)) return 'offline';
   return 'unknown';
@@ -36,15 +37,29 @@ export function accountApi(sb: SupabaseClient) {
     },
     async requestCode(email: string): Promise<void> {
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      if (error && (error as { status?: number }).status === 429) throw new SyncError('rate_limited', 'code_rate_limited');
       if (error) throw new SyncError(errorCode(error), error.message);
     },
     async verifyCode(email: string, code: string): Promise<AccountUser> {
       const { data, error } = await sb.auth.verifyOtp({ email, token: code.trim(), type: 'email' });
+      // A wrong, used or expired code (the server does not say which): ask for a new one.
+      if (error && (error as { status?: number }).status === 403) throw new SyncError('not_authenticated', 'code_invalid_or_expired');
       if (error || !data.user) throw new SyncError(errorCode(error), error?.message ?? 'no user');
       return { id: data.user.id, email: data.user.email ?? null };
     },
-    async signOut(): Promise<void> {
-      await sb.auth.signOut();
+    /**
+     * Signs out. If the server cannot be reached the tokens are still removed from this device
+     * ('local'); the refresh token then expires on the server by itself. Never throws.
+     */
+    async signOut(): Promise<{ serverRevoked: boolean }> {
+      try {
+        const { error } = await sb.auth.signOut();
+        if (!error) return { serverRevoked: true };
+      } catch {
+        // fall through to the local sign-out
+      }
+      await sb.auth.signOut({ scope: 'local' }).catch(() => undefined);
+      return { serverRevoked: false };
     },
     async consent(): Promise<Consent> {
       const { data, error } = await sb.from('profiles').select('consent_cloud_backup, consent_social').single();
@@ -67,7 +82,10 @@ export function accountApi(sb: SupabaseClient) {
           const at = new Date().toISOString();
           return rows.map((r) => ({ eventId: r.event_id, outcome: r.outcome, reasonCode: r.reason ?? undefined, serverReceivedAtUtc: at }));
         },
-        pull: (after) => rpc<RemoteEvent[]>('pull_events', { p_after: after, p_limit: 200 }),
+        pull: async (after) => (await rpc<RemoteEvent[]>('pull_events', { p_after: after, p_limit: 200 })).map((e) => ({ ...e, seq: Number(e.seq) })),
+        setBlessingGoals: async (goals) => {
+          await rpc('set_blessing_goals', { p_goals: goals });
+        },
       };
     },
   };

@@ -27,7 +27,15 @@ export type RemoteEvent = {
   payload: Record<string, unknown>;
 };
 
-export type SyncErrorCode = 'offline' | 'not_authenticated' | 'consent_required' | 'account_deleted' | 'rate_limited' | 'unknown';
+export type SyncErrorCode =
+  | 'offline'
+  | 'not_authenticated'
+  | 'consent_required'
+  | 'account_deleted'
+  | 'rate_limited'
+  /** The device could not store its own data: nothing is sent or applied until it can. */
+  | 'local_save_failed'
+  | 'unknown';
 
 export class SyncError extends Error {
   constructor(public readonly code: SyncErrorCode, message?: string) {
@@ -38,6 +46,8 @@ export class SyncError extends Error {
 export type SyncRemote = {
   submit: (batch: Array<Pick<OutboxItem, 'eventId' | 'operation' | 'targetEventId' | 'payload'>>) => Promise<EventReceipt[]>;
   pull: (after: number) => Promise<RemoteEvent[]>;
+  /** Goal snapshots, so the server scores each day with the goal in force on it. */
+  setBlessingGoals?: (goals: Array<{ from: string; blessingGoal: number }>) => Promise<void>;
 };
 
 export type SyncStatus =
@@ -45,8 +55,10 @@ export type SyncStatus =
   | { state: 'signed-out' }
   | { state: 'consent-needed' }
   | { state: 'syncing' }
-  | { state: 'ok'; at: number; pushed: number; pulled: number; pending: number }
+  | { state: 'ok'; at: number; pushed: number; pulled: number; pending: number; rejected: number }
   | { state: 'error'; code: SyncErrorCode; at: number; pending: number }
+  /** Stopped because the user signed out, switched account or revoked consent: results dropped. */
+  | { state: 'cancelled' }
   | { state: 'account-deleted' };
 
 /** Never-sent items written as schema v1 (with the city) are re-encoded as v2, or dropped if local-only. */
@@ -114,52 +126,108 @@ export type SyncDeps = {
   cursor: () => number;
   /** Applies pulled events to the state (reducer action 'applyRemoteEvents'). */
   applyRemote: (events: RemoteEvent[]) => void;
+  /**
+   * Writes the state (entries + cursor, one transaction) to the device. Sync is reported as done
+   * only after this succeeded; before the first push it proves that local saving works at all.
+   */
+  persist?: () => Promise<boolean>;
+  /** False once the run belongs to an old session (sign-out, other account, consent revoked). */
+  isCurrent?: () => boolean;
+  /** Goal snapshots and the fingerprint of the last ones the server accepted. */
+  goals?: { current: () => Array<{ from: string; blessingGoal: number }>; sent: () => string | null; markSent: (hash: string) => void };
   remote: SyncRemote;
   gate: SyncGate;
   now: () => number;
 };
 
+/** Upper bounds per run: a long queue or history is processed in many requests, never skipped. */
+export const MAX_PUSH_ROUNDS = 200;
+export const MAX_PULL_PAGES = 1000;
+
+class Cancelled extends Error {}
+
 export async function syncNow(d: SyncDeps): Promise<SyncStatus> {
   if (!d.gate.enabled) return { state: 'off' };
   if (!d.gate.consent.cloudBackup) return { state: 'consent-needed' };
   const now = d.now();
-  let fatal: SyncError | null = null;
-
-  // Push
-  const listed = await d.listOutbox();
-  const { items, changed } = upgradePayloads(listed, d.logs(), await d.installationId());
-  if (changed.length) await d.saveOutbox(changed);
-  const transport = {
-    submit: async (batch: Parameters<SyncRemote['submit']>[0]) => {
-      try {
-        return await d.remote.submit(batch);
-      } catch (e) {
-        if (e instanceof SyncError && e.code !== 'offline' && e.code !== 'rate_limited') fatal = e;
-        throw e;
-      }
-    },
+  const current = () => d.isCurrent?.() ?? true;
+  const guard = () => {
+    if (!current()) throw new Cancelled();
   };
-  const after = await syncOnce(items, transport, now, d.gate);
-  const updated = after.filter((a, i) => a !== items[i]);
-  const failure = fatal as SyncError | null;
-  if (failure?.code === 'account_deleted') return { state: 'account-deleted' };
-  if (updated.length) await d.saveOutbox(updated);
-  const pending = after.filter((i) => i.status === 'pending' || i.status === 'deferred').length;
-  if (failure) return { state: 'error', code: failure.code, at: now, pending };
-
-  // Pull
-  let pulled = 0;
+  let pending = 0;
   try {
-    for (let page = 0; page < 20; page += 1) {
+    if (d.persist && !(await d.persist())) return { state: 'error', code: 'local_save_failed', at: now, pending: 0 };
+    guard();
+
+    // Goals first: the scores of the events below depend on them.
+    if (d.goals && d.remote.setBlessingGoals) {
+      const goals = d.goals.current();
+      const hash = canonicalJsonOf(goals);
+      if (d.goals.sent() !== hash) {
+        await d.remote.setBlessingGoals(goals);
+        guard();
+        d.goals.markSent(hash);
+      }
+    }
+
+    // Push: every due item, in batches, until nothing is due. Any failure stops the run and is
+    // reported as an error – never as "synced".
+    const listed = await d.listOutbox();
+    const { items: upgraded, changed } = upgradePayloads(listed, d.logs(), await d.installationId());
+    if (changed.length) await d.saveOutbox(changed);
+    let items = upgraded;
+    let pushed = 0;
+    let rejected = 0;
+    let failure: SyncError | null = null;
+    const transport = {
+      submit: async (batch: Parameters<SyncRemote['submit']>[0]) => {
+        try {
+          return await d.remote.submit(batch);
+        } catch (e) {
+          failure = e instanceof SyncError ? e : new SyncError('offline', e instanceof Error ? e.message : String(e));
+          throw e;
+        }
+      },
+    };
+    for (let round = 0; round < MAX_PUSH_ROUNDS; round += 1) {
+      guard();
+      const after = await syncOnce(items, transport, now, d.gate);
+      const updated = after.filter((a, i) => a !== items[i]);
+      if (updated.length === 0) break;
+      // Receipts are written even if the run was cancelled meanwhile: they are facts of this space.
+      await d.saveOutbox(updated);
+      pushed += updated.filter((u) => u.status === 'accepted').length;
+      rejected += updated.filter((u) => u.status === 'rejected').length;
+      items = after;
+      if (failure) break;
+    }
+    pending = items.filter((i) => i.status === 'pending' || i.status === 'deferred').length;
+    const f = failure as SyncError | null;
+    if (f?.code === 'account_deleted') return { state: 'account-deleted' };
+    if (f) return { state: 'error', code: f.code, at: now, pending };
+
+    // Pull: page after page until the server has nothing newer.
+    let pulled = 0;
+    for (let page = 0; page < MAX_PULL_PAGES; page += 1) {
+      guard();
       const events = await d.remote.pull(d.cursor());
+      guard(); // a response that arrives after a sign-out / account switch is dropped
       if (events.length === 0) break;
       d.applyRemote(events);
       pulled += events.length;
     }
+    // Entries and cursor are durable before "synced" is shown.
+    if (d.persist && !(await d.persist())) return { state: 'error', code: 'local_save_failed', at: now, pending };
+    guard();
+    return { state: 'ok', at: now, pushed, pulled, pending, rejected };
   } catch (e) {
+    if (e instanceof Cancelled) return { state: 'cancelled' };
     const code = e instanceof SyncError ? e.code : 'offline';
     if (code === 'account_deleted') return { state: 'account-deleted' };
     return { state: 'error', code, at: now, pending };
   }
-  return { state: 'ok', at: now, pushed: updated.filter((u) => u.status === 'accepted').length, pulled, pending };
+}
+
+function canonicalJsonOf(v: unknown): string {
+  return JSON.stringify(v);
 }

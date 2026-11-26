@@ -1,5 +1,9 @@
-// Distribution gate (round 10 S10-05, hardened in round 11 §5).
-//   node scripts/ci/check-distribution.mjs --kind debug|beta|release [--commit <sha>]
+// Distribution gate (round 10 S10-05, hardened in round 11 §5, build identity in round 12.5).
+//   node scripts/ci/check-distribution.mjs --kind debug|beta|release [--artifact <apk|ipa>] [--commit <sha>]
+// Device evidence counts only for the exact build: same release fingerprint (everything that goes
+// into the app; docs/evidence excluded, so recording evidence does not invalidate it), same
+// distribution configuration (a debug APK never counts for a release), and – when --artifact is
+// given – the same file (sha256). The commit is informational.
 // debug   – internal builds: never blocked (reports only).
 // beta    – TestFlight / Play testing: needs the decisions and gates a tester build depends on.
 // release – store: every required decision APPROVED, gates G0–G6 PASS, device evidence for THIS
@@ -7,10 +11,16 @@
 // It is a mandatory step of .github/workflows/release.yml; regular CI does not run it.
 // Passing it is not a legal, halachic or store approval – it only reports what is open.
 import { existsSync, readFileSync } from 'node:fs';
+import { buildIdentity, evidenceMatches } from '../build-info.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
 const kind = args.kind ?? 'release';
 const commit = (args.commit ?? '').slice(0, 7);
+if (args.artifact && !existsSync(args.artifact)) {
+  console.error(`artifact not found: ${args.artifact}`);
+  process.exit(2);
+}
+const identity = buildIdentity(kind === 'debug' ? 'debug' : kind, { artifact: args.artifact });
 if (!['debug', 'beta', 'release'].includes(kind)) {
   console.error(`unknown --kind ${kind}`);
   process.exit(2);
@@ -57,15 +67,12 @@ for (const g of GATES[kind] ?? []) {
   else if (!/\|\s*\*\*PASS\*\*/.test(line) && !/\|\s*PASS\b/.test(line.split('|')[2] ?? '')) blockers.push(`${g}: not PASS`);
 }
 
-// 3. Device evidence for this exact commit (Android and iPhone).
+// 3. Device evidence for this exact build (Android and iPhone).
 if (kind !== 'debug') {
-  if (!commit) blockers.push('--commit <sha> is required to tie evidence to the build');
-  else {
-    const ev = csv('docs/mobile-readiness/test_evidence.csv').filter((r) => r.status === 'PASS' && (r.commit ?? '').includes(commit));
-    for (const platform of [/android/i, /iphone|ios/i]) {
-      if (!ev.some((r) => platform.test(r.device_model) && !/simulator|emulator|chromium|node|linux/i.test(r.device_model))) {
-        blockers.push(`no PASS device evidence on a real ${platform.source.split('|')[0]} for commit ${commit}`);
-      }
+  const ev = csv('docs/mobile-readiness/test_evidence.csv').filter((r) => evidenceMatches(r, identity));
+  for (const platform of [/android/i, /iphone|ios/i]) {
+    if (!ev.some((r) => platform.test(r.device_model) && !/simulator|emulator|chromium|node|linux/i.test(r.device_model))) {
+      blockers.push(`no PASS device evidence on a real ${platform.source.split('|')[0]} for build ${identity.buildId}`);
     }
   }
 }
@@ -93,6 +100,6 @@ if (kind !== 'debug') {
   }
 }
 
-console.log(`Distribution gate (${kind}${commit ? `, ${commit}` : ''}): ${blockers.length ? `BLOCKED (${blockers.length})` : 'no open blocker found – owner sign-off still required'}`);
+console.log(`Distribution gate (${kind}, ${identity.buildId}${commit ? `, commit ${commit}` : ''}): ${blockers.length ? `BLOCKED (${blockers.length})` : 'no open blocker found – owner sign-off still required'}`);
 for (const b of blockers) console.log(`  - ${b}`);
 process.exit(kind === 'debug' || blockers.length === 0 ? 0 : 1);

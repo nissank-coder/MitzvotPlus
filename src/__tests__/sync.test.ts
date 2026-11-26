@@ -126,7 +126,8 @@ describe('round 12 sync', () => {
     const a = new Device(server);
     await a.act('chesed');
     server.loseNextResponse = true;
-    expect((await a.sync()).state).toBe('ok'); // push failed silently (backoff), pull ok
+    // Round 12.5: a failed push is reported as an error (never as "synced"), the item is kept.
+    expect(await a.sync()).toMatchObject({ state: 'error', code: 'offline', pending: 1 });
     expect(server.events).toHaveLength(1);
     const outbox = await a.storage.listOutbox();
     expect(outbox[0]!.status).toBe('pending');

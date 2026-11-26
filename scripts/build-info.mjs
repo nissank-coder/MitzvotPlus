@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { execSync } from 'node:child_process';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { existsSync } from 'node:fs';
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -58,7 +59,71 @@ export function buildInfo(root = process.cwd()) {
   };
 }
 
+/* ------------------------------ Build identity (round 12.5) ------------------------------ */
+// Device evidence must belong to the exact build that ships. A commit id cannot do that: adding the
+// evidence to the repository makes a new commit. The release fingerprint hashes everything that
+// goes INTO the app – web source, native projects, build configuration, dependencies – and nothing
+// else (docs, evidence, tests, server migrations), so recording evidence does not change it.
+const RELEASE_INPUTS = ['src', 'index.html', 'public', 'assets', 'package.json', 'package-lock.json', 'vite.config.ts', 'tsconfig.json', 'capacitor.config.ts', 'scripts/csp.mjs', 'scripts/build-info.mjs', 'android', 'ios'];
+const EXCLUDED = /(^|\/)(__tests__|__integration__|build|\.gradle|Pods|DerivedData|xcuserdata|node_modules)(\/|$)|^android\/app\/src\/main\/assets\/public\/|^ios\/App\/App\/public\/|^android\/capacitor-cordova-android-plugins\/|local\.properties$/;
+
+function trackedFiles(root) {
+  try {
+    const out = execSync(`git ls-files -z -- ${RELEASE_INPUTS.join(' ')}`, { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+    const files = out.split('\0').filter(Boolean);
+    if (files.length) return files;
+  } catch {
+    // no git: walk the folders
+  }
+  return RELEASE_INPUTS.flatMap((p) => {
+    const abs = join(root, p);
+    if (!existsSync(abs)) return [];
+    return statSync(abs).isDirectory() ? walk(abs).map((f) => relative(root, f).split('\\').join('/')) : [p];
+  });
+}
+
+export function releaseFingerprint(root = process.cwd()) {
+  const hash = createHash('sha256');
+  for (const file of trackedFiles(root).filter((f) => !EXCLUDED.test(f)).sort()) {
+    const abs = join(root, file);
+    if (!existsSync(abs)) continue; // deleted in the working tree
+    hash.update(file);
+    hash.update('\0');
+    hash.update(readFileSync(abs).toString('utf8').replace(/\r\n/g, '\n'));
+    hash.update('\0');
+  }
+  return hash.digest('hex').slice(0, 16);
+}
+
+/** The distribution configuration a build was made with: debug and release builds differ. */
+export function buildConfig(kind, env = process.env) {
+  const backend = env.VITE_BACKEND_ENV === 'development' || env.VITE_BACKEND_ENV === 'staging' ? env.VITE_BACKEND_ENV : 'none';
+  return `${kind}+backend=${backend}+dbenc=${env.VITE_DB_ENCRYPTION === 'true' ? 'on' : 'off'}`;
+}
+
+export function artifactHash(path) {
+  return createHash('sha256').update(readFileSync(path)).digest('hex');
+}
+
+/** What a tester writes into test_evidence.csv (build_id) for a device test of this build. */
+export function buildIdentity(kind, { artifact, env = process.env, root = process.cwd() } = {}) {
+  const fp = releaseFingerprint(root);
+  const cfg = buildConfig(kind, env);
+  const sha = artifact ? artifactHash(artifact) : null;
+  return { fingerprint: fp, config: cfg, artifactSha256: sha, buildId: `fp=${fp};cfg=${cfg}${sha ? `;sha256=${sha.slice(0, 16)}` : ''}` };
+}
+
+/** Whether an evidence row (test_evidence.csv) belongs to exactly this build. */
+export function evidenceMatches(row, identity) {
+  const p = Object.fromEntries(String(row.build_id ?? '').split(';').map((x) => x.split('=')).filter((x) => x.length >= 2).map(([k, ...v]) => [k, v.join('=')]));
+  return row.status === 'PASS' && p.fp === identity.fingerprint && p.cfg === identity.config && (!identity.artifactSha256 || p.sha256 === identity.artifactSha256.slice(0, 16));
+}
+
+// CLI: node scripts/build-info.mjs --identity debug [--artifact app-debug.apk]
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const info = buildInfo();
-  console.log(JSON.stringify(info, null, 2));
+  const a = process.argv.slice(2);
+  if (a[0] === '--identity') {
+    const at = a.indexOf('--artifact');
+    console.log(JSON.stringify(buildIdentity(a[1] ?? 'debug', { artifact: at >= 0 ? a[at + 1] : undefined }), null, 2));
+  } else console.log(JSON.stringify(buildInfo(), null, 2));
 }

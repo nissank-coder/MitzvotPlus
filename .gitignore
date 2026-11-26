@@ -8,6 +8,7 @@ dist/
 .vite/
 coverage/
 reports/
+dist-staging/
 dist-design/
 dist-r11/
 dist-r11-demo/
