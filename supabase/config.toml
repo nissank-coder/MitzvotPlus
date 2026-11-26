@@ -12,6 +12,9 @@ jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
 enable_signup = true
+# Round 13: the only addresses a social sign-in may return to – the app's own link and the local
+# web page. Anything else falls back to site_url (never a foreign site).
+additional_redirect_urls = ["mitzvotplus://auth/callback", "http://localhost:3000/?auth=callback"]
 
 [auth.email]
 enable_signup = true
@@ -38,3 +41,17 @@ content_path = "./supabase/templates/confirmation.html"
 schemas = ["public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 500
+
+# Round 13: Google / Apple next to guest use – OFF until the owner configures the providers.
+# Client secrets are never in this file or the app: env() reads them from the CLI's environment
+# (local) or they are entered in the hosted project's dashboard (staging).
+[auth.external.google]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+skip_nonce_check = false
+
+[auth.external.apple]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_APPLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"

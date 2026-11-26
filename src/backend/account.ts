@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { BackupState, RemoteEvent, SyncError, SyncErrorCode, SyncRemote } from '../sync/engine';
 import type { GoalWire } from '../sync/goals';
+import type { OAuthProvider } from './oauth';
 import type { EventReceipt } from '../sync/outbox';
 
 /**
@@ -49,6 +50,24 @@ export function accountApi(sb: SupabaseClient) {
       // A wrong, used or expired code (the server does not say which): ask for a new one.
       if (error && (error as { status?: number }).status === 403) throw new SyncError('not_authenticated', 'code_invalid_or_expired');
       if (error || !data.user) throw new SyncError(errorCode(error), error?.message ?? 'no user');
+      return { id: data.user.id, email: data.user.email ?? null };
+    },
+    /**
+     * Round 13: the provider's sign-in page (Google / Apple), to open in the system browser. The
+     * PKCE verifier is kept by supabase-js in the secure store until the code comes back.
+     */
+    async startOAuth(provider: OAuthProvider, redirectTo: string): Promise<string> {
+      const { data, error } = await sb.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo, skipBrowserRedirect: true, ...(provider === 'google' ? { queryParams: { prompt: 'select_account' } } : {}) },
+      });
+      if (error || !data?.url) throw new SyncError(errorCode(error), error?.message ?? 'no_url');
+      return data.url;
+    },
+    /** Round 13: the code from the return link → a session. A code this app did not ask for fails. */
+    async finishOAuth(code: string): Promise<AccountUser> {
+      const { data, error } = await sb.auth.exchangeCodeForSession(code);
+      if (error || !data.user) throw new SyncError('not_authenticated', 'oauth_failed');
       return { id: data.user.id, email: data.user.email ?? null };
     },
     /**

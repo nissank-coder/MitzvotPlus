@@ -8,6 +8,7 @@ import { createFreshState, reducer } from '../store/state';
 import { scoreLogs } from '../lib/metrics';
 import { syncNow, SyncStatus } from '../sync/engine';
 import { goalWireOf } from '../sync/goals';
+import { NATIVE_AUTH_CALLBACK, parseAuthCallback } from '../backend/oauth';
 import type { AppState } from '../types';
 // @ts-expect-error – plain .mjs test server
 import { prepareDatabase, startGateway } from '../../scripts/gateway/local-supabase.mjs';
@@ -45,7 +46,8 @@ const memoryAuthStorage = () => {
   const m = new Map<string, string>();
   return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k) };
 };
-const client = () => createClient(gw.url, gw.anonKey, { auth: { storage: memoryAuthStorage(), persistSession: true, autoRefreshToken: false, detectSessionInUrl: false } });
+// The app's auth settings (src/backend/supabase.ts): PKCE, no session from a URL.
+const client = () => createClient(gw.url, gw.anonKey, { auth: { storage: memoryAuthStorage(), persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, flowType: 'pkce' } });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** A phone: its own SQLite, its own Supabase session, the app's engine. */
@@ -402,5 +404,69 @@ describe('round 13: blessing goals on two phones (review B2)', () => {
     expect(await one.sync()).toMatchObject({ state: 'ok' });
     expect((await serverGoals(one.userId)).at(-1)).toBe('2099-04-01:90');
     expect(goalWireOf(one.state.goalHistory).at(-1)).toMatchObject({ from: '2099-04-01', blessingGoal: 90 });
+  });
+});
+
+describe('round 13: sign-in with Google / Apple next to guest use (PKCE through the real supabase-js; review §6)', () => {
+  /** The system browser: follows the provider page to the return link (no redirect is followed further). */
+  const browse = async (url: string) => {
+    const r = await fetch(url, { redirect: 'manual' });
+    return r.headers.get('location') ?? '';
+  };
+
+  it('Google: the provider page returns to mitzvotplus://auth/callback with a code; the app exchanges it and gets its own data space', async () => {
+    const phone = new Phone();
+    gw.setProviderIdentity({ email: 'oauth-google@test.invalid' });
+    const start = await phone.api.startOAuth('google', NATIVE_AUTH_CALLBACK);
+    expect(start).toMatch(/\/auth\/v1\/authorize\?provider=google/);
+    expect(start).toMatch(/code_challenge=/);
+    const back = await browse(start);
+    const cb = parseAuthCallback(back);
+    expect(cb?.kind).toBe('code');
+    const user = await phone.api.finishOAuth((cb as { code: string }).code);
+    expect(user.email).toBe('oauth-google@test.invalid');
+    expect((await phone.api.currentUser())?.id).toBe(user.id);
+    // The same server rules as with the e-mail code: consent starts off, nothing is sent.
+    expect(await phone.api.consent()).toEqual({ cloudBackup: false, social: false });
+  });
+
+  it('cancelled at the provider: the app gets an error, no session; the user stays a guest', async () => {
+    const phone = new Phone();
+    gw.setProviderIdentity({ cancel: true });
+    const back = await browse(await phone.api.startOAuth('apple', NATIVE_AUTH_CALLBACK));
+    expect(parseAuthCallback(back)).toMatchObject({ kind: 'error', error: 'access_denied' });
+    expect(await phone.api.currentUser()).toBeNull();
+  });
+
+  it('a code this app did not ask for (a crafted link, or another phone\'s) cannot be exchanged', async () => {
+    const victim = new Phone();
+    const attacker = new Phone();
+    gw.setProviderIdentity({ email: 'oauth-attacker@test.invalid' });
+    const back = await browse(await attacker.api.startOAuth('google', NATIVE_AUTH_CALLBACK));
+    const code = (parseAuthCallback(back) as { code: string }).code;
+    await victim.api.startOAuth('google', NATIVE_AUTH_CALLBACK); // the victim has its own verifier
+    await expect(victim.api.finishOAuth(code)).rejects.toThrow();
+    expect(await victim.api.currentUser()).toBeNull();
+  });
+
+  it('a return address that is not allowed is not honoured (the provider falls back to the site address)', async () => {
+    const phone = new Phone();
+    gw.setProviderIdentity({ email: 'oauth-google@test.invalid' });
+    const back = await browse(await phone.api.startOAuth('google', 'https://evil.example/steal'));
+    expect(back.startsWith('https://evil.example')).toBe(false);
+  });
+
+  it('sign-out after a Google sign-in, then Apple with another account: separate data on the phone', async () => {
+    const phone = new Phone();
+    gw.setProviderIdentity({ email: 'oauth-one@test.invalid' });
+    const one = await phone.api.finishOAuth((parseAuthCallback(await browse(await phone.api.startOAuth('google', NATIVE_AUTH_CALLBACK))) as { code: string }).code);
+    phone.storage = (await phone.spaces.open(userSpace(one.id))) as SqlStateStorage;
+    await phone.act('shacharit');
+    expect(await phone.api.signOut()).toEqual({ serverRevoked: true });
+    gw.setProviderIdentity({ email: 'oauth-two@test.invalid' });
+    const two = await phone.api.finishOAuth((parseAuthCallback(await browse(await phone.api.startOAuth('apple', NATIVE_AUTH_CALLBACK))) as { code: string }).code);
+    expect(two.id).not.toBe(one.id);
+    expect(await phone.spaces.count(userSpace(two.id))).toBe(0);
+    expect(await phone.spaces.count(userSpace(one.id))).toBe(1);
   });
 });

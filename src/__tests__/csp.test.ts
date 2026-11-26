@@ -18,5 +18,8 @@ describe('round 12.5 – CSP per environment', () => {
     expect(() => backendOrigin({ VITE_BACKEND_ENV: 'staging', VITE_SUPABASE_URL: 'http://abcd.example.com', VITE_SUPABASE_ANON_KEY: 'k' })).toThrow(/https/);
     expect(backendOrigin({ VITE_BACKEND_ENV: 'development', VITE_SUPABASE_URL: 'http://127.0.0.1:54321', VITE_SUPABASE_ANON_KEY: 'k' })).toBe('http://127.0.0.1:54321');
     expect(() => backendOrigin({ VITE_BACKEND_ENV: 'development', VITE_SUPABASE_URL: 'http://evil.example.com', VITE_SUPABASE_ANON_KEY: 'k' })).toThrow();
+    // Round 13: the publishable key (newer Supabase projects) is the same public key under its new name.
+    expect(backendOrigin({ VITE_BACKEND_ENV: 'staging', VITE_SUPABASE_URL: 'https://abcd.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_x' })).toBe('https://abcd.supabase.co');
+    expect(() => backendOrigin({ VITE_BACKEND_ENV: 'staging', VITE_SUPABASE_URL: 'https://abcd.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_x' })).toThrow(/secret/);
   });
 });
