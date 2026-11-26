@@ -4,7 +4,11 @@
 // With --demo: an internal build (VITE_DEMO_CONTENT=true) for screens that need content that does not
 // exist in production yet (the marked TEST_ONLY Dvar Torah) – written to a separate, labelled folder.
 // The browser storage is seeded with synthetic states made by the app's own reducer; each scenario
-// is captured at 360/390/430 px. Checks: no horizontal scrolling, no console error, targets < 44px.
+// is captured at 360/390/430 px. Checks (each one FAILS the run): horizontal scrolling, a console
+// error, a tap target under 44px.
+// Round 13 (review §5): the evidence of the layout is the VIEWPORT capture, taken without any CSS
+// change (the fixed bottom bar where it really is). The full-page capture (bottom bar moved to the
+// end so it does not freeze mid-page) is a review aid only, taken at 390 and named "-full-review".
 //   node scripts/design/shots.mjs [--demo] [--only 08,09] [--out dir] [--widths 360,390,430]
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -20,7 +24,7 @@ const { createFreshState, reducer } = require('../../src/store/state.ts');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
 const DEMO = process.argv.includes('--demo');
-const OUT = args.out ?? (DEMO ? 'docs/design/round-1.1/shots-internal-build' : 'docs/design/round-1.1/shots');
+const OUT = args.out ?? (DEMO ? 'docs/design/round-13/shots-internal-build' : 'docs/design/round-13/shots');
 const WIDTHS = (args.widths ?? '360,390,430').split(',').map(Number);
 const NOW = new Date('2026-11-24T18:30:00+02:00').getTime(); // Tuesday evening, Jerusalem
 const PORT = 4176;
@@ -49,7 +53,7 @@ if (!DEMO) {
     process.exit(1);
   }
 }
-const preview = spawn('npx', ['vite', 'preview', '--outDir', DIST, '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
+const preview = spawn('npx', ['vite', 'preview', '--outDir', DIST, '--port', String(PORT), '--strictPort'], { stdio: 'ignore', detached: true });
 const url = `http://localhost:${PORT}`;
 for (let i = 0; i < 80; i += 1) {
   try {
@@ -100,6 +104,19 @@ const withBlessings = (n) => {
 const SUNDAY = new Date('2026-11-29T10:00:00+02:00').getTime(); // the Sunday after Shabbat 28.11
 const sundayWithShacharit = () => add(base(), 'shacharit', new Date('2026-11-29T08:00:00+02:00').getTime());
 const ninetyNine = () => withBlessings(99);
+const complete = () => {
+  let s = base();
+  s = add(s, 'shacharit', at(7, 10), { minyan: true });
+  s = add(s, 'mincha', at(13, 40));
+  s = add(s, 'arvit', at(18, 10));
+  return add(s, 'torahStudy', at(16, 5));
+};
+const SHABBAT = new Date('2026-11-28T13:00:00+02:00').getTime();
+const shabbatHabits = () =>
+  reducer(createFreshState(NOW - 9 * 86400000), {
+    type: 'completeOnboarding',
+    payload: { userName: 'דניאל', dailyGoal: 5, profile: { gender: 'male', cityId: 'jerusalem' }, dateKey: '2026-11-15', habits: [{ id: 'learn-daily', perWeek: 7 }, { id: 'tefillin', perWeek: 7 }, { id: 'gratitude', perWeek: 3 }] },
+  });
 const speechStarted = () => ({ ...base(), speech: { since: NOW - (3 * 86400000 + 4 * 3600000 + 12 * 60000), bestMs: 9 * 86400000, resets: 2, completedMs: 14 * 86400000, undo: null } });
 
 /* ----------------------------------- scenarios ----------------------------------- */
@@ -129,6 +146,15 @@ const SCENARIOS = [
   { name: '19-shabbat-sheet', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await settle(p); }, viewportOnly: true },
   { name: '20-shabbat-recorded-toast', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await p.locator('[role=dialog] [role=checkbox]').first().click(); await p.locator('[role=dialog] button', { hasText: 'שמירה' }).click(); await settle(p, 900); }, viewportOnly: true },
   { name: '21-blessing-goal-from-home', state: ninetyNine, go: async (p) => { await p.locator('[aria-label^="+ ברכה"]').first().click(); await settle(p, 900); }, viewportOnly: true },
+  // Round 13: completion, undo, the minyan choice from a habit, every entry reachable, the habit
+  // editor on Shabbat, the learning screen of production, the prayer-times screen.
+  { name: '22-home-complete', state: complete, go: async () => {} },
+  { name: '23-undo-after-record', state: fresh, go: async (p) => { await p.locator('[aria-label^="+ ברכה"]').first().click(); await settle(p, 900); await p.locator('[role=status] button[aria-label^="ביטול"]').click(); await settle(p, 600); } },
+  { name: '24-minyan-from-habit', state: fresh, go: async (p) => { await p.click('[aria-label="רישום תפילה: שלוש תפילות"]'); await p.locator('[role=dialog] button', { hasText: 'מנחה' }).click(); await settle(p); }, viewportOnly: true },
+  { name: '25-home-all-today', state: active, go: async (p) => { await p.locator('[aria-label="נרשם היום"] button', { hasText: /הצגת כל/ }).click(); await settle(p); } },
+  { name: '26-habit-editor-shabbat', state: shabbatHabits, now: SHABBAT, go: async (p) => { await p.locator('[aria-label="ההרגלים שלי"] button', { hasText: 'שינוי' }).click(); await settle(p); }, viewportOnly: true },
+  { name: '27-learning', state: active, go: async (p) => { await p.click('[aria-label^="לימוד יומי"]'); await settle(p); } },
+  { name: '28-prayer-times', state: fresh, go: async (p) => { await p.locator('button', { hasText: 'זמנים, סידור ומצוות היום לפי הלוח' }).click(); await p.locator('button', { hasText: 'זמני תפילה' }).click(); await settle(p); } },
 ].filter((sc) => (DEMO || !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
 
 const browser = await chromium.launch();
@@ -164,19 +190,24 @@ for (const width of WIDTHS) {
         })
         .map((el) => (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 24)),
     );
-    // A full-page capture would freeze the sticky bottom bar in mid-page: place it at the end.
-    if (!sc.viewportOnly) await p.addStyleTag({ content: 'nav[aria-label="ניווט ראשי"]{position:static !important}' });
-    const file = path.join(OUT, `${sc.name}-${width}.jpg`);
-    await p.screenshot({ path: file, fullPage: !sc.viewportOnly, type: 'jpeg', quality: 82 });
+    // The evidence: what the phone shows, without any CSS change.
+    await p.screenshot({ path: path.join(OUT, `${sc.name}-${width}.jpg`), type: 'jpeg', quality: 82 });
+    // A review aid: the whole page, with the fixed bottom bar moved to the end (a CSS change –
+    // not evidence of the bar's layout on a device).
+    if (!sc.viewportOnly && width === 390) {
+      await p.addStyleTag({ content: 'nav[aria-label="ניווט ראשי"]{position:static !important}' });
+      await p.screenshot({ path: path.join(OUT, `${sc.name}-${width}-full-review.jpg`), fullPage: true, type: 'jpeg', quality: 72 });
+    }
     report.push({ scenario: sc.name, width, overflowPx: overflow, smallTargets: small, consoleErrors: errors });
     if (overflow > 0) failures.push(`${sc.name}@${width}: horizontal overflow ${overflow}px`);
     if (errors.length) failures.push(`${sc.name}@${width}: console ${errors.join(' | ')}`);
+    if (small.length) failures.push(`${sc.name}@${width}: tap targets under 44px: ${small.join(', ')}`);
     await ctx.close();
   }
 }
 
 // Larger text: the page zoomed to 130 % (an approximation of the system text size on a phone).
-for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', '06-blessings-partial', '08-torah-reading', '11-speech-running', '18-home-partial-progress'].includes(s.name))) {
+for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', '06-blessings-partial', '08-torah-reading', '11-speech-running', '18-home-partial-progress', '22-home-complete', '27-learning'].includes(s.name))) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, timezoneId: 'Asia/Jerusalem', locale: 'he-IL', reducedMotion: 'reduce' });
   const p = await ctx.newPage();
   await p.addInitScript({ path: 'scripts/e2e/fakedate.js' });
@@ -198,7 +229,9 @@ for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', 
 }
 
 await browser.close();
-preview.kill();
+try {
+  process.kill(-preview.pid);
+} catch {}
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.writeFileSync(path.join(OUT, '..', DEMO ? 'layout-report-internal-build.json' : 'layout-report.json'), JSON.stringify({ build: DEMO ? 'internal (VITE_DEMO_CONTENT=true)' : 'production', commit: buildEnv.VITE_BUILD_COMMIT, captures: report }, null, 2));
 console.log(`Design shots (${DEMO ? 'internal build' : 'production build'}, ${buildEnv.VITE_BUILD_COMMIT.slice(0, 7)}): ${report.length} captures, ${failures.length} problems`);

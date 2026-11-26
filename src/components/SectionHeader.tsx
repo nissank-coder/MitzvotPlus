@@ -13,20 +13,18 @@ type Props = {
 export function SectionHeader({ title, icon, actionLabel, onAction }: Props) {
   return (
     <div className="flex flex-row items-center justify-between mb-3">
-      {actionLabel ? (
-        <button
-          type="button"
-          onClick={onAction}
-          disabled={!onAction}
-          className={`flex flex-row items-center gap-0.5 bg-transparent border-0 p-0 ${
-            onAction ? 'hover:opacity-80' : 'cursor-default'
-          }`}
-        >
-          {onAction ? <AppIcon name="chevronLeft" size={16} color={colors.primary} /> : null}
+      {/* A label without an action is text, not a (disabled) button; an action is a 44px target. */}
+      {actionLabel && onAction ? (
+        <button type="button" onClick={onAction} className="min-h-[44px] flex flex-row items-center gap-0.5 bg-transparent border-0 px-1 hover:opacity-80">
+          <AppIcon name="chevronLeft" size={16} color={colors.primary} />
           <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-bold">
             {actionLabel}
           </span>
         </button>
+      ) : actionLabel ? (
+        <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-bold">
+          {actionLabel}
+        </span>
       ) : (
         <div />
       )}

@@ -82,7 +82,7 @@ export function HabitPicker({
                             role="radio"
                             aria-checked={sel.perWeek === f.value}
                             onClick={() => setFreq(h.id, f.value)}
-                            className={`flex-1 min-h-[40px] rounded-[12px] text-[12px] font-extrabold border ${
+                            className={`flex-1 min-h-[44px] rounded-[12px] text-[12px] font-extrabold border ${
                               sel.perWeek === f.value ? 'bg-[#17324D] text-white border-[#17324D]' : 'bg-white text-[#17324D] border-[#DDE8EE]'
                             }`}
                           >

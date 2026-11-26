@@ -31,7 +31,7 @@ export function AppHeader({ onProfilePress }: { onProfilePress?: () => void }) {
       <button
         type="button"
         onClick={onProfilePress}
-        className="flex-1 flex flex-row items-center justify-end text-right bg-transparent border-0 p-0"
+        className="flex-1 min-h-[44px] flex flex-row items-center justify-end text-right bg-transparent border-0 p-0"
       >
         <div className="flex flex-col items-end mr-2">
           <span dir="rtl" className="text-[#17324D] text-[13px] font-extrabold leading-tight">

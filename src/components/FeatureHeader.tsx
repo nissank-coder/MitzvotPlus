@@ -17,7 +17,7 @@ export function FeatureHeader({ title, subtitle, icon, onBack }: Props) {
         type="button"
         onClick={onBack}
         aria-label="חזרה"
-        className="w-[42px] h-[42px] rounded-full flex items-center justify-center bg-white border border-[#DDE8EE] hover:bg-[#EAF4FB] transition-colors shrink-0"
+        className="w-11 h-11 rounded-full flex items-center justify-center bg-white border border-[#DDE8EE] hover:bg-[#EAF4FB] transition-colors shrink-0"
       >
         <AppIcon name="chevronRight" size={21} color={colors.primary} />
       </button>
