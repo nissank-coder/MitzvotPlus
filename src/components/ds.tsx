@@ -61,7 +61,7 @@ export function Ring({ value, max, size = 120, stroke = 12, onBrand = false, chi
 }
 
 /** Horizontal progress bar with an accessible value; the number is always shown next to it. */
-export function Meter({ value, max, onBrand = false, label, className = '' }: { value: number; max: number; onBrand?: boolean; label: string; className?: string }) {
+export function Meter({ value, max, onBrand = false, label, className = '', thin = false }: { value: number; max: number; onBrand?: boolean; label: string; className?: string; thin?: boolean }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div
@@ -70,7 +70,7 @@ export function Meter({ value, max, onBrand = false, label, className = '' }: { 
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={`h-2.5 rounded-full overflow-hidden ${onBrand ? 'bg-white/15' : 'bg-track'} ${className}`}
+      className={`${thin ? 'h-1.5' : 'h-2.5'} rounded-full overflow-hidden ${onBrand ? 'bg-white/15' : 'bg-track'} ${className}`}
     >
       <div className={`h-full rounded-full transition-[width] duration-500 ${onBrand ? 'bg-lime' : 'bg-lime-deep'}`} style={{ width: `${pct}%` }} />
     </div>
@@ -150,6 +150,28 @@ export function CheckMark({ done, size = 28 }: { done: boolean; size?: number })
       style={{ width: size, height: size }}
     >
       {done ? <AppIcon name="check" size={Math.round(size * 0.55)} color={ds.ink} strokeWidth={3} /> : null}
+    </span>
+  );
+}
+
+/**
+ * Progress of one habit (round 1.1): a lime check when done; for a habit that needs several entries
+ * (three prayers, 20 blessings) a small ring with its partial progress; an open circle otherwise.
+ */
+export function HabitMark({ title, value, needed, done }: { title: string; value: number; needed: number; done: boolean }) {
+  const label = needed > 1 ? `${title}: ${Math.min(value, needed)} מתוך ${needed}` : `${title}: ${done ? 'בוצע' : 'עוד לא נרשם'}`;
+  if (done || needed <= 1) {
+    return (
+      <span role="img" aria-label={label} className="shrink-0">
+        <CheckMark done={done} />
+      </span>
+    );
+  }
+  return (
+    <span role="img" aria-label={label} className="shrink-0">
+      <Ring value={value} max={needed} size={30} stroke={4}>
+        <span className="num text-[11px] font-extrabold text-ink leading-none">{Math.min(value, needed)}</span>
+      </Ring>
     </span>
   );
 }

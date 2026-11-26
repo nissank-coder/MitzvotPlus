@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Button, Num, Ring, ScreenHeader, SectionTitle, Surface } from '../components/ds';
@@ -41,7 +41,7 @@ const TRADITION = 100;
  * list – the same removal as everywhere (Home is updated from the same log).
  */
 export function BlessingsScreen({ onBack }: Props) {
-  const { state, derived, addBlessing, removeLog, isLogSaved, saveStatus } = useAppStore();
+  const { state, derived, addBlessing, removeLog } = useAppStore();
   const total = derived.blessingTotal;
   const goal = state.blessingGoal;
   const [period, setPeriod] = useState<Period>('all');
@@ -51,27 +51,11 @@ export function BlessingsScreen({ onBack }: Props) {
 
   const shown = useMemo(() => derived.todayBlessings.filter((log) => inPeriod(log.createdAt, period)), [derived.todayBlessings, period]);
 
-  // The goal message appears once the blessing that reached the goal is stored on the device
-  // (never for an entry that failed to save), once per day, inline – it does not block anything.
-  const [celebrate, setCelebrate] = useState(false);
-  const [reached, setReached] = useState(false);
-  const celebratedDay = useRef<string | null>(null);
-  useEffect(() => {
-    if (!celebrate || !latest || total < goal) return;
-    if (celebratedDay.current === derived.todayKey) return;
-    if (!isLogSaved(latest.id)) return;
-    celebratedDay.current = derived.todayKey;
-    setCelebrate(false);
-    setReached(true);
-    const t = window.setTimeout(() => setReached(false), 6000);
-    return () => window.clearTimeout(t);
-  }, [celebrate, latest, total, goal, derived.todayKey, isLogSaved, saveStatus]);
-
-  const add = (category: BlessingCategory) => {
-    // No cap at the goal: every additional blessing is still counted.
-    addBlessing(category);
-    if (total + 1 === goal) setCelebrate(true);
-  };
+  // The goal message is the shared toast (store/feedback.ts): shown once the blessing that reached
+  // the goal is saved, from ANY screen (Home, the add sheet, here), and it goes away by itself.
+  // Round 1 kept its own inline message here, which never disappeared (R2) and was missed when the
+  // goal was reached elsewhere or with fast taps (R3).
+  const add = (category: BlessingCategory) => addBlessing(category); // no cap: every blessing counts
 
   return (
     <div dir="rtl" className="flex-1 bg-canvas px-4 pb-10 pt-3 flex flex-col gap-4">
@@ -105,7 +89,6 @@ export function BlessingsScreen({ onBack }: Props) {
           <span className="text-[13px] text-on-brand-muted">
             היעד האישי: <Num>{goal}</Num> ברכות ביום{goal !== TRADITION ? ` · המנהג: ${TRADITION} ברכות` : ''}
           </span>
-          {reached ? <span className="text-[15px] font-extrabold text-lime mt-1">השלמת את היעד היומי. יישר כוח!</span> : null}
         </div>
         <div className="w-full flex flex-col gap-1">
           <Button variant="lime" size="lg" icon="plus" className="w-full" onClick={() => add('other')} aria-label="+ ברכה – רישום ברכה אחת">

@@ -1,0 +1,10 @@
+Round 1.1: 1 passed, 8 failed
+  PASS R2: reaching the goal on the blessings screen shows the message
+  FAIL R5: every control of the Shabbat sheet (opened from Home) is at least 44px – קידוש, שלוש סעודות 1, שלוש סעודות 2, שלוש סעודות 3, שחרית, מוסף
+  FAIL R1: the toast after a Shabbat entry does not name an unrelated entry of today – נרשם: שחרית 0/2 הרגלים היום ביטול
+  FAIL R1: "ביטול" never removes an entry other than the one just recorded
+  FAIL R2: the message disappears by itself (no permanent banner)
+  FAIL R3: the 100th blessing from Home announces the goal – הישג חדש: מאה ברכות יום אחד עם 100 ברכות שנרשמו
+  FAIL P1: the toast reports partial progress of the habit – נרשם: מנחה 0/2 הרגלים היום ביטול
+  FAIL P1: the habit row shows its partial progress (1 of 3)
+  FAIL R4: general learning does not mark the Dvar Torah as read – דבר תורה: נלמד היום

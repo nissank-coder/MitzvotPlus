@@ -1,9 +1,11 @@
-// Design round 1 – screenshots and layout checks of the RUNNING app (not a mock-up).
-// Builds an internal demo build (VITE_DEMO_CONTENT=true: the Dvar Torah placeholder is the marked
-// TEST_ONLY item – no approved content exists yet), serves it, seeds the browser storage with
-// synthetic states made by the app's own reducer, and captures each scenario at 360/390/430 px.
-// Checks on every capture: no horizontal scrolling, no console error, small touch targets listed.
-//   node scripts/design/shots.mjs [--out docs/design/round-1/shots] [--widths 360,390,430]
+// Screenshots and layout checks of the RUNNING app (not a mock-up).
+// Round 1.1: by default a PRODUCTION build – exactly what ships: no Dvar Torah (no approved content),
+// no community tab, no drafts; the build is checked for leaked internal content before any capture.
+// With --demo: an internal build (VITE_DEMO_CONTENT=true) for screens that need content that does not
+// exist in production yet (the marked TEST_ONLY Dvar Torah) – written to a separate, labelled folder.
+// The browser storage is seeded with synthetic states made by the app's own reducer; each scenario
+// is captured at 360/390/430 px. Checks: no horizontal scrolling, no console error, targets < 44px.
+//   node scripts/design/shots.mjs [--demo] [--only 08,09] [--out dir] [--widths 360,390,430]
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
@@ -17,17 +19,35 @@ require.extensions['.ts'] = (m, f) =>
 const { createFreshState, reducer } = require('../../src/store/state.ts');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const OUT = args.out ?? 'docs/design/round-1/shots';
+const DEMO = process.argv.includes('--demo');
+const OUT = args.out ?? (DEMO ? 'docs/design/round-1.1/shots-internal-build' : 'docs/design/round-1.1/shots');
 const WIDTHS = (args.widths ?? '360,390,430').split(',').map(Number);
 const NOW = new Date('2026-11-24T18:30:00+02:00').getTime(); // Tuesday evening, Jerusalem
 const PORT = 4176;
 const DIST = 'dist-design';
 fs.mkdirSync(OUT, { recursive: true });
 
-const build = spawnSync('npx', ['vite', 'build', '--outDir', DIST, '--emptyOutDir'], { env: { ...process.env, VITE_DEMO_CONTENT: 'true' }, encoding: 'utf8' });
+const buildEnv = { ...process.env, VITE_BUILD_COMMIT: process.env.VITE_BUILD_COMMIT ?? spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim() };
+if (DEMO) buildEnv.VITE_DEMO_CONTENT = 'true';
+else delete buildEnv.VITE_DEMO_CONTENT;
+const build = spawnSync('npx', ['vite', 'build', '--outDir', DIST, '--emptyOutDir'], { env: buildEnv, encoding: 'utf8' });
 if (build.status !== 0) {
   console.log(build.stdout, build.stderr);
   process.exit(1);
+}
+// A production capture must show the production app: refuse if internal content leaked into it.
+if (!DEMO) {
+  const leaked = [];
+  const walk = (d) => fs.readdirSync(d).forEach((f) => {
+    const full = path.join(d, f);
+    if (fs.statSync(full).isDirectory()) return walk(full);
+    if (/\.(js|html)$/.test(f) && /TEST-ONLY-NOT-FOR-DISTRIBUTION|DRAFT-NOT-APPROVED|נועם לוי/.test(fs.readFileSync(full, 'utf8'))) leaked.push(full);
+  });
+  walk(DIST);
+  if (leaked.length) {
+    console.log(`Not a production build – internal content in: ${leaked.join(', ')}`);
+    process.exit(1);
+  }
 }
 const preview = spawn('npx', ['vite', 'preview', '--outDir', DIST, '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
 const url = `http://localhost:${PORT}`;
@@ -77,6 +97,9 @@ const withBlessings = (n) => {
   for (let i = 0; i < n; i += 1) s = reducer(s, { type: 'addAction', payload: { key: 'blessing', category: 'other', now: at(6, 30) + i * 6 * 60000, dateKey: '2026-11-24' } });
   return s;
 };
+const SUNDAY = new Date('2026-11-29T10:00:00+02:00').getTime(); // the Sunday after Shabbat 28.11
+const sundayWithShacharit = () => add(base(), 'shacharit', new Date('2026-11-29T08:00:00+02:00').getTime());
+const ninetyNine = () => withBlessings(99);
 const speechStarted = () => ({ ...base(), speech: { since: NOW - (3 * 86400000 + 4 * 3600000 + 12 * 60000), bestMs: 9 * 86400000, resets: 2, completedMs: 14 * 86400000, undo: null } });
 
 /* ----------------------------------- scenarios ----------------------------------- */
@@ -90,8 +113,8 @@ const SCENARIOS = [
   { name: '05-blessings-zero', state: fresh, go: async (p) => { await p.click('[aria-label^="100 ברכות"]'); await settle(p); } },
   { name: '06-blessings-partial', state: active, go: async (p) => { await p.click('[aria-label^="100 ברכות"]'); await settle(p); } },
   { name: '07-blessings-goal', state: () => withBlessings(104), go: async (p) => { await p.click('[aria-label^="100 ברכות"]'); await settle(p); } },
-  { name: '08-torah-reading', state: fresh, go: async (p) => { await p.click('[aria-label^="דבר תורה"]'); await settle(p); } },
-  { name: '09-torah-recorded', state: fresh, go: async (p) => { await p.click('[aria-label^="דבר תורה"]'); await p.click('text=למדתי – לרשום לימוד'); await settle(p, 900); } },
+  { name: '08-torah-reading', demoOnly: true, state: fresh, go: async (p) => { await p.click('[aria-label^="דבר תורה"]'); await settle(p); } },
+  { name: '09-torah-recorded', demoOnly: true, state: fresh, go: async (p) => { await p.click('[aria-label^="דבר תורה"]'); await p.click('text=למדתי – לרשום לימוד'); await settle(p, 900); } },
   { name: '10-speech-first', state: fresh, go: async (p) => { await p.click('[aria-label^="שמירת הלשון"]'); await settle(p); } },
   { name: '11-speech-running', state: speechStarted, go: async (p) => { await p.click('[aria-label^="שמירת הלשון"]'); await settle(p); } },
   { name: '12-speech-reset-confirm', state: speechStarted, go: async (p) => { await p.click('[aria-label^="שמירת הלשון"]'); await p.click('text=רישום מעידה ואיפוס'); await settle(p); }, viewportOnly: true },
@@ -100,7 +123,13 @@ const SCENARIOS = [
   { name: '14-record-before', state: fresh, go: async () => {} },
   { name: '15-record-toast', state: fresh, go: async (p) => { await p.click('[aria-label="הוספת פעולה"]'); await p.locator('[role=dialog] button', { hasText: 'שחרית' }).click(); await p.locator('[role=dialog] button', { hasText: 'שחרית במניין' }).click(); await settle(p, 900); }, viewportOnly: true },
   { name: '16-record-after', state: fresh, go: async (p) => { await p.click('[aria-label="הוספת פעולה"]'); await p.locator('[role=dialog] button', { hasText: 'שחרית' }).click(); await p.locator('[role=dialog] button', { hasText: 'שחרית במניין' }).click(); await settle(p, 900); await p.locator('[role=status] button', { hasText: 'סגירה' }).click().catch(() => {}); await p.click('[aria-label="סגירה"]').catch(() => {}); await settle(p); } },
-];
+  // Round 1.1: partial progress, the Shabbat sheet and the blessing goal reached from Home.
+  { name: '17-partial-progress-toast', state: fresh, go: async (p) => { await p.click('[aria-label="רשמתי: שלוש תפילות"]'); await p.locator('[role=dialog] button', { hasText: 'מנחה' }).click(); await settle(p, 900); }, viewportOnly: true },
+  { name: '18-home-partial-progress', state: () => add(base(), 'mincha', at(13, 40)), go: async () => {} },
+  { name: '19-shabbat-sheet', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await settle(p); }, viewportOnly: true },
+  { name: '20-shabbat-recorded-toast', state: sundayWithShacharit, now: SUNDAY, go: async (p) => { await p.click('text=/שבוע טוב/'); await p.locator('[role=dialog] [role=checkbox]').first().click(); await p.locator('[role=dialog] button', { hasText: 'שמירה' }).click(); await settle(p, 900); }, viewportOnly: true },
+  { name: '21-blessing-goal-from-home', state: ninetyNine, go: async (p) => { await p.locator('[aria-label^="+ ברכה"]').first().click(); await settle(p, 900); }, viewportOnly: true },
+].filter((sc) => (DEMO || !sc.demoOnly) && (!args.only || args.only.split(',').some((pre) => sc.name.startsWith(pre))));
 
 const browser = await chromium.launch();
 const report = [];
@@ -118,7 +147,7 @@ for (const width of WIDTHS) {
       localStorage.clear();
       localStorage.setItem('__fakeNow', String(n));
       localStorage.setItem('mitzvot_plus_state_v1', JSON.stringify(s));
-    }, [NOW, sc.state()]);
+    }, [sc.now ?? NOW, sc.state()]);
     await p.reload();
     await settle(p, 700);
     try {
@@ -147,7 +176,7 @@ for (const width of WIDTHS) {
 }
 
 // Larger text: the page zoomed to 130 % (an approximation of the system text size on a phone).
-for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', '06-blessings-partial', '08-torah-reading', '11-speech-running'].includes(s.name))) {
+for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', '06-blessings-partial', '08-torah-reading', '11-speech-running', '18-home-partial-progress'].includes(s.name))) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, timezoneId: 'Asia/Jerusalem', locale: 'he-IL', reducedMotion: 'reduce' });
   const p = await ctx.newPage();
   await p.addInitScript({ path: 'scripts/e2e/fakedate.js' });
@@ -171,7 +200,7 @@ for (const sc of SCENARIOS.filter((s) => ['01-home-new-user', '02-home-active', 
 await browser.close();
 preview.kill();
 fs.rmSync(DIST, { recursive: true, force: true });
-fs.writeFileSync(path.join(OUT, '..', 'layout-report.json'), JSON.stringify(report, null, 2));
-console.log(`Design shots: ${report.length} captures, ${failures.length} problems`);
+fs.writeFileSync(path.join(OUT, '..', DEMO ? 'layout-report-internal-build.json' : 'layout-report.json'), JSON.stringify({ build: DEMO ? 'internal (VITE_DEMO_CONTENT=true)' : 'production', commit: buildEnv.VITE_BUILD_COMMIT, captures: report }, null, 2));
+console.log(`Design shots (${DEMO ? 'internal build' : 'production build'}, ${buildEnv.VITE_BUILD_COMMIT.slice(0, 7)}): ${report.length} captures, ${failures.length} problems`);
 for (const f of failures) console.log(`  FAIL ${f}`);
 process.exit(failures.length ? 1 : 0);

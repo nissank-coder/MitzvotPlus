@@ -1,0 +1,25 @@
+{
+  "build": "internal (VITE_DEMO_CONTENT=true)",
+  "commit": "095b1a84c20dc9149bb3b2d0e32f1d95a02a80b2",
+  "captures": [
+    {
+      "scenario": "08-torah-reading",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "09-torah-recorded",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "08-torah-reading",
+      "width": "390 @130%",
+      "overflowPx": 0
+    }
+  ]
+}

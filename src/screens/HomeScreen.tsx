@@ -3,7 +3,7 @@ import { AppIcon } from '../components/AppIcon';
 import { BackfillSheet } from '../components/BackfillSheet';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ChallengeCard, HabitEditorSheet } from '../components/gameplay';
-import { Button, CheckMark, IconBadge, Meter, Num, Ring, SectionTitle, Surface } from '../components/ds';
+import { Button, HabitMark, IconBadge, Meter, Num, Ring, SectionTitle, Surface } from '../components/ds';
 import { UnsavedMark } from '../components/SaveStatusBanner';
 import { TodayCard } from '../components/TodayCard';
 import { TodayPlanCard } from '../components/TodayPlanCard';
@@ -147,17 +147,26 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
                 <span className="text-[16px] font-extrabold truncate">
                   {nextHabit ? nextHabit.title : activeChallenge ? activeChallenge.def.title : 'אתגר קטן לשבוע'}
                 </span>
+                {nextHabit && nextHabit.needed > 1 ? (
+                  <span className="flex flex-row items-center gap-2 mt-1">
+                    <Meter value={nextHabit.value} max={nextHabit.needed} onBrand label={`הצעד הבא, ${nextHabit.title}: ${nextHabit.value} מתוך ${nextHabit.needed}`} className="flex-1 max-w-[120px]" thin />
+                    <span className="text-[12px] text-on-brand-muted">
+                      <Num>{Math.min(nextHabit.value, nextHabit.needed)}</Num> מתוך <Num>{nextHabit.needed}</Num>
+                    </span>
+                  </span>
+                ) : null}
               </span>
               <Button
                 variant="lime"
+                icon={nextHabit && nextHabit.needed > 1 ? 'plus' : undefined}
                 onClick={() => (nextHabit ? recordHabit(nextHabit.sel.id) : onOpenTracks())}
                 aria-label={nextHabit ? `הצעד הבא – רשמתי: ${nextHabit.title}` : 'בחירת אתגר'}
               >
-                {nextHabit ? 'רשמתי' : activeChallenge ? 'למסלולים' : 'בחירת אתגר'}
+                {nextHabit ? (nextHabit.needed > 1 ? 'עוד אחת' : 'רשמתי') : activeChallenge ? 'למסלולים' : 'בחירת אתגר'}
               </Button>
             </div>
           ) : null}
-          <p className="text-[12px] text-on-brand-muted">רושמים רק מה שכבר נעשה. כל רישום נשמר מיד במכשיר.</p>
+          {firstDay ? <p className="text-[12px] text-on-brand-muted">רושמים רק מה שכבר נעשה. כל רישום נשמר מיד במכשיר.</p> : null}
         </Surface>
       ) : (
         <Surface tone="brand" as="section" aria-label="היעד שלי היום" className="p-5 flex flex-col gap-3 rounded-[var(--radius-hero)]">
@@ -183,13 +192,14 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
           <ul className="flex flex-col">
             {habits.map((h) => (
               <li key={h.sel.id} className="flex flex-row items-center gap-3 min-h-[60px] border-t border-line first:border-t-0">
-                <CheckMark done={h.done} />
+                <HabitMark title={h.title} value={h.value} needed={h.needed} done={h.done} />
                 <span className="flex-1 min-w-0 flex flex-col">
                   <span className="text-[15px] font-bold text-ink">{h.title}</span>
                   <span className="text-[13px] text-ink-muted">
-                    {h.needed > 1 ? (
+                    {h.needed > 1 && !h.done ? (
                       <>
                         <Num>{Math.min(h.value, h.needed)}</Num> מתוך <Num>{h.needed}</Num>
+                        {h.value > 0 ? ` · עוד ${h.needed - h.value}` : ''}
                       </>
                     ) : h.done ? (
                       'בוצע היום'
@@ -257,10 +267,12 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
             ברכה
           </Button>
         </div>
+        {/* Round 1.1 (R4): the Dvar Torah is "done" only when the Dvar Torah itself was recorded –
+            general learning does not mark it read. Without approved content the tile is learning. */}
         <CoreTile
           title={DVAR_TORAH_AVAILABLE ? 'דבר תורה' : 'לימוד יומי'}
-          value={derived.learnedToday ? 'נלמד היום' : 'לקריאה'}
-          done={derived.learnedToday}
+          value={(DVAR_TORAH_AVAILABLE ? derived.torahCompletedToday : derived.learnedToday) ? 'נרשם היום' : 'לקריאה'}
+          done={DVAR_TORAH_AVAILABLE ? derived.torahCompletedToday : derived.learnedToday}
           icon="book"
           onPress={() => onOpenFeature(DVAR_TORAH_AVAILABLE ? 'torah' : 'learning')}
         />
@@ -290,7 +302,7 @@ export function HomeScreen({ onOpenFeature, onOpenProfile, onOpenProgress, onOpe
           })}
         </div>
         <p className="text-[13px] text-ink-muted leading-5">
-          <Num>{weekGoalDays}</Num> ימי יעד השבוע. ✓ יום שבו הושלם היעד · כחול בהיר: יש רישום · שבת וחג לא נספרים כחסרים.
+          <Num>{weekGoalDays}</Num> ימי יעד השבוע · ✓ היעד הושלם · כחול: יש רישום · שבת וחג אינם חסרים
         </p>
       </Surface>
 

@@ -5,7 +5,7 @@ import { getDayInfo } from '../lib/jewishCalendar';
 import { backfillChecklist } from '../lib/todayPlan';
 import { dateFromKey } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
-import { colors } from '../theme';
+import { ds } from '../theme';
 import { AppIcon } from './AppIcon';
 
 const FULL_SHABBAT: ActionKey[] = ['kiddush', 'shabbatMeal', 'havdalah'];
@@ -53,22 +53,22 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={onClose} role="dialog" aria-modal="true" aria-label="רישום שבת">
-      <div dir="rtl" className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow" onClick={(e) => e.stopPropagation()}>
-        <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
-        <h2 className="text-[#17324D] text-[22px] font-black">מה עשית ב{sections.length > 1 ? 'ימים הקדושים' : sections[0]?.info.isShabbat ? 'שבת' : 'חג'}?</h2>
-        <p className="text-[#718397] text-[13px] mt-1">המצוות יירשמו בתאריך שבו נעשו. שבת מלאה (קידוש, שלוש סעודות והבדלה) מזכה בבונוס.</p>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45" onClick={onClose} role="dialog" aria-modal="true" aria-label="רישום שבת">
+      <div dir="rtl" className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-surface rounded-t-[28px] px-5 pt-2 sheet-safe" onClick={(e) => e.stopPropagation()}>
+        <div aria-hidden="true" className="w-12 h-[5px] rounded-full bg-line mx-auto mb-4" />
+        <h2 className="text-ink text-[22px] font-extrabold">מה עשית ב{sections.length > 1 ? 'ימים הקדושים' : sections[0]?.info.isShabbat ? 'שבת' : 'חג'}?</h2>
+        <p className="text-ink-muted text-[14px] mt-1">המצוות יירשמו בתאריך שבו נעשו. שבת מלאה (קידוש, שלוש סעודות והבדלה) מזכה בבונוס.</p>
 
         {sections.map((section) => (
           <div key={section.dateKey} className="mt-5">
-            <p className="text-[#1B6F8F] text-[13px] font-black mb-1">{section.title}</p>
+            <p className="text-brand text-[13px] font-bold mb-1">{section.title}</p>
             {section.items.map((item) => {
               const max = item.times ?? actionDef(item.key).dailyCap ?? 1;
               const n = get(section.dateKey, item.key);
               const multi = (item.times ?? 1) > 1;
               return (
-                <div key={item.key + item.title} className="min-h-[54px] flex flex-row items-center justify-between border-b border-[#EAF0F4]">
-                  <span className="text-[#17324D] text-[15px] font-extrabold">{item.title}</span>
+                <div key={item.key + item.title} className="min-h-[56px] flex flex-row items-center justify-between gap-2 border-b border-line">
+                  <span className="text-ink text-[15px] font-bold">{item.title}</span>
                   {multi ? (
                     <div className="flex flex-row items-center gap-2">
                       {Array.from({ length: max }, (_, i) => (
@@ -78,7 +78,7 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
                           aria-label={`${item.title} ${i + 1}`}
                           aria-pressed={n > i}
                           onClick={() => set(section.dateKey, item.key, n > i ? i : i + 1)}
-                          className={`w-9 h-9 rounded-full border text-[13px] font-black ${n > i ? 'bg-[#2AAE9B] border-[#2AAE9B] text-white' : 'bg-white border-[#DDE8EE] text-[#718397]'}`}
+                          className={`w-11 h-11 rounded-full border text-[14px] font-extrabold ${n > i ? 'bg-brand border-brand text-on-brand' : 'bg-surface border-line text-ink-muted'}`}
                         >
                           {i + 1}
                         </button>
@@ -91,9 +91,9 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
                       aria-checked={n > 0}
                       aria-label={item.title}
                       onClick={() => set(section.dateKey, item.key, n > 0 ? 0 : 1)}
-                      className={`w-9 h-9 rounded-[12px] border flex items-center justify-center ${n > 0 ? 'bg-[#2AAE9B] border-[#2AAE9B]' : 'bg-white border-[#DDE8EE]'}`}
+                      className={`w-11 h-11 rounded-[14px] border-2 flex items-center justify-center ${n > 0 ? 'bg-lime border-lime' : 'bg-surface border-[#B8C4DA]'}`}
                     >
-                      {n > 0 ? <AppIcon name="check" size={18} color={colors.white} /> : null}
+                      {n > 0 ? <AppIcon name="check" size={20} color={ds.ink} strokeWidth={3} /> : null}
                     </button>
                   )}
                 </div>
@@ -102,10 +102,10 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
           </div>
         ))}
 
-        <button type="button" onClick={save} className="w-full min-h-[52px] mt-6 rounded-full bg-[#2AAE9B] text-white text-[15px] font-black hover:opacity-90">
+        <button type="button" onClick={save} className="w-full min-h-[56px] mt-6 rounded-[18px] bg-brand text-on-brand text-[16px] font-bold active:bg-brand-press">
           שמירה
         </button>
-        <button type="button" onClick={() => { backfill([], days); onClose(); }} className="w-full min-h-[44px] mt-2 rounded-full text-[#718397] text-[13px] font-bold hover:bg-[#F4F8FB]">
+        <button type="button" onClick={() => { backfill([], days); onClose(); }} className="w-full min-h-[48px] mt-2 rounded-[16px] text-ink-muted text-[14px] font-bold active:bg-canvas">
           לא עכשיו – לא להציג שוב
         </button>
       </div>

@@ -25,6 +25,7 @@ import { buildTodayPlan, PlanItem } from '../lib/todayPlan';
 import { AppSettings, AppState, BlessingCategory, HabitSelection, UserProfile } from '../types';
 import { SCORING_RULES_VERSION } from '../lib/metrics';
 import { computeDerived, Derived } from './derived';
+import { addedSince, feedbackFor, FeedbackSnapshot, snapshotOf } from './feedback';
 import { createFreshState, loadState, reducer } from './state';
 
 export type ActionOptions = Omit<ActionInput, 'key' | 'now'>;
@@ -35,8 +36,8 @@ export type Celebration = {
   kind: 'saved' | 'habit' | 'goal' | 'award' | 'challenge';
   title: string;
   detail?: string;
-  /** The entry this feedback is about (saved / habit / goal): the toast offers to undo it. */
-  logId?: string;
+  /** Exactly the entries this feedback is about (saved / habit / goal): "ביטול" removes these. */
+  logIds?: string[];
   logTitle?: string;
 };
 
@@ -226,31 +227,27 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   // Feedback and completion only after the change is stored on the device (B08 / C1):
   // achievements and challenge completions are recorded once the latest entry is saved.
   const [celebration, setCelebration] = useState<Celebration | null>(null);
-  const seen = useRef<{ logs: number; habits: number; goal: boolean; day: string } | null>(null);
+  // Round 1.1: the feedback is about exactly the entries that were added (see store/feedback.ts).
+  const seen = useRef<FeedbackSnapshot | null>(null);
   useEffect(() => {
     if (!hydrated) return;
-    const latest = derived.todayLogs[0];
     const prev = seen.current;
-    const now = { logs: state.logs.length, habits: derived.habitsDoneToday, goal: derived.todayGoalMet, day: todayKey };
-    if (!prev || prev.day !== todayKey) {
-      seen.current = now;
+    const current = snapshotOf(state, derived);
+    if (!prev || prev.day !== current.day) {
+      seen.current = current;
       return;
     }
-    const added = state.logs.length > prev.logs;
-    if (!added) {
-      seen.current = { ...now };
+    const added = addedSince(prev, state.logs);
+    if (added.length === 0) {
+      seen.current = current;
       return;
     }
-    // Wait until the new entry is durably saved before any feedback.
-    if (!latest || !isLogSaved(latest.id)) return;
-    seen.current = now;
-    let next: Omit<Celebration, 'id'>;
-    if (derived.todayGoalMet && !prev.goal) next = { kind: 'goal', title: 'היעד היומי הושלם', detail: 'יישר כוח' };
-    else if (derived.habitsDoneToday > prev.habits)
-      next = { kind: 'habit', title: 'הרגל הושלם', detail: `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` };
-    else next = { kind: 'saved', title: `נרשם: ${latest.title}`, detail: derived.hasHabits ? `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` : undefined };
-    setCelebration({ id: Date.now(), ...next, logId: latest.id, logTitle: latest.title });
-  }, [hydrated, state.logs.length, derived, todayKey, isLogSaved, saveStatus]);
+    // Wait until every new entry is durably saved before any feedback.
+    if (!added.every((l) => isLogSaved(l.id))) return;
+    seen.current = current;
+    const next = feedbackFor(prev, added, state, derived);
+    if (next) setCelebration({ id: Date.now(), ...next });
+  }, [hydrated, state, derived, isLogSaved, saveStatus]);
 
   // The first evaluation after loading records past achievements quietly ("earned before"),
   // without a celebration (no surprising retroactive rewards).
@@ -273,10 +270,15 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       });
     if (quiet) return;
     const first = ready[0];
-    setCelebration(
-      first
-        ? { id: at, kind: 'award', title: `הישג חדש: ${first.def.title}`, detail: first.def.explanation }
-        : { id: at, kind: 'challenge', title: `אתגר הושלם: ${done[0]!.def.title}`, detail: 'נשמר בהיסטוריית המסלולים' },
+    const extra = first ? `הישג חדש: ${first.def.title}` : `אתגר הושלם: ${done[0]!.def.title}`;
+    // An achievement earned by the entry just recorded joins that entry's feedback (which may carry
+    // the goal message and "ביטול") instead of replacing it.
+    setCelebration((prev) =>
+      prev && at - prev.id < 2000
+        ? { ...prev, detail: prev.detail ? `${prev.detail} · ${extra}` : extra }
+        : first
+          ? { id: at, kind: 'award', title: extra, detail: first.def.explanation }
+          : { id: at, kind: 'challenge', title: extra, detail: 'נשמר בהיסטוריית המסלולים' },
     );
   }, [hydrated, derived, saveStatus, isLogSaved]);
 
