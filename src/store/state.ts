@@ -438,6 +438,8 @@ export function reducer(state: AppState, action: Action): AppState {
       if (habits.length === 0) return state;
       const target = Math.min(habits.length, Math.max(1, Math.round(action.payload.habitTarget ?? habits.length)));
       const current = goalsOn(state.goalHistory, action.dateKey);
+      // The same choice again is not a change (round 13, U1): history and habit target stay as they are.
+      if (JSON.stringify(current.habits ?? []) === JSON.stringify(habits) && (action.payload.habitTarget === undefined || current.habitTarget === target)) return state;
       return {
         ...state,
         goalHistory: withGoals(state.goalHistory, action.dateKey, {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { AchievementView, ChallengeView } from '../lib/challenges';
-import { HABIT_DOMAINS, HabitDomain, HABITS, habitById } from '../lib/habits';
+import { HABIT_DOMAINS, HabitDomain, HABITS, habitById, habitSelectionOn } from '../lib/habits';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import { Gender, HabitSelection } from '../types';
 import { AppIcon } from './AppIcon';
+import { ModalLayer } from './Modal';
 
 /* ------------------------------- Habit picker ------------------------------- */
 
@@ -104,16 +105,16 @@ export function HabitPicker({
 /** Modal sheet to edit habits from Home or "אני". */
 export function HabitEditorSheet({ onClose }: { onClose: () => void }) {
   const { state, derived, setHabits } = useAppStore();
-  const [value, setValue] = useState<HabitSelection[]>(derived.habitsToday.map((h) => h.sel));
+  // The whole choice in force today – weekly habits and those not due today included (round 13, U1).
+  const [initial] = useState(() => habitSelectionOn(state.goalHistory, derived.todayKey).habits);
+  const [value, setValue] = useState<HabitSelection[]>(initial);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35" onClick={onClose}>
-      <div
-        dir="rtl"
-        role="dialog"
-        aria-label="ההרגלים שלי"
-        className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-[#F4F8FB] rounded-t-[28px] px-4 pt-5 pb-6"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <ModalLayer
+      label="ההרגלים שלי"
+      onClose={onClose}
+      backdropClassName="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35"
+      panelClassName="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-[#F4F8FB] rounded-t-[28px] px-4 pt-5 pb-6"
+    >
         <h2 className="text-[20px] font-black text-[#17324D]">ההרגלים שלי</h2>
         <p className="text-[13px] text-[#5C6F82] mt-1 mb-4">
           מומלץ 2–3 הרגלים. שינוי חל מהיום והלאה – ההיסטוריה נשארת כפי שהייתה.
@@ -127,7 +128,8 @@ export function HabitEditorSheet({ onClose }: { onClose: () => void }) {
             type="button"
             disabled={value.length === 0}
             onClick={() => {
-              setHabits(value);
+              // "Save" without a change changes nothing (no new snapshot, the habit target is kept).
+              if (JSON.stringify(value) !== JSON.stringify(initial)) setHabits(value);
               onClose();
             }}
             className="flex-[2] min-h-[50px] rounded-[16px] bg-[#2AAE9B] disabled:bg-[#A7B4C0] text-white font-extrabold"
@@ -135,8 +137,7 @@ export function HabitEditorSheet({ onClose }: { onClose: () => void }) {
             שמירה ({value.length} נבחרו)
           </button>
         </div>
-      </div>
-    </div>
+    </ModalLayer>
   );
 }
 
@@ -223,11 +224,15 @@ export function AchievementBadge({ view }: { view: AchievementView }) {
  */
 export function CelebrationToast() {
   const { celebration, dismissCelebration, removeLog } = useAppStore();
+  // One timer per toast (its id): an achievement joining the toast, or any re-render of the app,
+  // does not start it over (round 13, U4).
+  const id = celebration?.id;
+  const kind = celebration?.kind;
   useEffect(() => {
-    if (!celebration) return;
-    const t = window.setTimeout(dismissCelebration, celebration.kind === 'saved' ? 4000 : 5000);
+    if (id === undefined) return;
+    const t = window.setTimeout(dismissCelebration, kind === 'saved' ? 4000 : 5000);
     return () => window.clearTimeout(t);
-  }, [celebration, dismissCelebration]);
+  }, [id, kind, dismissCelebration]);
   if (!celebration) return null;
   const strong = celebration.kind !== 'saved';
   return (

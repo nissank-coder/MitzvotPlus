@@ -11,6 +11,7 @@ import {
 } from '../content/packs';
 import { countToday } from '../lib/scoring';
 import { useAppStore } from '../store/AppStore';
+import { useRecordFlow } from '../components/RecordFlow';
 import { colors } from '../theme';
 
 type Props = { onBack: () => void; onOpenProfile: () => void; initialId?: string };
@@ -38,7 +39,9 @@ const ACTION_FOR: Record<string, ActionKey> = {
 };
 
 export function SiddurScreen({ onBack, onOpenProfile, initialId }: Props) {
-  const { state, derived, calendar, addAction } = useAppStore();
+  const { state, derived, calendar } = useAppStore();
+  // One recording flow (round 13, U5): a prayer is recorded with the minyan choice.
+  const { record } = useRecordFlow();
   const [index, setIndex] = useState<SiddurIndex | null>(null);
   const [prayer, setPrayer] = useState<SiddurPrayer | null>(null);
   const [openId, setOpenId] = useState<string | null>(initialId ?? null);
@@ -123,7 +126,7 @@ export function SiddurScreen({ onBack, onOpenProfile, initialId }: Props) {
             {action ? (
               <button
                 type="button"
-                onClick={() => addAction(action)}
+                onClick={() => record(action)}
                 disabled={actionDone}
                 className={`h-10 px-4 rounded-full text-[13px] font-black ${actionDone ? 'bg-[#EAF7EF] text-[#4DAA78]' : 'bg-[#2AAE9B] text-white'}`}
               >

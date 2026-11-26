@@ -229,6 +229,15 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
   // Feedback and completion only after the change is stored on the device (B08 / C1):
   // achievements and challenge completions are recorded once the latest entry is saved.
   const [celebration, setCelebration] = useState<Celebration | null>(null);
+  // A stable callback (round 13, U4): the toast's timer no longer starts over on every render.
+  const dismissCelebration = useCallback(() => setCelebration(null), []);
+  // Round 13 (U3): a toast about entries that are gone (removed on another screen, e.g. the 100th
+  // blessing deleted from the blessings list) disappears – it never shows a goal that is no longer met.
+  useEffect(() => {
+    if (!celebration?.logIds?.length) return;
+    const ids = new Set(state.logs.map((l) => l.id));
+    if (celebration.logIds.some((id) => !ids.has(id))) setCelebration(null);
+  }, [state.logs, celebration]);
   // Round 1.1: the feedback is about exactly the entries that were added (see store/feedback.ts).
   const seen = useRef<FeedbackSnapshot | null>(null);
   useEffect(() => {
@@ -342,7 +351,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       joinChallenge: (definitionId) => dispatch({ type: 'joinChallenge', payload: { definitionId, now: Date.now() }, dateKey: todayKey }),
       leaveChallenge: (instanceId) => dispatch({ type: 'leaveChallenge', payload: { instanceId, now: Date.now() } }),
       celebration,
-      dismissCelebration: () => setCelebration(null),
+      dismissCelebration,
       runSync: (remote, consent) => {
         const storage = storageRef.current as (SqlStateStorage & { kind: 'sqlite' }) | null;
         return coordinator.run(spaceRef.current, () => spaceRef.current, async (sameSession) => {
@@ -430,6 +439,8 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
           saverRef.current = saver;
           seen.current = null;
           primed.current = false;
+          // Nothing of the previous space is announced in the new one (round 13, U4).
+          setCelebration(null);
           dispatch({ type: 'hydrate', payload: loaded });
           setSpace(target);
         } catch (error) {

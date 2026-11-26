@@ -1,6 +1,6 @@
 import { ActionKey } from '../data/actions';
 import { ActivityLog, FeatureKey, GoalSnapshot, HabitSelection, IconName } from '../types';
-import { metricsFor } from './metrics';
+import { goalsOn, metricsFor } from './metrics';
 
 /**
  * Habit catalog (round 9, B1). A habit is a rule over the log: "done on a day" when the day's
@@ -105,6 +105,16 @@ export function habitProgress(habit: HabitDefinition, dayLogs: ActivityLog[]): {
     value = keys.size;
   }
   return { value, needed: habit.perDay, done: value >= habit.perDay };
+}
+
+/**
+ * The whole habit choice in force on a day (round 13, review U1): daily AND weekly habits, also those
+ * not due that day (tefillin on Shabbat). The habit editor starts from it – starting from today's
+ * due habits dropped the others on "save", even without any change.
+ */
+export function habitSelectionOn(history: GoalSnapshot[], dateKey: string): { habits: HabitSelection[]; habitTarget?: number } {
+  const g = goalsOn(history, dateKey);
+  return { habits: g.habits ?? [], ...(g.habitTarget !== undefined ? { habitTarget: g.habitTarget } : {}) };
 }
 
 /** Daily habits are those chosen for every day; fewer days a week = a weekly habit (S10-01). */

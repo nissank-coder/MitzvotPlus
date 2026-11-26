@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { QuickAddSheet } from './components/QuickAddSheet';
+import { RecordFlowProvider, RecordFocus } from './components/RecordFlow';
 import { SaveStatusBanner } from './components/SaveStatusBanner';
 import { useAppStore, AppStoreProvider } from './store/AppStore';
 import { BlessingGuideScreen } from './screens/BlessingGuideScreen';
@@ -34,7 +35,10 @@ function MitzvotApp() {
   const { hydrated, state, calendar, storageError, flush, refreshClock } = useAppStore();
   const [tab, setTab] = useState<TabKey>('today');
   const [feature, setFeature] = useState<FeatureKey>(null);
-  const [quickAddVisible, setQuickAddVisible] = useState(false);
+  // The shared add sheet; opened for one habit it is narrowed to its actions (round 13, U5).
+  const [quickAdd, setQuickAdd] = useState<{ focus: RecordFocus | null } | null>(null);
+  const quickAddVisible = quickAdd !== null;
+  const setQuickAddVisible = (open: boolean) => setQuickAdd(open ? { focus: null } : null);
 
   // After "delete all data" the user goes through onboarding again and should land on the home tab.
   useEffect(() => {
@@ -201,9 +205,11 @@ function MitzvotApp() {
   return (
     <div className="min-h-dvh max-w-[460px] mx-auto flex flex-col bg-[#F4F8FB] sm:border-x sm:border-[#DDE8EE] sm:shadow-xl">
       <SaveStatusBanner />
-      <main className="flex-1 flex flex-col">{content}</main>
+      <RecordFlowProvider openQuickAdd={(focus) => setQuickAdd({ focus: focus ?? null })}>
+        <main className="flex-1 flex flex-col">{content}</main>
+      </RecordFlowProvider>
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
-      <QuickAddSheet visible={quickAddVisible} onClose={() => setQuickAddVisible(false)} />
+      <QuickAddSheet visible={quickAddVisible} focus={quickAdd?.focus ?? null} onClose={() => setQuickAddVisible(false)} />
       <CelebrationToast />
     </div>
   );

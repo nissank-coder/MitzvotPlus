@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -34,6 +34,8 @@ const CELL: Record<string, string> = {
 export function ProgressScreen() {
   const { state, derived, removeLog } = useAppStore();
   const [period, setPeriod] = useState<Period>('week');
+  const [journalLimit, setJournalLimit] = useState(JOURNAL_PAGE);
+  useEffect(() => setJournalLimit(JOURNAL_PAGE), [period]);
   const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
   const stats = useMemo(() => periodStats(derived.progressContext, period), [derived.progressContext, period]);
   const journal = useMemo(() => periodLogs(derived.progressContext.byDay, stats.start, stats.end), [derived.progressContext, stats]);
@@ -207,7 +209,7 @@ export function ProgressScreen() {
         {journal.length === 0 ? (
           <p className="text-[13px] text-[#5C6F82]">אין רישומים בתקופה.</p>
         ) : (
-          journal.slice(0, 40).map((log) => (
+          journal.slice(0, journalLimit).map((log) => (
             <div key={log.id} className="flex flex-row items-center gap-2 min-h-[44px] border-t border-[#EAF0F4]">
               <span className="flex-1 text-[14px] font-bold text-[#17324D]">
                 {log.title} <UnsavedMark logId={log.id} />
@@ -217,12 +219,18 @@ export function ProgressScreen() {
                 {log.backfill ? ' · בדיעבד' : ''}
               </span>
               <span className="text-[12px] font-bold text-[#946300] w-[42px] text-left">{derived.pointsByLog.get(log.id) ?? 0}</span>
-              <button type="button" onClick={() => setPendingRemove({ id: log.id, title: log.title })} aria-label={`מחיקה: ${log.title}`} className="w-9 h-9 flex items-center justify-center">
+              <button type="button" onClick={() => setPendingRemove({ id: log.id, title: log.title })} aria-label={`מחיקה: ${log.title}`} className="w-11 h-11 flex items-center justify-center">
                 <AppIcon name="close" size={14} color={colors.textMuted} />
               </button>
             </div>
           ))
         )}
+        {/* Every entry of the period can be reached for a correction (round 13, U6). */}
+        {journal.length > journalLimit ? (
+          <button type="button" onClick={() => setJournalLimit((n) => n + JOURNAL_PAGE)} className="self-start min-h-[44px] px-2 text-[14px] font-bold text-[#1B6F8F]">
+            הצגת עוד {Math.min(JOURNAL_PAGE, journal.length - journalLimit)} (נותרו {journal.length - journalLimit})
+          </button>
+        ) : null}
       </Card>
 
       <ConfirmDialog
@@ -259,3 +267,5 @@ function StatTile({ value, label }: { value: number; label: string }) {
     </div>
   );
 }
+
+const JOURNAL_PAGE = 40;

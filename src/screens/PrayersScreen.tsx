@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from '../components/Card';
 import { SectionHeader } from '../components/SectionHeader';
 import { ActionRow, ExternalLink, FeatureScreen, Notice } from '../components/ui';
@@ -7,13 +7,15 @@ import { nusachLabel, siddurUrl } from '../data/siddur';
 import { formatClock, zmanimList } from '../lib/jewishCalendar';
 import { countToday } from '../lib/scoring';
 import { useAppStore } from '../store/AppStore';
+import { useRecordFlow } from '../components/RecordFlow';
 
 type Props = { onBack: () => void; onOpenProfile: () => void; onOpenSiddur: (id?: string) => void };
 
 export function PrayersScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
   const { state, derived, calendar, addAction } = useAppStore();
   const { zmanim, city, now, day } = calendar;
-  const [minyan, setMinyan] = useState(false);
+  // One recording flow (round 13, U5): "במניין או ביחידות" is asked in the shared sheet, per prayer.
+  const { record } = useRecordFlow();
   const male = state.profile.gender === 'male';
 
   const prayers: Array<{ key: ActionKey; window?: string }> = [
@@ -36,24 +38,20 @@ export function PrayersScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
     <FeatureScreen title="תפילות וזמנים" subtitle={`נוסח ${nusachLabel[state.profile.nusach]} · ${city.name}`} icon="prayer" onBack={onBack} onOpenProfile={onOpenProfile}>
       <Card className="p-4 mb-4">
         <SectionHeader title="התפילות של היום" icon="prayer" />
-        <label dir="rtl" className="flex flex-row items-center gap-2 mb-2 text-[13px] font-extrabold text-[#17324D] cursor-pointer">
-          <input type="checkbox" checked={minyan} onChange={(e) => setMinyan(e.target.checked)} className="accent-[#2AAE9B] w-5 h-5" />
-          התפללתי במניין (בונוס)
-        </label>
+        <p dir="rtl" className="mb-2 text-[13px] text-[#5C6F82]">בבחירת תפילה נשאל אם התפללת במניין או ביחידות.</p>
         {prayers.map((p, i) => {
           const def = actionDef(p.key);
           const style = categoryStyle[def.category];
           const done = def.oncePerDay ? countToday(derived.todayLogs, derived.todayKey, p.key) > 0 : false;
-          const bonus = minyan && def.minyanBonus ? def.minyanBonus : 0;
           return (
             <ActionRow
               key={p.key}
               icon={def.icon}
               title={def.title}
               subtitle={p.window}
-              points={def.points + bonus}
+              points={def.points}
               done={done}
-              onPress={() => addAction(p.key, { minyan: Boolean(bonus) })}
+              onPress={() => record(p.key)}
               color={style.color}
               background={style.background}
               last={i === prayers.length - 1}
