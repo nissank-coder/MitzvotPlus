@@ -1,0 +1,7 @@
+     × B1.2 + B1.3: "all history" uploads exactly the live entries – also those from another phone – and never a deleted one 18ms
+     × B1.1: "only from now" sends no old entry – accepted, pending or deferred – also after a restart; new entries are backed up 7ms
+     × B1.4: a second phone, offline during the deletion, cannot upload its old queue after "only from now" 7ms
+     × "all history" chosen on one phone: the second phone re-uploads its live entries once, deleted ones never 6ms
+     × while the decision is open, nothing is sent from any phone, and the app says a choice is needed 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  5 failed | 2 passed (7)
