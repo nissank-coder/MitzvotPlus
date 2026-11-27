@@ -1,0 +1,53 @@
+{
+  "build": "production",
+  "commit": "6fddb19a461d20085618c112779be0e64202d163",
+  "browser": "Chromium 390×844 (not a phone)",
+  "steps": [
+    {
+      "step": "start",
+      "ok": true,
+      "frame": "01-start.jpg"
+    },
+    {
+      "step": "choose-prayer",
+      "ok": true,
+      "frame": "02-choose-prayer.jpg"
+    },
+    {
+      "step": "choose-minyan",
+      "ok": true,
+      "frame": "03-choose-minyan.jpg"
+    },
+    {
+      "step": "recorded-partial",
+      "ok": true,
+      "frame": "04-recorded-partial.jpg"
+    },
+    {
+      "step": "undo",
+      "ok": true,
+      "frame": "05-undo.jpg"
+    },
+    {
+      "step": "record-again",
+      "ok": true,
+      "frame": "06-record-again.jpg"
+    },
+    {
+      "step": "second-prayer",
+      "ok": true,
+      "frame": "07-second-prayer.jpg"
+    },
+    {
+      "step": "habit-complete",
+      "ok": true,
+      "frame": "08-habit-complete.jpg"
+    },
+    {
+      "step": "goal-complete",
+      "ok": true,
+      "frame": "09-goal-complete.jpg"
+    }
+  ],
+  "video": "demo-choose-record-undo-complete.mp4"
+}
