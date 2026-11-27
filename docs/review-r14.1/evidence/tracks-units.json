@@ -1,0 +1,822 @@
+{
+  "generatedAt": "2026-11-27T08:54:37.210Z",
+  "from": "2026-11-26",
+  "days": 8,
+  "loader": "src/lib/sefaria.ts (the app's own)",
+  "summary": {
+    "dailyHalacha": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 8,
+      "licenses": {
+        "Torat Emet 357 (Public Domain)": 8
+      }
+    },
+    "chofetzchaim": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 8,
+      "licenses": {
+        "Chofetz Chaim (CC-BY-SA)": 8
+      }
+    },
+    "psalms": {
+      "units": 8,
+      "ok": 0,
+      "failed": 0,
+      "local": 8,
+      "offlineCopy": 0,
+      "licenses": {}
+    },
+    "rambam1": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 8,
+      "licenses": {
+        "Torat Emet 363 (Public Domain)": 8
+      }
+    },
+    "mishnayomi": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 8,
+      "licenses": {
+        "Torat Emet 357 (Public Domain)": 8
+      }
+    },
+    "dafyomi": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 0,
+      "licenses": {
+        "William Davidson Edition - Vocalized Aramaic (CC-BY-NC)": 8
+      }
+    },
+    "nachyomi": {
+      "units": 8,
+      "ok": 8,
+      "failed": 0,
+      "local": 0,
+      "offlineCopy": 8,
+      "licenses": {
+        "Miqra according to the Masorah (CC-BY-SA)": 8
+      }
+    }
+  },
+  "rows": [
+    {
+      "dateKey": "2026-11-26",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י׳",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.10"
+      ],
+      "status": "ok",
+      "segments": 26,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 1048
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 9.3-9.4",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.3-4"
+      ],
+      "status": "ok",
+      "segments": 6,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 625
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "psalms",
+      "label": "תהילים ע״ט-פ״ב",
+      "refs": [
+        "Psalms.79-82"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק ט״ז",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.16"
+      ],
+      "status": "ok",
+      "segments": 35,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 331
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "mishnayomi",
+      "label": "נגעים 3:7-8",
+      "refs": [
+        "Mishnah_Negaim.3.7-8"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 66
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "dafyomi",
+      "label": "ערכין דף ט׳",
+      "refs": [
+        "Arakhin.9a-9b"
+      ],
+      "status": "ok",
+      "segments": 22,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 2093
+    },
+    {
+      "dateKey": "2026-11-26",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ג",
+      "refs": [
+        "Ezekiel.23"
+      ],
+      "status": "ok",
+      "segments": 49,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 119
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״א",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.11"
+      ],
+      "status": "ok",
+      "segments": 25,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 145
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 9.5-9.6",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_9.5-6"
+      ],
+      "status": "ok",
+      "segments": 3,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 102
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "psalms",
+      "label": "תהילים פ״ג-פ״ז",
+      "refs": [
+        "Psalms.83-87"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "rambam1",
+      "label": "הלכות מאכלות אסורות פרק י״ז",
+      "refs": [
+        "Mishneh_Torah,_Forbidden_Foods.17"
+      ],
+      "status": "ok",
+      "segments": 32,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 92
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "mishnayomi",
+      "label": "נגעים 4:1-2",
+      "refs": [
+        "Mishnah_Negaim.4.1-2"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 71
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "dafyomi",
+      "label": "ערכין דף י׳",
+      "refs": [
+        "Arakhin.10a-10b"
+      ],
+      "status": "ok",
+      "segments": 32,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 1011
+    },
+    {
+      "dateKey": "2026-11-27",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ד",
+      "refs": [
+        "Ezekiel.24"
+      ],
+      "status": "ok",
+      "segments": 27,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 113
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ב",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.12"
+      ],
+      "status": "ok",
+      "segments": 15,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 129
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.1-10.2",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.1-2"
+      ],
+      "status": "ok",
+      "segments": 8,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 80
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "psalms",
+      "label": "תהילים פ״ח-פ״ט",
+      "refs": [
+        "Psalms.88-89"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק א׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.1"
+      ],
+      "status": "ok",
+      "segments": 29,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 4095
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "mishnayomi",
+      "label": "נגעים 4:3-4",
+      "refs": [
+        "Mishnah_Negaim.4.3-4"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 78
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "dafyomi",
+      "label": "ערכין דף י״א",
+      "refs": [
+        "Arakhin.11a-11b"
+      ],
+      "status": "ok",
+      "segments": 43,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 147
+    },
+    {
+      "dateKey": "2026-11-28",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ה",
+      "refs": [
+        "Ezekiel.25"
+      ],
+      "status": "ok",
+      "segments": 17,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 1172
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ג",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.13"
+      ],
+      "status": "ok",
+      "segments": 5,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 118
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.3",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.3"
+      ],
+      "status": "ok",
+      "segments": 1,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 2565
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "psalms",
+      "label": "תהילים צ׳-צ״ו",
+      "refs": [
+        "Psalms.90-96"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ב׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.2"
+      ],
+      "status": "ok",
+      "segments": 22,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 99
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "mishnayomi",
+      "label": "נגעים 4:5-6",
+      "refs": [
+        "Mishnah_Negaim.4.5-6"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 1525
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ב",
+      "refs": [
+        "Arakhin.12a-12b"
+      ],
+      "status": "ok",
+      "segments": 27,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 95
+    },
+    {
+      "dateKey": "2026-11-29",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ו",
+      "refs": [
+        "Ezekiel.26"
+      ],
+      "status": "ok",
+      "segments": 21,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 100
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ד",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.14"
+      ],
+      "status": "ok",
+      "segments": 8,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 128
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.4",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.4"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 85
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "psalms",
+      "label": "תהילים צ״ז-ק״ג",
+      "refs": [
+        "Psalms.97-103"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ג׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.3"
+      ],
+      "status": "ok",
+      "segments": 25,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 782
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "mishnayomi",
+      "label": "נגעים 4:7-8",
+      "refs": [
+        "Mishnah_Negaim.4.7-8"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 665
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ג",
+      "refs": [
+        "Arakhin.13a-13b"
+      ],
+      "status": "ok",
+      "segments": 32,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 99
+    },
+    {
+      "dateKey": "2026-11-30",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ז",
+      "refs": [
+        "Ezekiel.27"
+      ],
+      "status": "ok",
+      "segments": 36,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 215
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ט״ו",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.15"
+      ],
+      "status": "ok",
+      "segments": 13,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 122
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.5-10.6",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.5-6"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 351
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "psalms",
+      "label": "תהילים ק״ד-ק״ה",
+      "refs": [
+        "Psalms.104-105"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ד׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.4"
+      ],
+      "status": "ok",
+      "segments": 18,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 136
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "mishnayomi",
+      "label": "נגעים 4:9-10",
+      "refs": [
+        "Mishnah_Negaim.4.9-10"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 2561
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "dafyomi",
+      "label": "ערכין דף י״ד",
+      "refs": [
+        "Arakhin.14a-14b"
+      ],
+      "status": "ok",
+      "segments": 45,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 115
+    },
+    {
+      "dateKey": "2026-12-01",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ח",
+      "refs": [
+        "Ezekiel.28"
+      ],
+      "status": "ok",
+      "segments": 26,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 113
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן ט״ז",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.16"
+      ],
+      "status": "ok",
+      "segments": 5,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 124
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.7-10.8",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.7-8"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 76
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "psalms",
+      "label": "תהילים ק״ו-ק״ז",
+      "refs": [
+        "Psalms.106-107"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ה׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.5"
+      ],
+      "status": "ok",
+      "segments": 12,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 135
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "mishnayomi",
+      "label": "נגעים 4:11-5:1",
+      "refs": [
+        "Mishnah_Negaim.4.11-5.1"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 91
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "dafyomi",
+      "label": "ערכין דף ט״ו",
+      "refs": [
+        "Arakhin.15a-15b"
+      ],
+      "status": "ok",
+      "segments": 48,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 125
+    },
+    {
+      "dateKey": "2026-12-02",
+      "track": "nachyomi",
+      "label": "יחזקאל כ״ט",
+      "refs": [
+        "Ezekiel.29"
+      ],
+      "status": "ok",
+      "segments": 21,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 1139
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "dailyHalacha",
+      "label": "קיצור שולחן ערוך, סימן י״ז",
+      "refs": [
+        "Kitzur_Shulchan_Arukh.17"
+      ],
+      "status": "ok",
+      "segments": 10,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 1004
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "chofetzchaim",
+      "label": "הלכות לשון הרע 10.9-10.10",
+      "refs": [
+        "Chofetz_Chaim,_Part_One,_The_Prohibition_Against_Lashon_Hara,_Principle_10.9-10"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Chofetz Chaim",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 84
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "psalms",
+      "label": "תהילים ק״ח-קי״ב",
+      "refs": [
+        "Psalms.108-112"
+      ],
+      "status": "local-pack"
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "rambam1",
+      "label": "הלכות שחיטה פרק ו׳",
+      "refs": [
+        "Mishneh_Torah,_Ritual_Slaughter.6"
+      ],
+      "status": "ok",
+      "segments": 21,
+      "version": "Torat Emet 363",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 653
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "mishnayomi",
+      "label": "נגעים 5:2-3",
+      "refs": [
+        "Mishnah_Negaim.5.2-3"
+      ],
+      "status": "ok",
+      "segments": 2,
+      "version": "Torat Emet 357",
+      "license": "Public Domain",
+      "offlineCopy": true,
+      "ms": 76
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "dafyomi",
+      "label": "ערכין דף ט״ז",
+      "refs": [
+        "Arakhin.16a-16b"
+      ],
+      "status": "ok",
+      "segments": 47,
+      "version": "William Davidson Edition - Vocalized Aramaic",
+      "license": "CC-BY-NC",
+      "offlineCopy": false,
+      "ms": 311
+    },
+    {
+      "dateKey": "2026-12-03",
+      "track": "nachyomi",
+      "label": "יחזקאל ל׳",
+      "refs": [
+        "Ezekiel.30"
+      ],
+      "status": "ok",
+      "segments": 26,
+      "version": "Miqra according to the Masorah",
+      "license": "CC-BY-SA",
+      "offlineCopy": true,
+      "ms": 1729
+    }
+  ]
+}

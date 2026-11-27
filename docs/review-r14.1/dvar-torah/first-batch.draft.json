@@ -1,0 +1,196 @@
+{
+  "title": "דבר תורה – מנה ראשונה לבדיקה (טיוטה)",
+  "status": "DRAFT – NOT APPROVED. Not in the app pack; the pipeline rejects it (approval ≠ APPROVED).",
+  "generatedAt": "2026-11-27T08:44:34.069Z",
+  "items": [
+    {
+      "id": "dvar-torah/w01",
+      "plannedDate": "2026-11-28",
+      "parasha": "וישלח",
+      "title": "עשרים שנה אצל לבן",
+      "body": "יעקב שולח לעשו מסר קצר: \"עם לבן גרתי\". רש״י מביא פירוש שהמילה \"גרתי\" עולה בגימטריה תרי״ג, ומסביר: עם לבן גרתי, ותרי״ג מצוות שמרתי ולא למדתי ממעשיו הרעים. עשרים שנה חי יעקב בבית שלא תמך בדרכו, ובכל זאת שמר על מה שהיה חשוב לו. המצוות לא היו אצלו תוצאה של סביבה נוחה, אלא עוגן שהחזיק אותו בתוך סביבה קשה. גם לנו יש ימים שבהם הסביבה לא עוזרת. הרגל אחד קטן שנשמר בכל יום יכול להיות העוגן הזה.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "גרתי. לֹא נַעֲשֵׂיתִי שַׂר וְחָשׁוּב אֶלָּא גֵּר, אֵינְךָ כְּדַאי לִשְׂנֹא אוֹתִי עַל בִּרְכַּת אָבִיךָ שֶׁבֵּרְכַנִי הֱוֵה גְבִיר לְאַחֶיךָ, שֶׁהֲרֵי לֹא נִתְקַיְּמָה בִי. דָּ\"אַ גַּרְתִּי בְּגִימַטְרִיָּא תרי\"ג, כְּלוֹמַר, עִם לָבָן גַּרְתִּי וְתַרְיַ\"ג מִצְוֹת שָׁמַרְתִּי וְלֹא לָמַדְתִּי מִמַּעֲשָׂיו הָרָעִים:",
+        "ref": "Rashi on Genesis.32.5",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Genesis.32.5?lang=he"
+      },
+      "verse": {
+        "ref": "בראשית לב, ה",
+        "sefariaRef": "Genesis.32.5",
+        "phraseQuoted": "עם לבן גרתי",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w02",
+      "plannedDate": "2026-12-05",
+      "parasha": "וישב",
+      "title": "מה ראה פוטיפר",
+      "body": "יוסף משרת בבית פוטיפר, והתורה אומרת: \"וירא אדניו כי ה׳ אתו\". איך ראה זאת מצרי שלא הכיר את אלוקי ישראל? רש״י עונה: \"שם שמים שגור בפיו\". יוסף הזכיר את ה׳ באופן טבעי, בדיבור הרגיל של כל יום, וזה מה שראו סביבו. אמונה מתבטאת לא רק בתפילה אלא גם במילים קטנות שחוזרות לאורך היום. ברכה שנאמרת בכוונה על כוס מים היא דרך פשוטה להרגיל את הפה לכך.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "כי ה' אתו. שֵׁם שָׁמַיִם שָׁגוּר בְּפִיו:",
+        "ref": "Rashi on Genesis.39.3",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Genesis.39.3?lang=he"
+      },
+      "verse": {
+        "ref": "בראשית לט, ג",
+        "sefariaRef": "Genesis.39.3",
+        "phraseQuoted": "וירא אדניו כי ה׳ אתו",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w03",
+      "plannedDate": "2026-12-12",
+      "parasha": "מקץ",
+      "title": "בלעדי",
+      "body": "פרעה פונה ליוסף כאל מי שיודע לפתור חלומות. רגע לפני ההצלחה הגדולה של חייו עונה יוסף במילה אחת: \"בלעדי\". רש״י מפרש: \"אין החכמה משלי, אלא אלהים יענה – יתן עניה בפי – לשלום פרעה\". יוסף לא מזלזל ביכולת שלו, אבל זוכר מאין היא באה. דווקא ברגע של הצלחה קל לשכוח. אפשר לסיים יום טוב במחשבה קצרה של הכרת הטוב: מה הצליח היום, ומי עזר לי להגיע לזה.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "בלעדי. אֵין הַחָכְמָה מִשֶּׁלִּי, אֶלָּא אֱלֹהִים יַעֲנֶה – יִתֵּן עֲנִיָּה בְּפִי – לִשְׁלוֹם פַּרְעֹה:",
+        "ref": "Rashi on Genesis.41.16",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Genesis.41.16?lang=he"
+      },
+      "verse": {
+        "ref": "בראשית מא, טז",
+        "sefariaRef": "Genesis.41.16",
+        "phraseQuoted": "בלעדי",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w04",
+      "plannedDate": "2026-12-19",
+      "parasha": "ויגש",
+      "title": "אל תרגזו בדרך",
+      "body": "יוסף שולח את אחיו חזרה אל יעקב ומוסיף בקשה אחת: \"אל תרגזו בדרך\". רש״י מביא כמה פירושים, ולפי פשוטו של מקרא: יוסף דאג שמא יריבו בדרך על מכירתו, ויאמר אחד לחברו \"על ידך נמכר, אתה ספרת לשון הרע עליו\". אחרי פיוס גדול קל לחזור לשאלה מי אשם. יוסף מבקש מהם לעצור את זה עוד לפני שמתחיל. אפשר לקחת מכאן החלטה קטנה לשבוע: לא לחפש את האשם, ולשמור על הדיבור בדרך.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "אל תרגזו בדרך. אַל תִּתְעַסְּקוּ בִּדְבַר הֲלָכָה שֶׁלֹּא תִרְגַּז עֲלֵיכֶם הַדֶּרֶךְ, דָּ\"אַ אַל תַּפְסִיעוּ פְסִיעָה גַסָּה וְהִכָּנְסוּ בַחַמָּה לָעִיר; וּלְפִי פְשׁוּטוֹ שֶׁל מִקְרָא יֵשׁ לוֹמַר, לְפִי שֶׁהָיוּ נִכְלָמִים, הָיָה דוֹאֵג, שֶׁמָּא יָרִיבוּ בַדֶּרֶךְ עַל דְּבַר מְכִירָתוֹ, לְהִתְוַכֵּחַ זֶה עִם זֶה וְלוֹמַר עַל יָדְךָ נִמְכַּר, אַתָּה סִפַּרְתָּ לָשׁוֹן הָרָע עָלָיו, וְגָרַמְתָּ לָנוּ לִשְׂנֹאתוֹ:",
+        "ref": "Rashi on Genesis.45.24",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Genesis.45.24?lang=he"
+      },
+      "verse": {
+        "ref": "בראשית מה, כד",
+        "sefariaRef": "Genesis.45.24",
+        "phraseQuoted": "אל תרגזו בדרך",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w05",
+      "plannedDate": "2026-12-26",
+      "parasha": "ויחי",
+      "title": "ישימך אלהים כאפרים וכמנשה",
+      "body": "יעקב מברך את בני יוסף ואומר: \"בך יברך ישראל\". רש״י מסביר: \"הבא לברך את בניו יברכם בברכתם, ויאמר איש לבנו ישימך אלהים כאפרים וכמנשה\". זו הברכה שהורים רבים אומרים לילדיהם בליל שבת. הברכה עוברת מדור לדור, ובכל פעם היא נאמרת מחדש, בקול של אבא או אמא ובשם של הילד. מי שנוהג לברך את ילדיו בליל שבת, יכול לעשות זאת השבוע בתשומת לב מיוחדת.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "בך יברך ישראל. הַבָּא לְבָרֵךְ אֶת בָּנָיו יְבָרְכֵם בְּבִרְכָתָם וְיֹאמַר אִישׁ לִבְנוֹ יְשִׂימְךָ אֱלֹהִים כְּאֶפְרַיִם וְכִמְנַשֶּׁה:",
+        "ref": "Rashi on Genesis.48.20:1",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Genesis.48.20.1?lang=he"
+      },
+      "verse": {
+        "ref": "בראשית מח, כ",
+        "sefariaRef": "Genesis.48.20",
+        "phraseQuoted": "בך יברך ישראל",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w06",
+      "plannedDate": "2027-01-02",
+      "parasha": "שמות",
+      "title": "לראות את הסבל",
+      "body": "משה גדל בבית פרעה, ויוצא אל אחיו: \"וירא בסבלתם\". רש״י מפרש: \"נתן עיניו ולבו להיות מצר עליהם\". הראייה כאן היא לא מבט מהצד. משה מסתכל, מרגיש את הצער ונותן לו מקום בלב, ורק אחר כך פועל. חסד מתחיל ביכולת לראות את מי שלידנו. לפני שמחפשים מה לעשות, אפשר לשאול את מי עוד לא ראיתי השבוע, ולהקדיש לו תשומת לב.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "וירא בסבלתם. נָתַן עֵינָיו וְלִבּוֹ לִהְיוֹת מֵצֵר עֲלֵיהֶם (שמות רבה א'):",
+        "ref": "Rashi on Exodus.2.11:2",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Exodus.2.11.2?lang=he"
+      },
+      "verse": {
+        "ref": "שמות ב, יא",
+        "sefariaRef": "Exodus.2.11",
+        "phraseQuoted": "וירא בסבלתם",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    },
+    {
+      "id": "dvar-torah/w07",
+      "plannedDate": "2027-01-09",
+      "parasha": "וארא",
+      "title": "להנהיג בנחת",
+      "body": "ה׳ מדבר אל משה ואהרן: \"ויצום אל בני ישראל\". רש״י מפרש: \"צוום עליהם להנהיגם בנחת ולסבול אותם\". המשימה כוללת את היחס לעם, ולא רק את היציאה ממצרים: סבלנות, נחת ונשיאה בעול של אנשים עייפים וכועסים. זה נכון גם בבית, בעבודה ובכל מקום שבו מישהו סומך עלינו. השבוע אפשר לשים לב לטון: לומר את אותו הדבר, בנחת.",
+      "author": "טיוטה: Claude – לעריכה ולבדיקה",
+      "approval": "DRAFT_FOR_REVIEW",
+      "review": {
+        "reviewer": null,
+        "reviewedAt": null
+      },
+      "quote": {
+        "text": "ויצום אל בני ישראל. צִוָּם עֲלֵיהֶם לְהַנְהִיגָם בְּנַחַת וְלִסְבֹּל אוֹתָם (שמות רבה):",
+        "ref": "Rashi on Exodus.6.13:2",
+        "edition": "Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",
+        "license": "Public Domain",
+        "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001969084",
+        "url": "https://www.sefaria.org/Rashi_on_Exodus.6.13.2?lang=he"
+      },
+      "verse": {
+        "ref": "שמות ו, יג",
+        "sefariaRef": "Exodus.6.13",
+        "phraseQuoted": "ויצום אל בני ישראל",
+        "note": "רק המילים המצוטטות; הנוסח המלא לא הועתק (המהדורה בספריא ברישיון CC-BY-SA)"
+      }
+    }
+  ]
+}

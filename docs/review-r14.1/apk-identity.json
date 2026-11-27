@@ -1,0 +1,17 @@
+{
+  "file": "MitzvotPlus-0.1.0-r14.1-6fddb19.apk",
+  "kind": "debug (internal; not signed for release, not for distribution)",
+  "build": "production web bundle (no VITE_DEMO_CONTENT, no backend variables) – PR 14 + PR 15 + round 14.1",
+  "versionName": "0.1.0",
+  "versionCode": 141,
+  "commit": "6fddb19a461d20085618c112779be0e64202d163",
+  "branch": "claude/r14-1-acceptance (on claude/r14-core-content, on claude/r13-completion)",
+  "buildId": "fp=5c69c96e1d88d012;cfg=debug+backend=none+dbenc=off;sha256=138740b8b909b6ac",
+  "embeddedBuildInfo": "assets/public: commit 6fddb19…, source fingerprint 2d93cc9bdaa9, dirty=false, mode Production",
+  "sha256": "138740b8b909b6ac0de1d92267d0e7b5eefe80c8466e35cc1e6f60f2f1e29a1a",
+  "sizeBytes": 14702395,
+  "signingCertSha256": "57f7d8c4c84a8ddf25092495e5968a2b64778b5dc87c25aaad58c264fb026dd3 – the same debug key as the APKs of rounds 1.1, main b0c7e22, 13 and 14 (an update keeps the data); CI-built APKs use another key",
+  "internalContent": "none – 0 files for every release-check marker (TEST-ONLY, DRAFT, mock community, supabase-js, gateway, auth/callback, NOT_APPROVED, siddur-ashkenaz)",
+  "pageSize16k": "OK – zipalign -P 16: libsqlcipher.so for all four ABIs",
+  "verifyOnPhone": "אני → אודות האפליקציה: גרסה 0.1.0, קומיט 6fddb19, טביעת קוד 2d93cc9bdaa9"
+}

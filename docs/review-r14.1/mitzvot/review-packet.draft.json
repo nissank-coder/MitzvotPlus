@@ -1,0 +1,343 @@
+{
+  "title": "ספריית מצוות – 12 פריטים להעמקה (טיוטה לבדיקה)",
+  "status": "DRAFT – PENDING_REVIEW; not in the app",
+  "generatedAt": "2026-11-27T08:45:38.925Z",
+  "items": [
+    {
+      "id": "emunah",
+      "title": "האמונה בה׳",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:1",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 1",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 1",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.1?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת וישמע יתרו, מדע הלכות יסודי התורה פ\"א"
+        }
+      ],
+      "rambamOpening": "היא הצווי אשר צונו בהאמנת האלהות, והוא שנאמין שיש שם עלה וסבה הוא פועל לכל הנמצאים, והוא אמרו אנכי ה' אלהיך. ובסוף גמרא מכות (דף כ\"ג:) אמרו תרי\"ג מצות נאמרו למשה בסיני, מאי קראה תורה צוה לנו משה, ר\"ל מנין תור\"ה. והקשו על זה ואמרו תורה בגימטריא תרי\"א הוי, והיה ",
+      "expandedDraft": "המצווה הראשונה ברשימת הרמב״ם: להאמין שיש אלוה, שהוא הסיבה והפועל של כל מה שקיים. הרמב״ם לומד אותה מהדיבר הראשון, \"אנכי ה׳ אלהיך\", ומביא את הגמרא שלפיה \"אנכי\" ו\"לא יהיה לך\" נשמעו מפי הגבורה.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "אמונה – ללימוד בלבד; אין לה רישום עשייה."
+    },
+    {
+      "id": "achdut",
+      "title": "ייחוד ה׳",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:2",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 2",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 2",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.2?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת ואתחנן, מדע הלכות יסודי התורה פרק א'"
+        }
+      ],
+      "rambamOpening": "היא הצווי שצונו בהאמנת היחוד, והוא שנאמין שפועל המציאות וסבתו הראשונה אחד, והוא אמרו יתעלה שמע ישראל ה' אלהינו ה' אחד, וברוב המדרשות תמצאם אומרים על מנת ליחד את שמי, על מנת ליחדני, ורבים כאלה, רוצים בזה המאמר אנחנו אמנם הוציאנו מעבדות ועשה עמנו מה שעשה מן החסד",
+      "expandedDraft": "להאמין שפועל המציאות וסיבתו הראשונה הוא אחד, כמו שנאמר \"שמע ישראל ה׳ אלהינו ה׳ אחד\". הרמב״ם מציין שחז״ל קוראים למצווה הזאת גם \"מלכות שמים\".",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "אמונה – ללימוד בלבד."
+    },
+    {
+      "id": "talmud-torah",
+      "title": "תלמוד תורה",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:11",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 11",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 11",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.11?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת ואתחנן, אהבה הלכות תלמוד תורה פרק א'"
+        }
+      ],
+      "rambamOpening": "היא שצונו ללמוד תורה וללמדה וזהו הנקרא תלמוד תורה, והוא אמרו ושננתם לבניך וכתוב בספרי לבניך אלו התלמידים שהתלמידים קרויים בנים שנאמר יצאו בני הנביאים, ושם נאמר ושננתם שיהיו מחודדים בתוך פיך כשאדם שואלך דבר לא תהא מגמגם לו אלא אמור לו מיד. וכבר נכפל זה הצווי פע",
+      "expandedDraft": "ללמוד תורה וללמד אותה, כמו שנאמר \"ושננתם לבניך\". לפי הספרי שמביא הרמב״ם, \"לבניך\" כולל גם תלמידים, ו\"ושננתם\" פירושו שהדברים יהיו מחודדים בפה, כך שאדם יוכל לענות מיד כשנשאל.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "torahStudy",
+      "doingNote": "קיים: \"לימוד תורה\"."
+    },
+    {
+      "id": "kriat-shema",
+      "title": "קריאת שמע",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:10",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 10",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 10",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.10?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת ואתחנן, אהבה הלכות קריאת שמע פ\"א"
+        }
+      ],
+      "rambamOpening": "היא שצונו לקרוא קריאת שמע ערבית ושחרית והוא אמרו ודברת בם. וכבר נתבארו משפטי מצוה זו במסכת ברכות (דף כ\"א) ושם נתבאר דקריאת שמע דאורייתא. וכתוב בתוספתא כשם שנתנה תורה קבע לקריאת שמע כך נתנו חכמים זמן לתפלה, רוצה לומר שזמני התפלה אינם מן התורה אמנם חיוב התפלה עצ",
+      "expandedDraft": "לקרוא קריאת שמע בערב ובבוקר, כמו שנאמר \"ודברת בם\". הרמב״ם מציין שקריאת שמע היא מן התורה, ושמשפטיה מבוארים במסכת ברכות.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "shema",
+      "doingNote": "קיים: \"קריאת שמע בזמנה\"."
+    },
+    {
+      "id": "tefilla",
+      "title": "תפילה",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:5",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 5",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 5",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.5?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת ואלה המשפטים, אהבה הלכות תפלה וברכת כהנים פ\"א"
+        }
+      ],
+      "rambamOpening": "הוא שצונו לעבדו, וכבר נכפל זה הצווי פעמים באמרו ועבדתם את ה' אלהיכם, ואמר ואותו תעבודו. ואע\"פ שזה הצווי הוא גם כן מהצוויים הכוללים כמו שביארנו בשורש ד', הנה יש בו יחוד אחר שהוא צווי לתפלה. ולשון ספרי ולעבדו זו תפלה. ואמרו גם כן ולעבדו זו תלמוד, ובמשנתו של רבי ",
+      "expandedDraft": "לעבוד את ה׳, כמו שנאמר \"ועבדתם את ה׳ אלהיכם\". הרמב״ם מביא את לשון הספרי: \"ולעבדו – זו תפלה\". בעשה י הוא מוסיף שחיוב התפילה עצמו מן התורה, ואילו זמני התפילה נקבעו על ידי חכמים.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "יש כמה פעולות תפילה (שחרית, מנחה, ערבית, מוסף), ולכן אין קישור אחד. לבדיקה: להציג \"רישום תפילה\" שפותח את הבחירה."
+    },
+    {
+      "id": "tefillin-yad",
+      "title": "תפילין של יד",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:13",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 13",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 13",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.13?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת בוא, ואתחנן, עקב, אהבה הלכות תפילין ומזוזה וספר תורה פ\"א"
+        }
+      ],
+      "rambamOpening": "היא שצונו להניח תפילין של יד והוא אמרו וקשרתם לאות על ידך. וכבר נכפל זה הצווי ארבע פעמים, והראיה על היות תפילין של ראש ושל יד שתי מצות אמרם בגמרא (מנחות מ\"ד) על צד התימה ממי שיחשוב שתפילין של ראש ושל יד לא יונח אחד מהם בלתי האחר אלא אם יהיו שתיהן יחד מאמר זה ל",
+      "expandedDraft": "להניח תפילין של יד, כמו שנאמר \"וקשרתם לאות על ידך\". הרמב״ם מונה תפילין של יד ותפילין של ראש כשתי מצוות נפרדות, ולכן מי שיכול להניח רק אחת מהן מניח את זו שנזדמנה לו.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "tefillin",
+      "doingNote": "קיים: \"הנחת תפילין\" (פעם ביום)."
+    },
+    {
+      "id": "tzitzit",
+      "title": "ציצית",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:14",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 14",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 14",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.14?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת שלח לך, אהבה הלכות ציצית פרק א'"
+        }
+      ],
+      "rambamOpening": "היא שצונו לעשות ציצית והוא אמרו יתעלה ועשו להם ציצית ונתנו על ציצית הכנף. ואינה נמנית בשתי מצות, ואף על פי שהעיקר אצלנו התכלת אינה מעכבת את הלבן והלבן אינו מעכב את התכלת, שהרי נאמר בספרי יכול שהן שתי מצות מצות תכלת ומצות לבן תלמוד לומר והיה לכם לציצית מצוה אחת",
+      "expandedDraft": "לעשות ציצית בכנפות הבגד, כמו שנאמר \"ועשו להם ציצית\". הרמב״ם מונה אותה כמצווה אחת, אף שיש בה לבן ותכלת, ומציין שנשים פטורות ממנה.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "אין פעולה ייעודית. הצעה: הרגל אופציונלי, אחרי החלטה על ניקוד וכללים."
+    },
+    {
+      "id": "mezuzah",
+      "title": "מזוזה",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:15",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 15",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 15",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.15?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: בפרשת ואתחנן, עקב, אהבה הלכות תפילין פרק ה'"
+        }
+      ],
+      "rambamOpening": "היא שצונו לעשות מזוזה והוא אמרו יתעלה וכתבתם על מזוזות ביתך. והנה נכפל הצווי הזה. וכבר התבארו דיני מצוה זו בפ\"ג ממנחות. (בפרשת ואתחנן, עקב, אהבה הלכות תפילין פרק ה'):",
+      "expandedDraft": "לעשות מזוזה, כמו שנאמר \"וכתבתם על מזוזות ביתך\". הרמב״ם מציין שדיני המצווה מבוארים במסכת מנחות.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "אין פעולה יומית. לבדיקה: תזכורת לבדיקת מזוזות, לא רישום יומי."
+    },
+    {
+      "id": "birkat-hamazon",
+      "title": "ברכת המזון",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:19",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 19",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 19",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.19?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: והיה עקב, אהבה הלכות ברכות פ\"א"
+        }
+      ],
+      "rambamOpening": "היא שצונו לברכו אחר אכילה והוא אמרו ואכלת ושבעת וברכת את ה' אלהיך. ולשון התוספתא ברכת המזון מן התורה שנאמר ואכלת ושבעת וברכת. וכבר התבארו משפטי מצוה זו במקומות רבים ממסכת ברכות. (והיה עקב, אהבה הלכות ברכות פ\"א):",
+      "expandedDraft": "לברך את ה׳ אחרי האכילה, כמו שנאמר \"ואכלת ושבעת וברכת את ה׳ אלהיך\". הרמב״ם מביא את לשון התוספתא: ברכת המזון מן התורה.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "birkatHamazon",
+      "doingNote": "קיים: \"ברכת המזון\"."
+    },
+    {
+      "id": "kibud-av-vaem",
+      "title": "כיבוד אב ואם",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:210",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 210",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 210",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.210?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: וישמע יתרו, הלכות ממרים פ\"ו"
+        }
+      ],
+      "rambamOpening": "היא שצונו לכבד אב ואם. והוא אמרו יתעלה כבד את אביך ואת אמך. וכבר התבארו משפטי מצוה זו בתלמוד ועיקרו בקדושין. ולשון ספרא איזהו כבוד מאכיל ומשקה מכניס ומוציא. (וישמע יתרו, הלכות ממרים פ\"ו):",
+      "expandedDraft": "לכבד אב ואם, כמו שנאמר \"כבד את אביך ואת אמך\". הרמב״ם מביא את הספרא שמגדיר מהו כבוד: \"מאכיל ומשקה, מכניס ומוציא\" – עזרה מעשית בצרכים של ההורים.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "parents",
+      "doingNote": "קיים: \"כיבוד הורים\"."
+    },
+    {
+      "id": "tzedakah",
+      "title": "צדקה",
+      "type": "aseh",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:aseh:195",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, עשה 195",
+          "sefariaRef": "Sefer HaMitzvot, Positive Commandments 195",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.195?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: ראה אנכי, הלכות מתנות עניים פרק ו'"
+        }
+      ],
+      "rambamOpening": "היא שצונו לעשות צדקה ולחזק החלשים ולהרחיב אליהם. וכבר בא הצווי במצוה זו במלות מתחלפות, אמרו יתעלה פתוח תפתח את ידך וגו' אמר והחזקת בו ואמר וחי אחיך עמך, והכוונה באלו הלשונות כולם אחת והוא שנעזור אותם ונחזקם די ספוקם. וכבר התבארו דיני מצוה זו במקומות רבים בכתוב",
+      "expandedDraft": "לתת צדקה, לחזק את החלשים ולהרחיב להם. הרמב״ם מסביר שכל הלשונות בתורה (\"פתוח תפתח\", \"והחזקת בו\", \"וחי אחיך עמך\") כוונתם אחת: לעזור לנזקק עד שיהיה לו די צרכו. לפי הקבלה שהוא מביא, גם עני שמתפרנס מצדקה חייב במצווה, אפילו בדבר מועט.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": "charity",
+      "doingNote": "קיים: \"נתינת צדקה\"."
+    },
+    {
+      "id": "lo-telech-rachil",
+      "title": "לא תלך רכיל",
+      "type": "lav",
+      "review": "PENDING_REVIEW",
+      "reviewedBy": null,
+      "count": {
+        "proposed": "rambam:lav:301",
+        "status": "PROPOSED"
+      },
+      "sources": [
+        {
+          "label": "ספר המצוות לרמב״ם, לא תעשה 301",
+          "sefariaRef": "Sefer HaMitzvot, Negative Commandments 301",
+          "edition": "Sefer HaMitzvot, Warsaw 1883",
+          "license": "Public Domain",
+          "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.301?lang=he"
+        },
+        {
+          "label": "מקום במשנה תורה, לפי הערת המהדורה: קדושים תהיו, מדע הלכות דעות פ\"ז"
+        }
+      ],
+      "rambamOpening": "הזהיר מהיות רכיל. והוא אמרו לא תלך רכיל בעמך, אמרו (ספרא) לא תהא רך בדברים לזה וקשה לזה. דבר אחר שלא תהא כרוכל שטוען דברים והולך, ובכלל לאו זה אזהרה מהוצאת שם רע. (קדושים תהיו, מדע הלכות דעות פ\"ז):",
+      "expandedDraft": "איסור להיות רכיל, כמו שנאמר \"לא תלך רכיל בעמך\". הרמב״ם מביא את הספרא: לא להיות רך בדברים לזה וקשה לזה, ולא להיות כרוכל שנושא דברים מאדם לאדם. לדבריו, בכלל האיסור גם הוצאת שם רע.",
+      "expandedBy": "טיוטה: Claude, על סמך לשון הרמב״ם במהדורה הזו – לעריכה ולבדיקה",
+      "doing": null,
+      "doingNote": "לאו – אין \"עשיתי\". קשור למסך שמירת הלשון, בלי רישום עבירה."
+    }
+  ]
+}
