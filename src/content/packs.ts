@@ -7,7 +7,7 @@ import { DEMO_CONTENT } from '../config/features';
  */
 export type Segment = { text: string; note?: boolean };
 
-export type SiddurSection = {
+export type SiddurTextSection = {
   ref: string;
   heTitle: string;
   versionTitle: string;
@@ -15,7 +15,11 @@ export type SiddurSection = {
   versionSource: string;
   sha256: string;
   segments: Segment[];
+  missing?: undefined;
 };
+/** Round 14.1: in the map, but in no edition the pack may use – kept in its place and said, never skipped. */
+export type SiddurMissingSection = { ref: string; heTitle: string; missing: true };
+export type SiddurSection = SiddurTextSection | SiddurMissingSection;
 
 export type SiddurGroup = 'weekday' | 'shabbat' | 'holiday';
 
@@ -84,7 +88,7 @@ export const loadTehillim = async (): Promise<TehillimPack> => (await import('./
 /** Licenses that allow bundling in the app (CC-BY requires the attribution shown in the reader). */
 export const ALLOWED_LICENSES = ['Public Domain', 'CC0', 'CC-BY'];
 
-export function attributionFor(section: Pick<SiddurSection, 'versionTitle' | 'license'>): string {
+export function attributionFor(section: Pick<SiddurTextSection, 'versionTitle' | 'license'>): string {
   return `${section.versionTitle} · ${section.license} · דרך ספריא`;
 }
 

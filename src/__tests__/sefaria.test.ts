@@ -52,6 +52,41 @@ describe('loading a text', () => {
     expect(e).toMatchObject({ kind: 'rate-limited', ref: 'Kitzur_Shulchan_Arukh.10', detail: { status: 429, attempts: 3 } });
   });
 
+  it('one budget for the whole sequence: no retry that would end after it, no request longer than what is left (round 14.1)', async () => {
+    let clock = 0;
+    const pauses: number[] = [];
+    const busy = () => new Response('busy', { status: 429 });
+    const { fetchImpl, calls } = script(busy(), busy(), busy());
+    const e = await loadSefariaText(['Kitzur_Shulchan_Arukh.10'], {
+      fetchImpl,
+      now: () => clock,
+      sleep: async (ms) => {
+        pauses.push(ms);
+        clock += ms;
+      },
+      budgetMs: 5000,
+    }).catch((x) => x);
+    // 429 → a pause of 3000 (fits in 5000) → 429 → the next pause (8000) would pass the budget: stop.
+    expect(e).toMatchObject({ kind: 'rate-limited', detail: { attempts: 2 } });
+    expect(calls).toHaveLength(2);
+    expect(pauses).toEqual([3000]);
+  });
+
+  it('a budget already used: "timeout" without another request', async () => {
+    let clock = 0;
+    const { fetchImpl, calls } = script(new Response('busy', { status: 503 }), ok(3));
+    const e = await loadSefariaText(['A.1'], {
+      fetchImpl,
+      now: () => clock,
+      sleep: async () => {
+        clock += 10_000;
+      },
+      budgetMs: 1000,
+    }).catch((x) => x);
+    expect(calls).toHaveLength(1);
+    expect(e).toMatchObject({ kind: 'server' });
+  });
+
   it('no answer in time: "timeout", retried, then reported', async () => {
     const { fetchImpl, calls } = script('hang', 'hang', 'hang');
     const e = await loadSefariaText(['Kitzur_Shulchan_Arukh.10'], { fetchImpl, sleep: noSleep, timeoutMs: 20 }).catch((x) => x);

@@ -152,10 +152,18 @@ export function SiddurScreen({ onBack, onOpenProfile, initialId }: Props) {
                     {section.heTitle}
                   </h2>
                 ) : null}
-                <TextReader segments={section.segments} />
-                <p dir="ltr" className="text-[10px] text-ink-muted mt-3 text-left">
-                  {attributionFor(section)}
-                </p>
+                {section.missing ? (
+                  <p dir="rtl" className="rounded-[12px] bg-amber-soft text-ink text-[14px] leading-6 px-3 py-2.5" role="note" data-testid="siddur-missing">
+                    <span className="font-bold">חסר במהדורה שבחבילה: {section.heTitle}.</span> הקטע לא נמצא באף מהדורה שמותר לכלול באפליקציה, ולכן לא הושלם מנוסח אחר. יש לומר אותו מסידור מודפס.
+                  </p>
+                ) : (
+                  <>
+                    <TextReader segments={section.segments} />
+                    <p dir="ltr" className="text-[10px] text-ink-muted mt-3 text-left">
+                      {attributionFor(section)}
+                    </p>
+                  </>
+                )}
               </section>
             ))}
           </Card>

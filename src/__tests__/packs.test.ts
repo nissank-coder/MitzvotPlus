@@ -5,7 +5,7 @@ import weekday from '../content/packs/siddur-sefard-weekday.json';
 import shabbat from '../content/packs/siddur-sefard-shabbat.json';
 import holiday from '../content/packs/siddur-sefard-holiday.json';
 import tehillim from '../content/packs/tehillim.json';
-import { ALLOWED_LICENSES, MONTHLY_TEHILLIM, SiddurIndex, SiddurPack, TehillimPack, tehillimForDay } from '../content/packs';
+import { ALLOWED_LICENSES, MONTHLY_TEHILLIM, SiddurIndex, SiddurPack, TehillimPack, tehillimForDay, SiddurTextSection } from '../content/packs';
 import { getDayInfo } from '../lib/jewishCalendar';
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
@@ -35,6 +35,7 @@ describe('Siddur Sefard pack', () => {
     for (const p of ALL) {
       expect(p.sections.length).toBeGreaterThan(0);
       for (const s of p.sections) {
+        if (s.missing) throw new Error(`a missing section in the Sefard pack: ${s.ref}`);
         expect(ALLOWED_LICENSES).toContain(s.license);
         expect(s.versionTitle).toBeTruthy();
         expect(s.versionSource).toMatch(/^https?:\/\//);
@@ -47,7 +48,7 @@ describe('Siddur Sefard pack', () => {
   it('contains the weekday prayers and the blessings the app links to', () => {
     const ids = ALL.map((p) => p.id);
     for (const id of ['shacharit', 'mincha', 'maariv', 'birkat-hamazon', 'meein-shalosh', 'borei-nefashot', 'bedtime-shema']) expect(ids).toContain(id);
-    const amidah = ALL.find((p) => p.id === 'shacharit')!.sections.find((s) => s.heTitle === 'עמידה')!;
+    const amidah = ALL.find((p) => p.id === 'shacharit')!.sections.find((s) => s.heTitle === 'עמידה') as SiddurTextSection;
     expect(amidah.segments[0]!.text.replace(/[\u0591-\u05C7]/g, '')).toContain('אדני שפתי תפתח');
   });
 });
@@ -62,7 +63,7 @@ describe('Siddur Sefard – Shabbat and holidays', () => {
   it('contains the Shabbat prayers from Kabbalat Shabbat to Havdalah', () => {
     const ids = (shabbat as SiddurPack).prayers.map((p) => p.id);
     for (const id of ['shabbat-candles', 'kabbalat-shabbat', 'shabbat-maariv', 'shabbat-night-meal', 'shabbat-shacharit', 'shabbat-musaf', 'shabbat-mincha', 'havdalah']) expect(ids).toContain(id);
-    const kiddush = (shabbat as SiddurPack).prayers.find((p) => p.id === 'shabbat-night-meal')!.sections.find((s) => s.heTitle.includes('קידוש'))!;
+    const kiddush = (shabbat as SiddurPack).prayers.find((p) => p.id === 'shabbat-night-meal')!.sections.find((s) => s.heTitle.includes('קידוש')) as SiddurTextSection;
     expect(kiddush.segments.map((x) => x.text).join(' ').replace(/[\u0591-\u05C7]/g, '')).toContain('ויכלו');
   });
 
@@ -88,5 +89,40 @@ describe('monthly Tehillim division', () => {
     expect(tehillimForDay(13, info.hebrewMonthLength)).toEqual([{ from: 69, to: 71 }]);
     expect(tehillimForDay(29, 29).map((r) => r.from)).toEqual([140, 145]);
     expect(tehillimForDay(29, 30)).toEqual([{ from: 140, to: 144 }]);
+  });
+});
+
+/**
+ * Round 14.1 – nusach Ashkenaz (internal review only): each prayer from ONE edition, so it reads as one
+ * nusach; a section no allowed edition has is kept in its place as "missing" (the siddur says so),
+ * never skipped and never filled from another nusach; the pack is not approved for distribution.
+ */
+describe('Siddur Ashkenaz pack (internal review)', async () => {
+  const fs = await import('node:fs');
+  const read = (g: string) => JSON.parse(fs.readFileSync(`src/content/packs/siddur-ashkenaz-${g}.json`, 'utf8')) as SiddurPack & { distribution: string; approval: string };
+  const groups = ['weekday', 'shabbat', 'holiday'].map(read);
+  const prayers = groups.flatMap((g) => g.prayers);
+
+  it('is pending review and not approved for distribution', () => {
+    for (const g of groups) expect([g.approval, g.distribution]).toEqual(['PENDING_RABBINIC_REVIEW', 'NOT_APPROVED']);
+  });
+
+  it('every prayer comes from one edition, with an allowed licence and intact text', () => {
+    for (const p of prayers) {
+      const present = p.sections.flatMap((s) => (s.missing ? [] : [s]));
+      expect(present.length).toBeGreaterThan(0);
+      expect(new Set(present.map((s) => s.versionTitle)).size).toBe(1);
+      for (const s of present) {
+        expect(ALLOWED_LICENSES).toContain(s.license);
+        expect(sha(s.segments.map((x) => x.text).join('\n'))).toBe(s.sha256);
+      }
+    }
+  });
+
+  it('the weekday prayers are whole except three sections, each kept in its place and named', () => {
+    const weekday = groups[0]!.prayers;
+    const missing = weekday.flatMap((p) => p.sections.filter((s) => s.missing).map((s) => `${p.id}: ${s.heTitle}`));
+    expect(missing).toEqual(['shacharit: יהי רצון', 'mincha: וידוי וי"ג המידות', 'maariv: ויתן לך']);
+    expect(prayers.flatMap((p) => p.sections.filter((s) => s.missing)).length).toBe(7);
   });
 });

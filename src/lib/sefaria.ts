@@ -91,6 +91,9 @@ export type LoadOptions = {
   timeoutMs?: number;
   /** Further attempts after the first (only for failures that can pass). */
   retries?: number;
+  /** The time for the whole sequence – every request and pause together (round 14.1). No retry starts
+   *  when it would end after the budget; a request never waits longer than what is left of it. */
+  budgetMs?: number;
   /** Ignore the local copy (the reader's "load again"). */
   refresh?: boolean;
   cache?: TextCache | null;
@@ -165,16 +168,22 @@ export async function loadSefariaText(refs: string[], options: LoadOptions = {})
     if (hit) return { ...hit, fromCache: true };
   }
   const parts: Array<Awaited<ReturnType<typeof fetchOnce>>> = [];
+  const started = o.now();
+  const budget = options.budgetMs ?? 30_000;
+  const left = () => budget - (o.now() - started);
   for (const ref of refs) {
     for (let attempt = 1; ; attempt += 1) {
+      const remaining = left();
+      if (remaining <= 0) throw new SefariaError('timeout', ref, { ms: o.now() - started, attempts: attempt - 1, message: `total time budget (${budget} ms) used` });
       try {
-        parts.push(await fetchOnce(ref, o, attempt));
+        parts.push(await fetchOnce(ref, { ...o, timeoutMs: Math.min(o.timeoutMs, remaining) }, attempt));
         break;
       } catch (e) {
         if (!(e instanceof SefariaError)) throw e;
-        const last = attempt > o.retries || !RETRYABLE.includes(e.kind) || (e.kind === 'offline' && !o.online());
+        const wait = BACKOFF_MS[Math.min(attempt - 1, BACKOFF_MS.length - 1)]! * (e.kind === 'rate-limited' ? 2 : 1);
+        const last = attempt > o.retries || !RETRYABLE.includes(e.kind) || (e.kind === 'offline' && !o.online()) || wait >= left();
         if (last) throw e;
-        await o.sleep(BACKOFF_MS[Math.min(attempt - 1, BACKOFF_MS.length - 1)]! * (e.kind === 'rate-limited' ? 2 : 1));
+        await o.sleep(wait);
         if (o.signal?.aborted) throw e;
       }
     }

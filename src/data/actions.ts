@@ -55,8 +55,8 @@ export const ACTIONS = {
   charity: { title: 'נתינת צדקה', icon: 'charity', points: 15, dailyCap: 3, category: 'chesed', quick: true },
   chesed: { title: 'מעשה חסד', icon: 'heart', points: 15, dailyCap: 5, category: 'chesed', quick: true },
   parents: { title: 'כיבוד הורים', icon: 'user', points: 15, dailyCap: 3, category: 'chesed', quick: true },
-  guests: { title: 'הכנסת אורחים', icon: 'home', points: 15, dailyCap: 3, category: 'chesed' },
-  visitSick: { title: 'ביקור חולים', icon: 'heart', points: 20, dailyCap: 2, category: 'chesed' },
+  guests: { title: 'הכנסת אורחים', icon: 'home', points: 15, dailyCap: 3, category: 'chesed', quick: true },
+  visitSick: { title: 'ביקור חולים', icon: 'heart', points: 20, dailyCap: 2, category: 'chesed', quick: true },
   cleanSpeech: { title: 'יום של שמירת הלשון', icon: 'shield', points: 20, dailyCap: 1, oncePerDay: true, category: 'chesed' },
   // Round 9 habits (score-3). Values are a proposal for owner approval (scoring-rules.md).
   gratitude: { title: 'הכרת הטוב', icon: 'star', points: 10, dailyCap: 1, oncePerDay: true, category: 'chesed', quick: true },

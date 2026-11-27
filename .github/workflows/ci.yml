@@ -137,6 +137,8 @@ jobs:
         run: node scripts/e2e/round-13.mjs 2>&1 | tee reports/round-13.txt
       - name: Round 14 – existing user from main, clean install, learning reader (retry, 429, offline, full text), no flash
         run: node scripts/e2e/round-14.mjs 2>&1 | tee reports/round-14.txt
+      - name: Round 14.1 – mobile acceptance scenarios A–M in the browser (clean install, upgrade, no unintended entries, undo, reader network, nusach, catalog)
+        run: node scripts/e2e/round-14-1.mjs 2>&1 | tee reports/round-14-1.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

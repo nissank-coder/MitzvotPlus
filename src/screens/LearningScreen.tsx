@@ -9,6 +9,7 @@ import { currentStreak } from '../lib/progress';
 import { deviceTextCache, FAILURE_TEXT, loadSefariaText, SefariaError, TrackItem, trackItem, TRACKS } from '../lib/learning';
 import type { SefariaText } from '../lib/sefaria';
 import { formatTime } from '../lib/dates';
+import { BUILD_INFO } from '../config/buildInfo';
 import { useAppStore } from '../store/AppStore';
 import { ds } from '../theme';
 
@@ -204,6 +205,8 @@ function Reader({ item, done, onRecord, onClose }: { item: TrackItem; done: bool
       refresh: run > 0,
       sleep: (ms) =>
         new Promise((r) => {
+          // A load that was stopped (closed, or another text opened) no longer touches the screen.
+          if (controller.signal.aborted) return r();
           attempt += 1;
           setSt({ kind: 'loading', attempt });
           setTimeout(r, ms);
@@ -302,7 +305,23 @@ function FailureView({ error, onRetry, url }: { error: Error; onRetry: () => voi
             ? `${error.kind} · ${error.ref} · HTTP ${error.detail.status ?? '—'} · ${error.detail.ms} ms · attempts ${error.detail.attempts}${error.detail.message ? ` · ${error.detail.message}` : ''}`
             : error.message}
         </p>
+        <p dir="ltr" className="text-left font-mono [overflow-wrap:anywhere] mt-1" data-testid="reader-env">
+          {environmentLine()}
+        </p>
       </details>
     </div>
   );
+}
+
+/**
+ * Where the failure happened (round 14.1): build, shell and engine – so a screenshot from a phone
+ * tells which APK and which WebView. No personal data: no account, no history, no location.
+ */
+function environmentLine(): string {
+  const cap = (window as { Capacitor?: { getPlatform?: () => string } }).Capacitor;
+  const shell = cap?.getPlatform?.() ?? 'web';
+  const engine = /Chrome\/(\d+)/.exec(navigator.userAgent)?.[1];
+  const webview = /; wv\)/.test(navigator.userAgent);
+  const online = navigator.onLine === false ? 'offline' : 'online';
+  return `build ${BUILD_INFO.commit?.slice(0, 7) ?? '—'} · ${shell}${webview ? ' WebView' : ''} · Chrome ${engine ?? '—'} · ${online}`;
 }
