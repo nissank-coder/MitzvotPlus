@@ -1,0 +1,17 @@
+Round 13: 5 passed, 11 failed
+  PASS U2: the reset dialog opens
+  PASS U2: Escape closes the dialog
+  PASS U2: the page is active again after closing
+  PASS U6: Home shows the 5 newest entries of today
+  PASS U3: reaching the goal shows the toast
+  FAIL U1: on Shabbat the editor starts with all three habits (weekly and not-due included)
+  FAIL U1: saving without a change changes nothing (no habit lost, no new snapshot)
+  FAIL U2: the page behind the dialog is inert
+  FAIL U2: the focus stays where the user moved it while the screen renders every second – ביטול → אני → ביטול
+  FAIL U2: Tab and Shift+Tab stay inside the dialog
+  FAIL U2: the focus returns to the button that opened it – שמירת הלשוןמודעות לדיבור, בלי שיפוטיותפרטי · נשמר רק במכשיר הזה · לא משותף ולא מגובההזמן מאז האיפוס האחרון שרשמת0דקותמתחיליםמאז שהפעלת את המונה: 19:54שעון המכשיר מוקדם ממועד ההתחלה. הזמן יוצג שוב כשהשעון יתוקן.מעדת? זה חלק מהדרךרישום מעידה מתחיל את המונה מחדש. השיא והממוצע נשמרים, ושום תחום אחר באפליקציה לא מושפע.רישום מעידה ואיפוסעכשיופחות מדקההשיא שלךפחות מדקהממוצע—רעיונות קטניםעוצרים רגע לפני שמדבריםשואלים: האם זה נכון, נחוץ ומיטיב?מכוונים את השיחה לטובמעבירים את המיקוד לנושא מועיל או למילה טובה.מדברים על אחרים כפי שהיינו רוציםחושבים איך היינו מרגישים אילו הדברים נאמרו עלינו.המונה מבוסס רק על מה שרשמת. הוא לא מעיד על מה שלא תועד, ולא נכנס לניקוד, לאתגרים או לקהילה.אנימסלוליםהוספההתקדמותהיום
+  FAIL exception: page.click: Timeout 8000ms exceeded.
+  FAIL U5: a double tap on "הצעד הבא" records the tapped habit once – not the next one – ["birkatHamazon","torahStudy"]
+  FAIL exception: locator.getAttribute: Timeout 8000ms exceeded.
+  FAIL exception: locator.click: Timeout 8000ms exceeded.
+  FAIL U3: removing that blessing elsewhere removes the goal toast (99 again)

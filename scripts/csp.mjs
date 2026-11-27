@@ -6,7 +6,10 @@ export const PRODUCTION_CONNECT = ["'self'", 'https://www.sefaria.org'];
 export function backendOrigin(env) {
   const kind = env.VITE_BACKEND_ENV;
   const url = env.VITE_SUPABASE_URL;
-  if ((kind !== 'development' && kind !== 'staging') || !url || !env.VITE_SUPABASE_ANON_KEY) return null;
+  // The public key: VITE_SUPABASE_PUBLISHABLE_KEY (newer projects) or VITE_SUPABASE_ANON_KEY.
+  const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
+  if ((kind !== 'development' && kind !== 'staging') || !url || !key) return null;
+  if (/^sb_secret_/.test(key)) throw new Error('a secret key must never be in a VITE_ variable – use the publishable key');
   let u;
   try {
     u = new URL(url);

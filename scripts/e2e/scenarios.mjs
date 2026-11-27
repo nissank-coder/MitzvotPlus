@@ -80,24 +80,27 @@ try {
   check((await count('text=טיוטה פנימית')) === 0, 'production: no draft content');
 
   // 2. Three prayers: asks which prayer; only the chosen one is recorded
-  await p.click('[aria-label="רשמתי: שלוש תפילות"]');
+  await p.click('[aria-label="רישום תפילה: שלוש תפילות"]');
   check((await count('[role=dialog][aria-label^="איזו תפילה?"]')) === 1, '2: prayer chooser opens');
   await p.locator('[role=dialog] button', { hasText: 'מנחה' }).click();
+  await p.locator('[role=dialog] button', { hasText: 'מנחה ביחידות' }).click(); // round 13 (U5): the minyan choice
   await settle();
   check((await toast()).includes('נרשם'), '2: saved feedback after recording', await toast());
-  await p.click('[aria-label="רשמתי: שלוש תפילות"]');
+  await p.click('[aria-label="רישום תפילה: שלוש תפילות"]');
   check(await p.locator('[role=dialog] button', { hasText: 'מנחה' }).isDisabled(), '2: an already recorded prayer cannot be chosen again');
   await p.locator('[role=dialog] button', { hasText: 'שחרית' }).click();
+  await p.locator('[role=dialog] button', { hasText: 'שחרית ביחידות' }).click(); // round 13 (U5): the minyan choice
   await settle();
-  await p.click('[aria-label="רשמתי: שלוש תפילות"]');
+  await p.click('[aria-label="רישום תפילה: שלוש תפילות"]');
   await p.locator('[role=dialog] button', { hasText: 'ערבית' }).click();
+  await p.locator('[role=dialog] button', { hasText: 'ערבית ביחידות' }).click(); // round 13 (U5): the minyan choice
   await settle();
   check((await count('text=/^1\\/2$/')) === 1, '2: three different prayers complete the habit (1/2)');
   await shot('02-three-prayers');
 
   // 3. Learning track: "I did it" opens the learning screen, never records general learning
   const before = await text('text=/^\\d+$/ >> nth=0');
-  await p.click('[aria-label="רשמתי: מסלול לימוד קבוע"]');
+  await p.click('[aria-label="פתיחה: מסלול לימוד קבוע"]');
   await settle();
   check((await count('text=הלימוד שלי היום')) === 1, '3: learning-track habit opens the learning screen');
   void before;

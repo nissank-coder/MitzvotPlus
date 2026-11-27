@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AppIcon } from '../components/AppIcon';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Button, Num, Ring, ScreenHeader, SectionTitle, Surface } from '../components/ds';
@@ -45,6 +45,9 @@ export function BlessingsScreen({ onBack }: Props) {
   const total = derived.blessingTotal;
   const goal = state.blessingGoal;
   const [period, setPeriod] = useState<Period>('all');
+  // Round 13 (U6): the list grows by pages; a new part of the day starts from the first page.
+  const [limit, setLimit] = useState(FIRST_PAGE);
+  useEffect(() => setLimit(FIRST_PAGE), [period]);
   const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
   const remaining = Math.max(0, goal - total);
   const latest = derived.todayBlessings[0];
@@ -159,7 +162,7 @@ export function BlessingsScreen({ onBack }: Props) {
           <p className="py-4 text-[14px] text-ink-muted text-center">{total > 0 ? 'אין ברכות בחלק זה של היום.' : 'הברכה הראשונה של היום מחכה לך.'}</p>
         ) : (
           <ul className="flex flex-col">
-            {shown.slice(0, 12).map((item) => (
+            {shown.slice(0, limit).map((item) => (
               <li key={item.id} className="flex flex-row items-center gap-2 min-h-[52px] border-t border-line first:border-t-0">
                 <span className="num text-[13px] text-ink-muted w-12">{formatTime(item.createdAt)}</span>
                 <span className="flex-1 min-w-0 text-[15px] font-bold text-ink truncate">
@@ -178,7 +181,12 @@ export function BlessingsScreen({ onBack }: Props) {
             ))}
           </ul>
         )}
-        {shown.length > 12 ? <p className="text-[12px] text-ink-muted pb-1">ועוד {shown.length - 12} ברכות</p> : null}
+        {/* Every entry can be reached for a correction (round 13, U6) – also an early one on a day of 100. */}
+        {shown.length > limit ? (
+          <Button variant="ghost" size="sm" className="self-start" onClick={() => setLimit((n) => n + PAGE)}>
+            הצגת עוד {Math.min(PAGE, shown.length - limit)} (נותרו {shown.length - limit})
+          </Button>
+        ) : null}
       </Surface>
 
       <p className="text-[12px] text-ink-muted px-1">
@@ -198,3 +206,6 @@ export function BlessingsScreen({ onBack }: Props) {
     </div>
   );
 }
+
+const FIRST_PAGE = 12;
+const PAGE = 20;

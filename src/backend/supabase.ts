@@ -16,7 +16,10 @@ export function supabaseClient(): Promise<SupabaseClient> {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: false, // one-time code sign-in: no redirect / deep link in v1
+          // Round 13: Google / Apple with PKCE – the app exchanges the returned code itself (the
+          // verifier is kept in the secure store); a session is never read from a URL.
+          detectSessionInUrl: false,
+          flowType: 'pkce',
           storageKey: 'session',
           storage: {
             getItem: (k) => secure.get('auth', k),

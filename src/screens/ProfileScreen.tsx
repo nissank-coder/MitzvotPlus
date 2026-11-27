@@ -3,6 +3,7 @@ import { AppHeader } from '../components/AppHeader';
 import { AppIcon } from '../components/AppIcon';
 import { Card } from '../components/Card';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { ModalLayer } from '../components/Modal';
 import { ProfileFields } from '../components/ProfileFields';
 import { COMMUNITY_ENABLED, DEMO_CONTENT, NOTIFICATIONS_ENABLED } from '../config/features';
 import { hebrewYear } from '../lib/dates';
@@ -325,18 +326,12 @@ function GoalsEditor({ initial, onSave, onClose }: { initial: Goals; onSave: (go
     setGoals((prev) => ({ ...prev, [row.key]: Math.min(row.max, Math.max(row.min, prev[row.key] + delta)) }));
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="עריכת יעדים"
+    <ModalLayer
+      label="עריכת יעדים"
+      onClose={onClose}
+      backdropClassName="fixed inset-0 z-50 flex items-end justify-center bg-[#0C1F30]/35"
+      panelClassName="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow"
     >
-      <div
-        dir="rtl"
-        className="w-full max-w-[460px] bg-white rounded-t-[28px] px-5 pt-2 sheet-safe card-shadow"
-        onClick={(e) => e.stopPropagation()}
-      >
         <div className="w-12 h-[5px] rounded-full bg-[#DDE8EE] mx-auto mb-4" />
         <h2 className="text-[#17324D] text-[20px] font-black mb-4">היעדים שלי</h2>
         {rows.map((row) => (
@@ -347,7 +342,7 @@ function GoalsEditor({ initial, onSave, onClose }: { initial: Goals; onSave: (go
                 type="button"
                 aria-label={`הגדלת ${row.label}`}
                 onClick={() => change(row, row.step)}
-                className="w-9 h-9 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
+                className="w-11 h-11 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
               >
                 +
               </button>
@@ -356,7 +351,7 @@ function GoalsEditor({ initial, onSave, onClose }: { initial: Goals; onSave: (go
                 type="button"
                 aria-label={`הקטנת ${row.label}`}
                 onClick={() => change(row, -row.step)}
-                className="w-9 h-9 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
+                className="w-11 h-11 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[20px] font-black"
               >
                 −
               </button>
@@ -370,7 +365,6 @@ function GoalsEditor({ initial, onSave, onClose }: { initial: Goals; onSave: (go
         >
           שמירה
         </button>
-      </div>
-    </div>
+    </ModalLayer>
   );
 }

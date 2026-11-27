@@ -5,10 +5,19 @@ import { useAppStore } from '../store/AppStore';
 import { ds } from '../theme';
 import { AppIcon } from './AppIcon';
 import { Num } from './ds';
+import { ModalLayer } from './Modal';
+import type { RecordFocus } from './RecordFlow';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
+  /** Round 13 (U5): opened for one habit – "which prayer?" or directly the minyan choice of one prayer. */
+  focus?: RecordFocus | null;
+};
+
+const itemOf = (key: ActionKey): QuickAddItem => {
+  const def = actionDef(key);
+  return { key, title: def.title, detail: def.minyanBonus ? 'minyan' : null, oncePerDay: Boolean(def.oncePerDay) } as QuickAddItem;
 };
 
 /**
@@ -18,27 +27,23 @@ type Props = {
  * closes are ignored. The saved confirmation (with "ביטול") comes from the toast once the entry
  * is stored on the device; a failed save shows the save banner instead.
  */
-export function QuickAddSheet({ visible, onClose }: Props) {
+export function QuickAddSheet({ visible, onClose, focus = null }: Props) {
   const { state, derived, addAction, addBlessing, previewPoints } = useAppStore();
-  const [detail, setDetail] = useState<QuickAddItem | null>(null);
+  // Opened for one prayer, the sheet starts at its minyan choice – from the first frame (round 14:
+  // no flash of the whole list first). The sheet is mounted afresh for every opening (App gives it
+  // a new key), so nothing is carried over from the last time (A15).
+  const single = focus && focus.actions.length === 1 ? itemOf(focus.actions[0]!) : null;
+  const [detail, setDetail] = useState<QuickAddItem | null>(() => (single?.detail === 'minyan' ? single : null));
   const [recorded, setRecorded] = useState<{ key: ActionKey; minyan: boolean } | null>(null);
   const busy = useRef(false);
   const groups = useMemo(() => quickAddGroups(state.profile.gender), [state.profile.gender]);
 
-  // Every opening starts fresh: no detail step, no carried-over minyan choice (A15).
   useEffect(() => {
-    if (visible) busy.current = false;
-    else {
+    if (!visible) {
       setDetail(null);
       setRecorded(null);
     }
   }, [visible]);
-  useEffect(() => {
-    if (!visible) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [visible, onClose]);
 
   if (!visible) return null;
 
@@ -55,21 +60,33 @@ export function QuickAddSheet({ visible, onClose }: Props) {
   };
   const isRecorded = (key: ActionKey, minyan?: boolean) => recorded?.key === key && (minyan === undefined || recorded.minyan === minyan);
   const choose = (item: QuickAddItem) => (item.detail === 'minyan' ? setDetail(item) : record(item.key));
+  // A narrowed list ("which prayer?"): the habit's own actions only.
+  const focusItems = focus && !single ? focus.actions.map(itemOf) : null;
+  const canGoBack = detail !== null && !(single && single.key === detail.key);
+  const label = detail ? `פרטי הרישום: ${detail.title}` : focusItems ? `איזו תפילה? ${focus!.title}` : 'הוספת פעולה';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45" onClick={() => !recorded && onClose()} role="dialog" aria-modal="true" aria-label={detail ? `פרטי הרישום: ${detail.title}` : 'הוספת פעולה'}>
-      <div dir="rtl" aria-busy={recorded ? true : undefined} className={`w-full max-w-[460px] max-h-[88dvh] flex flex-col bg-canvas rounded-t-[28px] sheet-safe ${recorded ? '[&_button]:pointer-events-none' : ''}`} onClick={(e) => e.stopPropagation()}>
+    <ModalLayer
+      label={label}
+      onClose={() => !recorded && onClose()}
+      closeOnBackdrop={!recorded}
+      backdropClassName="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45"
+      panelClassName={`w-full max-w-[460px] max-h-[88dvh] flex flex-col bg-canvas rounded-t-[28px] sheet-safe ${recorded ? '[&_button]:pointer-events-none' : ''}`}
+      panelProps={{ 'aria-busy': recorded ? true : undefined }}
+    >
         <div className="px-4 pt-2.5">
           <span aria-hidden="true" className="block w-12 h-[5px] rounded-full bg-line mx-auto mb-3" />
           <div className="flex flex-row items-start gap-3 mb-3">
-            {detail ? (
+            {canGoBack ? (
               <button type="button" onClick={() => setDetail(null)} aria-label="חזרה לרשימה" className="w-12 h-12 rounded-full bg-surface border border-line flex items-center justify-center shrink-0">
                 <AppIcon name="chevronRight" size={22} color={ds.brand} />
               </button>
             ) : null}
             <div className="flex-1 min-w-0">
-              <h2 className="text-[22px] font-extrabold text-ink leading-tight">{detail ? detail.title : 'מה רשמת?'}</h2>
-              <p className="text-[14px] text-ink-muted mt-0.5">{detail ? 'עוד פרט אחד, והתפילה נרשמת' : 'בחרו פעולה שכבר עשיתם. היא נרשמת להיום.'}</p>
+              <h2 className="text-[22px] font-extrabold text-ink leading-tight">{detail ? detail.title : focusItems ? 'איזו תפילה התפללת?' : 'מה רשמת?'}</h2>
+              <p className="text-[14px] text-ink-muted mt-0.5">
+                {detail ? 'עוד פרט אחד, והתפילה נרשמת' : focusItems ? `${focus!.title} · נרשם רק מה שבחרת` : 'בחרו פעולה שכבר עשיתם. היא נרשמת להיום.'}
+              </p>
             </div>
             <button type="button" onClick={onClose} aria-label="סגירה" className="w-12 h-12 rounded-full bg-surface border border-line flex items-center justify-center shrink-0">
               <AppIcon name="close" size={20} color={ds.inkMuted} />
@@ -109,6 +126,27 @@ export function QuickAddSheet({ visible, onClose }: Props) {
                         'ללא נקודות'
                       )}
                     </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : focusItems ? (
+            <div className="flex flex-col gap-2.5 pb-2">
+              {focusItems.map((item) => {
+                const isDone = (item.oncePerDay && doneToday.has(item.key)) || isRecorded(item.key);
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    disabled={isDone}
+                    onClick={() => choose(item)}
+                    aria-label={isDone ? `${item.title} – נרשם היום` : item.title}
+                    className={`min-h-[60px] rounded-[18px] border px-4 flex flex-row items-center gap-3 text-right ${
+                      isDone ? 'bg-lime-soft text-lime-ink border-transparent' : 'bg-surface text-ink border-line ds-shadow active:bg-brand-soft'
+                    }`}
+                  >
+                    <span className="flex-1 text-[17px] font-extrabold">{item.title}</span>
+                    {isDone ? <span className="text-[13px] font-bold">נרשם היום ✓</span> : <AppIcon name="chevronLeft" size={18} color={ds.brand} />}
                   </button>
                 );
               })}
@@ -162,7 +200,6 @@ export function QuickAddSheet({ visible, onClose }: Props) {
             ))
           )}
         </div>
-      </div>
-    </div>
+    </ModalLayer>
   );
 }

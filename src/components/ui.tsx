@@ -73,7 +73,7 @@ export function ActionRow({
           onClick={onPress}
           disabled={disabled || done}
           aria-label={done ? `${title} – בוצע` : `סימון: ${title}`}
-          className={`min-w-[64px] h-9 px-3 rounded-full text-[12px] font-black transition-colors shrink-0 ${
+          className={`min-w-[64px] min-h-[44px] px-3 rounded-full text-[12px] font-black transition-colors shrink-0 ${
             done
               ? 'bg-[#EAF7EF] text-[#4DAA78]'
               : disabled
@@ -94,7 +94,7 @@ export function Chip({ children, active, onPress }: PropsWithChildren<{ active?:
       type="button"
       onClick={onPress}
       aria-pressed={active}
-      className={`min-h-[36px] px-3 rounded-full border text-[13px] font-extrabold whitespace-nowrap transition-colors ${
+      className={`min-h-[44px] px-3 rounded-full border text-[13px] font-extrabold whitespace-nowrap transition-colors ${
         active ? 'bg-[#2AAE9B] border-[#2AAE9B] text-white' : 'bg-white border-[#DDE8EE] text-[#17324D] hover:bg-[#EAF4FB]'
       }`}
     >

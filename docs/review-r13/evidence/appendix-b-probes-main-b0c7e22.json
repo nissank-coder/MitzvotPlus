@@ -1,0 +1,89 @@
+{
+  "environment": "Node SQLite + actual storage/reducer/sync; synthetic in-memory remote",
+  "deleted_entry_reupload": {
+    "localLogCount": 0,
+    "before": [
+      {
+        "operation": "create",
+        "status": "accepted"
+      },
+      {
+        "operation": "void",
+        "status": "accepted"
+      }
+    ],
+    "requeued": 1,
+    "submitted": [
+      {
+        "eventId": "log-mwxqye4z-1-f4hm",
+        "operation": "create"
+      }
+    ],
+    "result": {
+      "state": "ok",
+      "at": 1795709304322,
+      "pushed": 1,
+      "pulled": 0,
+      "pending": 0,
+      "rejected": 0
+    },
+    "deletedCreateSubmitted": true,
+    "voidStillPresent": false
+  },
+  "only_new_entries": {
+    "submitted": [
+      {
+        "eventId": "log-mwxqye57-2-2alt",
+        "operation": "create"
+      }
+    ],
+    "result": {
+      "state": "ok",
+      "at": 1795709304325,
+      "pushed": 1,
+      "pulled": 0,
+      "pending": 0,
+      "rejected": 0
+    },
+    "oldPendingEntrySubmitted": true
+  },
+  "remote_history_reupload": {
+    "localLogCount": 1,
+    "requeued": 0,
+    "submitted": [],
+    "result": {
+      "state": "ok",
+      "at": 1795709304327,
+      "pushed": 0,
+      "pulled": 0,
+      "pending": 0,
+      "rejected": 0
+    }
+  },
+  "habit_editor_source_path": {
+    "note": "Executes the derived selection and reducer used by the editor; does not mount the UI",
+    "before": [
+      {
+        "id": "learn-daily",
+        "perWeek": 7
+      },
+      {
+        "id": "gratitude",
+        "perWeek": 3
+      }
+    ],
+    "editorInitialSelection": [
+      {
+        "id": "learn-daily",
+        "perWeek": 7
+      }
+    ],
+    "after": [
+      {
+        "id": "learn-daily",
+        "perWeek": 7
+      }
+    ],
+    "weeklyHabitLost": true
+  }
+}

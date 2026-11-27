@@ -264,7 +264,7 @@ try {
   check(anonTables.length === 0, '14: the anonymous role has no access to any table', JSON.stringify(anonTables));
   const fnPriv = async (role) => (await db.query(`select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and has_function_privilege('${role}', p.oid, 'execute') order by 1`)).rows.map((r) => r.proname);
   check((await fnPriv('anon')).length === 0, '14: the anonymous role can call no function', (await fnPriv('anon')).join(','));
-  const API = ['block_user', 'create_invite', 'delete_my_account', 'export_my_data', 'give_kudos', 'pull_events', 'redeem_invite', 'set_blessing_goals', 'set_consent', 'share_achievement', 'submit_events', 'submit_report'];
+  const API = ['backup_state', 'block_user', 'create_invite', 'delete_my_account', 'export_my_data', 'get_blessing_goals', 'give_kudos', 'pull_events', 'redeem_invite', 'set_backup_scope', 'set_blessing_goals', 'set_consent', 'share_achievement', 'submit_events', 'submit_report'];
   check(JSON.stringify(await fnPriv('authenticated')) === JSON.stringify(API), '14: signed-in users can call exactly the API functions', (await fnPriv('authenticated')).join(','));
   const writes = (await db.query("select c.relname || ':' || string_agg(p, ',' order by p) w from pg_class c join pg_namespace n on n.oid = c.relnamespace cross join unnest(array['INSERT','UPDATE','DELETE']) p where n.nspname = 'public' and c.relkind = 'r' and (has_table_privilege('authenticated', c.oid, p) or (p <> 'DELETE' and has_any_column_privilege('authenticated', c.oid, p))) group by c.relname order by 1")).rows.map((r) => r.w);
   const WRITES = ['blocks:DELETE', 'friendships:DELETE', 'group_members:DELETE', 'groups:DELETE,INSERT,UPDATE', 'invites:DELETE', 'kudos:DELETE', 'profiles:UPDATE', 'shared_achievements:DELETE', 'social_profiles:DELETE,INSERT,UPDATE'];
@@ -333,7 +333,7 @@ try {
   // After-the-fact entry for an earlier day.
   f = reducer(f, { type: 'addAction', payload: { key: 'kiddush', backfill: true, now: Date.UTC(2026, 10, 23, 19), dateKey: '2026-11-21' } });
   const fGoals = f.goalHistory.map((x) => ({ from: x.from, blessingGoal: x.blessingGoal }));
-  check((await as(F, 'select public.set_blessing_goals($1::jsonb)', [JSON.stringify(fGoals)])).error === null, '16: goal history accepted');
+  check((await as(F, 'select public.set_blessing_goals($1::jsonb, 0)', [JSON.stringify(fGoals)])).error === null, '16: goal history accepted');
   const fEvents = eventsFrom(f, 'device-f1');
   for (let i = 0; i < fEvents.length; i += 100) await submit(F, fEvents.slice(i, i + 100));
   const parity = async (state, label) => {
@@ -356,9 +356,9 @@ try {
   await parity(f3, 'after the bundle was reduced from 5 to 2');
   // The goal is changed again (for today on): history only, old days do not move.
   const f4 = reducer(f3, { type: 'updateGoals', payload: { blessingGoal: 200 }, dateKey: '2026-11-24' });
-  await as(F, 'select public.set_blessing_goals($1::jsonb)', [JSON.stringify(f4.goalHistory.map((x) => ({ from: x.from, blessingGoal: x.blessingGoal })))]);
+  await as(F, 'select public.set_blessing_goals($1::jsonb, 1)', [JSON.stringify(f4.goalHistory.map((x) => ({ from: x.from, blessingGoal: x.blessingGoal })))]);
   await parity(f4, 'a new goal does not change the score of earlier days');
-  check(/bad_goal/.test((await as(F, "select public.set_blessing_goals('[{\"from\":\"2026-11-01\",\"blessingGoal\":5000}]'::jsonb)")).error ?? ''), '16: an impossible goal is refused');
+  check(/bad_goal/.test((await as(F, "select public.set_blessing_goals('[{\"from\":\"2026-11-01\",\"blessingGoal\":5000}]'::jsonb, 2)")).error ?? ''), '16: an impossible goal is refused');
 
   // 17. Concurrency: one account's uploads, consent changes and deletion are serialized
   const session = async () => {
@@ -419,6 +419,62 @@ try {
   check(/account_deleted/.test(err4 ?? ''), '17: account deleted during an upload – the upload is refused', String(err4));
   check((await db.query('select count(*)::int n from public.activity_events where user_id = $1', [G])).rows[0].n === 0, '17: and the deleted account has no events');
   check(/account_deleted/.test((await as(G, 'select * from public.pull_events(0)')).error ?? ''), '17: a pull after deletion reports the deletion');
+
+  // 18. Backup generation (round 13, review B1): the server enforces the user's choice for every device
+  const H = await newUser();
+  await as(H, 'select public.set_consent(true, false)');
+  let hs = reducer(createFreshState(NOW), { type: 'addAction', payload: { key: 'shacharit', now: NOW, dateKey: '2026-11-24' } });
+  const h1 = eventsFrom(hs, 'device-h1');
+  const state = async () => (await as(H, 'select public.backup_state() s')).rows[0]?.s;
+  const st1 = await state();
+  check(st1?.epoch === 1 && st1.floor === null && st1.decisionPending === false, '18: a new account: generation 1, no floor, nothing to decide', JSON.stringify(st1));
+  check((await submit(H, h1)).rows[0]?.outcome === 'accepted', '18: generation 1: an upload of a client from before round 13 (no epoch) is accepted');
+  await as(H, 'select public.set_consent(false, false, true)');
+  await as(H, 'select public.set_consent(true, false)');
+  const st2 = await state();
+  check(st2?.epoch === 2 && st2.decisionPending === true, '18: deleting the cloud copy starts generation 2 and waits for the choice', JSON.stringify(st2));
+  check(/backup_decision_required/.test((await as(H, 'select * from public.submit_events($1::jsonb, 2)', [JSON.stringify(h1)])).error ?? ''), '18: while the choice is open, nothing is accepted from any device');
+  check(/backup_epoch_changed/.test((await as(H, 'select public.set_backup_scope(1, true)')).error ?? ''), '18: an answer for an older generation is refused');
+  const st3 = (await as(H, 'select public.set_backup_scope(2, false) s')).rows[0]?.s;
+  check(st3?.floor !== null && st3?.decisionPending === false, '18: "only from now" sets the floor', JSON.stringify(st3));
+  const st4 = (await as(H, 'select public.set_backup_scope(2, true) s')).rows[0]?.s;
+  check(st4?.floor === st3?.floor, '18: a late answer from another device does not change the decision', JSON.stringify(st4));
+  check(/backup_epoch_changed/.test((await submit(H, h1)).error ?? ''), '18: a device still on the old generation (offline during the deletion) is refused');
+  check(/backup_epoch_changed/.test((await as(H, 'select * from public.submit_events($1::jsonb, 1)', [JSON.stringify(h1)])).error ?? ''), '18: naming the old generation explicitly is refused too');
+  const old = await as(H, 'select * from public.submit_events($1::jsonb, 2)', [JSON.stringify(h1)]);
+  check(old.rows[0]?.outcome === 'rejected' && old.rows[0]?.reason === 'before_backup_floor', '18: an entry recorded before "only from now" is refused, even with the right generation', JSON.stringify(old.rows));
+  const later = Date.now() + 1000;
+  hs = reducer(hs, { type: 'addAction', payload: { key: 'mincha', now: later, dateKey: new Date(later).toISOString().slice(0, 10) } });
+  const fresh = eventsFrom(hs, 'device-h1').filter((e) => e.eventId === hs.logs[0].id);
+  check((await as(H, 'select * from public.submit_events($1::jsonb, 2)', [JSON.stringify(fresh)])).rows[0]?.outcome === 'accepted', '18: an entry recorded after the choice is backed up');
+  await as(H, 'select public.set_consent(false, false, true)');
+  await as(H, 'select public.set_consent(true, false)');
+  check((await as(H, 'select public.set_backup_scope(3, true) s')).rows[0]?.s?.floor === null, '18: "all history" has no floor');
+  check((await as(H, 'select * from public.submit_events($1::jsonb, 3)', [JSON.stringify(h1)])).rows[0]?.outcome === 'accepted', '18: "all history": an old entry is accepted again in the new generation');
+  check(/permission denied/.test((await as(H, 'update public.profiles set backup_floor = null, backup_epoch = 1, backup_decision_pending = false')).error ?? ''), '18: the generation, the floor and the pending choice cannot be changed directly');
+  check(/permission denied/.test((await as(null, 'select public.backup_state()')).error ?? ''), '18: the anonymous role cannot read a backup state');
+
+  // 19. Goal history with a version (round 13, review B2): a stale phone cannot silently undo a change
+  const K = await newUser();
+  await as(K, 'select public.set_consent(true, false)');
+  const goalsOf = async () => (await as(K, 'select public.get_blessing_goals() g')).rows[0]?.g;
+  const k0 = await goalsOf();
+  check(k0?.version === 0 && k0.goals.length === 0, '19: a new account has no goal history (version 0)', JSON.stringify(k0));
+  const a50 = [{ from: '0000-00-00', blessingGoal: 100, setAt: 0 }, { from: '2026-11-24', blessingGoal: 50, setAt: NOW }];
+  const b100 = [{ from: '0000-00-00', blessingGoal: 100, setAt: 0 }];
+  check((await as(K, 'select public.set_blessing_goals($1::jsonb, 0) v', [JSON.stringify(a50)])).rows[0]?.v === 1, '19: phone A writes on version 0 → version 1');
+  check(/goals_conflict/.test((await as(K, 'select public.set_blessing_goals($1::jsonb, 0)', [JSON.stringify(b100)])).error ?? ''), "19: phone B, still on version 0, cannot replace A's change");
+  check(/goals_conflict/.test((await as(K, 'select public.set_blessing_goals($1::jsonb, null)', [JSON.stringify(b100)])).error ?? ''), '19: a write without a base version is refused');
+  const k1 = await goalsOf();
+  check(k1?.version === 1 && k1.goals.some((x) => x.from === '2026-11-24' && x.blessingGoal === 50 && Number(x.setAt) === NOW), "19: the server keeps A's change and the time it was set", JSON.stringify(k1));
+  check(k1?.goals[0]?.from === '0000-00-00', '19: the first goal is "since always"', JSON.stringify(k1?.goals[0]));
+  const merged = [...a50, { from: '2026-11-26', blessingGoal: 120, setAt: NOW + 1 }];
+  check((await as(K, 'select public.set_blessing_goals($1::jsonb, 1) v', [JSON.stringify(merged)])).rows[0]?.v === 2, '19: B writes its merge on version 1 → version 2');
+  await as(K, 'select public.set_consent(false, false, true)');
+  await as(K, 'select public.set_consent(true, false)');
+  const k2 = await goalsOf();
+  check(k2?.version === 3 && k2.goals.length === 0, '19: deleting the cloud copy clears the goals and moves the version on', JSON.stringify(k2));
+
   await c1.end();
   await c2.end();
 } catch (e) {

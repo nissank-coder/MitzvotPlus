@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { accountApi, AccountApi, AccountUser, Consent } from '../backend/account';
 import { supabaseClient } from '../backend/supabase';
 import { BACKEND } from '../backend/config';
+import { AuthCallback, authRedirect, enabledProviders, OAuthProvider, onAuthCallback, parseAuthCallback } from '../backend/oauth';
 import { useAppStore } from '../store/AppStore';
 import type { SyncErrorCode, SyncStatus } from '../sync/engine';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -26,6 +27,7 @@ const STATUS_TEXT: Record<SyncStatus['state'], string> = {
   error: 'לא סונכרן',
   cancelled: 'הסנכרון הופסק',
   'account-deleted': 'החשבון נמחק',
+  'decision-needed': 'ממתין לבחירה שלך: מה לגבות',
 };
 const ERROR_TEXT: Record<SyncErrorCode, string> = {
   offline: 'אין חיבור לשרת. הנתונים שמורים במכשיר וישלחו בפעם הבאה.',
@@ -34,18 +36,27 @@ const ERROR_TEXT: Record<SyncErrorCode, string> = {
   account_deleted: 'החשבון נמחק.',
   rate_limited: 'יותר מדי בקשות. ננסה שוב מאוחר יותר.',
   local_save_failed: 'השמירה במכשיר נכשלה, ולכן לא נשלח ולא התקבל דבר.',
+  backup_changed: 'הגיבוי נמחק בטלפון אחר. התור נבנה מחדש לפי הבחירה שחלה על החשבון.',
+  backup_decision_required: 'הגיבוי נמחק. לפני שליחה צריך לבחור מה לגבות.',
+  goals_conflict: 'היעדים שונו בטלפון אחר באותו זמן. ננסה שוב בסנכרון הבא.',
   unknown: 'שגיאה בסנכרון. הנתונים שמורים במכשיר.',
 };
 
 const AUTH_TEXT: Record<string, string> = {
   code_invalid_or_expired: 'הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.',
   code_rate_limited: 'אפשר לבקש קוד חדש בעוד דקה.',
+  oauth_failed: 'ההתחברות לא הושלמה. אפשר לנסות שוב או להמשיך כאורח.',
 };
+const PROVIDER_LABEL: Record<OAuthProvider, string> = { google: 'המשך עם Google', apple: 'המשך עם Apple' };
+const PROVIDERS = enabledProviders();
+const isNative = () => Boolean((window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.());
 
 type Dialog = 'transfer' | 'logout' | 'logout-wipe' | 'delete' | 'revoke' | 'reupload' | null;
 
 export default function AccountSection() {
-  const { runSync, cancelSync, space, spaceCount, switchSpace, state, decideReupload, markCloudDeleted, flush } = useAppStore();
+  const { runSync, cancelSync, space, spaceCount, switchSpace, markCloudDeleted, flush } = useAppStore();
+  /** Round 13 (B1): the backup generation that waits for the user's choice after a deletion. */
+  const [decisionEpoch, setDecisionEpoch] = useState<number | null>(null);
   const [api, setApi] = useState<AccountApi | null>(null);
   const [user, setUser] = useState<AccountUser | null>(null);
   const [pendingUser, setPendingUser] = useState<AccountUser | null>(null);
@@ -82,6 +93,41 @@ export default function AccountSection() {
     });
   }, []);
 
+  // Round 13: the return from Google / Apple – a deep link (native, also on a cold start) or the
+  // page's own address (web). Cancelled at the provider: nothing changes, the user stays a guest.
+  const finishSignIn = useRef<(cb: AuthCallback) => void>(() => undefined);
+  finishSignIn.current = (cb) => {
+    if (!api) return;
+    if (cb.kind === 'error') {
+      setMessage(cb.error === 'access_denied' ? 'ההתחברות בוטלה. אפשר להמשיך כאורח.' : (AUTH_TEXT.oauth_failed ?? null));
+      return;
+    }
+    void run(async () => {
+      const u = await api.finishOAuth(cb.code);
+      setUser(u);
+      setConsentState(await api.consent());
+      setStatus({ state: 'off' });
+      await enterAccount(u);
+    });
+  };
+  useEffect(() => {
+    if (!api) return;
+    const web = parseAuthCallback(window.location.href, window.location.origin);
+    if (web) {
+      window.history.replaceState(null, '', window.location.pathname); // the code is used once
+      finishSignIn.current(web);
+    }
+    return onAuthCallback((cb) => finishSignIn.current(cb));
+  }, [api]);
+  const startSignIn = (provider: OAuthProvider) =>
+    run(async () => {
+      if (!api) return;
+      const url = await api.startOAuth(provider, authRedirect(isNative(), window.location.origin));
+      // The system browser (never a web view inside the app): Capacitor hands an outside address
+      // to the browser; on the web the page itself goes there and comes back.
+      window.location.assign(url);
+    });
+
   const run = async (fn: () => Promise<void>) => {
     setMessage(null);
     setNotice(null);
@@ -116,7 +162,25 @@ export default function AccountSection() {
     const s = await runSync(api.remote(), consent.cloudBackup);
     setStatus(s);
     if (s.state === 'account-deleted') setUser(null);
+    // The cloud copy was deleted (here or on another phone): the choice is the user's, once for all phones.
+    if (s.state === 'decision-needed') {
+      const b = await api.backupState().catch(() => null);
+      if (b?.decisionPending) {
+        setDecisionEpoch(b.epoch);
+        setDialog('reupload');
+      }
+    }
   }, [api, user, space, consent.cloudBackup, runSync]);
+
+  /** "All history" or "only from now" – stored on the server, so every phone of the account follows it. */
+  const decide = (all: boolean) =>
+    run(async () => {
+      if (!api || decisionEpoch === null) return;
+      await api.setBackupScope(decisionEpoch, all);
+      setDecisionEpoch(null);
+      setNotice(all ? 'הגיבוי יכלול את כל מה שקיים בטלפונים, בלי מה שנמחק.' : 'יגובה רק מה שיירשם מעכשיו, בכל הטלפונים בחשבון.');
+      await sync();
+    });
 
   const leave = async (wipe: boolean) => {
     if (!api || !user) return;
@@ -166,6 +230,12 @@ export default function AccountSection() {
         step === 'email' ? (
           <div className="flex flex-col gap-2">
             <p className="text-[13px] text-[#5C6F82]">אפשר להמשיך כאורח. לכל חשבון יש נתונים נפרדים במכשיר. מה שנרשם כאורח עובר לחשבון רק אם תאשרו זאת.</p>
+            {PROVIDERS.map((p) => (
+              <button key={p} type="button" disabled={busy} onClick={() => void startSignIn(p)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] bg-white font-extrabold text-[#17324D]" data-testid={`signin-${p}`}>
+                {PROVIDER_LABEL[p]}
+              </button>
+            ))}
+            {PROVIDERS.length > 0 ? <p className="text-[12px] text-[#5C6F82]">או עם קוד בדוא״ל:</p> : null}
             <label className="text-[13px] font-bold text-[#17324D]" htmlFor="acct-email">דוא״ל</label>
             <input id="acct-email" type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3" />
             <button type="button" disabled={busy || !/^\S+@\S+\.\S+$/.test(email)} onClick={() => run(async () => { await api.requestCode(email); setStep('code'); })} className="min-h-[48px] rounded-[14px] bg-[#2AAE9B] disabled:bg-[#A7B4C0] text-white font-extrabold">
@@ -215,7 +285,11 @@ export default function AccountSection() {
                   ? run(async () => {
                       await api.setConsent({ ...consent, cloudBackup: true });
                       setConsentState({ ...consent, cloudBackup: true });
-                      if (state.sync?.cloudDeletedAt) setDialog('reupload');
+                      const b = await api.backupState();
+                      if (b.decisionPending) {
+                        setDecisionEpoch(b.epoch);
+                        setDialog('reupload');
+                      }
                     })
                   : setDialog('revoke')
               }
@@ -273,12 +347,14 @@ export default function AccountSection() {
       />
       <ConfirmDialog
         open={dialog === 'reupload'}
-        title="להעלות שוב את ההיסטוריה?"
-        message="הגיבוי שבשרת נמחק קודם. אפשר להעלות שוב את כל מה שבמכשיר, או לגבות רק מה שיירשם מעכשיו."
-        confirmLabel="להעלות את כל ההיסטוריה"
+        title="מה לגבות מעכשיו?"
+        message="הגיבוי שבשרת נמחק קודם, בטלפון הזה או בטלפון אחר. אפשר לגבות שוב את כל מה שקיים בטלפונים (בלי מה שנמחק), או רק מה שיירשם מעכשיו. הבחירה חלה על כל הטלפונים בחשבון. עד שתבחרו, לא נשלח דבר."
+        confirmLabel="כל ההיסטוריה"
         cancelLabel="רק מעכשיו"
-        onConfirm={onConfirmOf(() => void run(async () => { await decideReupload(true); }))}
-        onClose={onCancelOf(() => void decideReupload(false))}
+        onConfirm={() => void decide(true)}
+        onCancel={() => void decide(false)}
+        // Closing without a choice decides nothing: the backup waits, and nothing is sent.
+        onClose={() => setDialog(null)}
       />
       <ConfirmDialog
         open={dialog === 'logout'}

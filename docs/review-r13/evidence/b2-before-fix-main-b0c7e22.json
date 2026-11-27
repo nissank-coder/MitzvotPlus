@@ -1,0 +1,11 @@
+{
+  "schema": "main b0c7e22",
+  "afterPhoneA_sets50": [
+    "0000-00-00:100",
+    "2026-11-24:50"
+  ],
+  "afterPhoneB_stale100": [
+    "0000-00-00:100"
+  ],
+  "changeOfPhoneALost": true
+}

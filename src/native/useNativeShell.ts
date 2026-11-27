@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { DeepLinkTarget, parseDeepLink } from './deepLinks';
+import { BACKEND_ENABLED } from '../backend/config';
+import { deliverAuthCallback, parseAuthCallback } from '../backend/oauth';
 
 type Handlers = {
   /** Returns true when the back press was handled inside the app. */
@@ -39,6 +41,9 @@ export function useNativeShell(handlers: Handlers): void {
           if (!ref.current.onBack()) void App.minimizeApp();
         }),
         App.addListener('appUrlOpen', ({ url }) => {
+          // Round 13: a sign-in return (dev / staging builds only) goes to the account section.
+          const auth = BACKEND_ENABLED ? parseAuthCallback(url) : null;
+          if (auth) return deliverAuthCallback(auth);
           const target = parseDeepLink(url);
           if (target) ref.current.onDeepLink(target);
         }),
@@ -51,7 +56,9 @@ export function useNativeShell(handlers: Handlers): void {
 
       // Cold start from a link while the app was closed.
       const launch = await App.getLaunchUrl().catch(() => undefined);
-      const target = launch?.url ? parseDeepLink(launch.url) : null;
+      const auth = BACKEND_ENABLED && launch?.url ? parseAuthCallback(launch.url) : null;
+      if (auth) deliverAuthCallback(auth);
+      const target = launch?.url && !auth ? parseDeepLink(launch.url) : null;
       if (target && !disposed) ref.current.onDeepLink(target);
     })();
 

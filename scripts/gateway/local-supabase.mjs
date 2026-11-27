@@ -5,7 +5,7 @@
 // It is NOT Supabase: e-mail delivery is a test mailbox, JWTs are signed with a per-run secret.
 // Never deployed, never part of an app build (check:release forbids it).
 import http from 'node:http';
-import { createHmac, randomBytes, randomInt, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import pg from 'pg';
 
@@ -30,7 +30,7 @@ export async function prepareDatabase(adminUrl, name = 'mitzvot_gateway') {
   return url.toString();
 }
 
-export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3600, otpTtlSeconds = 600, otpResendSeconds = 60 }) {
+export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3600, otpTtlSeconds = 600, otpResendSeconds = 60, redirectUrls = ['mitzvotplus://auth/callback'], siteUrl = 'http://localhost:3000' }) {
   const secret = randomBytes(32);
   const anonKey = sign({ role: 'anon', iss: 'local-gateway' }, 10 * 365 * 86400);
   const pool = new pg.Pool({ connectionString: databaseUrl, max: 8 });
@@ -39,6 +39,10 @@ export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3
   const mailbox = new Map(); // email → last code (synthetic delivery)
   const refreshTokens = new Map(); // token → { userId, revoked }
   const stats = { refreshes: 0, otpRequests: 0, rpc: {} };
+  // Round 13 – a stand-in for a social provider (Google / Apple) behind /auth/v1/authorize, with
+  // the PKCE exchange of GoTrue. The test decides who "signs in" at the provider (or cancels).
+  let providerIdentity = null; // { email } | { cancel: true }
+  const authCodes = new Map(); // code → { email, challenge, used }
   let offline = false;
 
   function sign(payload, ttl) {
@@ -113,6 +117,27 @@ export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3
         return send(res, 200, {});
       }
       if (url.pathname === '/__test/stats') return send(res, 200, stats);
+      if (url.pathname === '/__test/provider') {
+        providerIdentity = body ?? null;
+        return send(res, 200, {});
+      }
+      // ---- The provider's page (a browser request: no API key). Like GoTrue: only an allowed
+      // redirect is honoured, otherwise the site URL; the code is bound to the PKCE challenge.
+      if (url.pathname === '/auth/v1/authorize' && req.method === 'GET') {
+        const wanted = url.searchParams.get('redirect_to') ?? '';
+        const target = redirectUrls.includes(wanted) ? wanted : siteUrl;
+        const challenge = url.searchParams.get('code_challenge');
+        const sep = target.includes('?') ? '&' : '?';
+        if (!['google', 'apple'].includes(url.searchParams.get('provider') ?? '') || !challenge || url.searchParams.get('code_challenge_method')?.toLowerCase() !== 's256') {
+          return send(res, 302, undefined, { location: `${target}${sep}error=invalid_request&error_description=PKCE+required` });
+        }
+        if (!providerIdentity || providerIdentity.cancel) {
+          return send(res, 302, undefined, { location: `${target}${sep}error=access_denied&error_description=The+user+cancelled` });
+        }
+        const code = b64url(randomBytes(18));
+        authCodes.set(code, { email: providerIdentity.email, challenge, used: false });
+        return send(res, 302, undefined, { location: `${target}${sep}code=${code}` });
+      }
       if (offline) {
         req.socket.destroy(); // like a lost connection
         return;
@@ -149,6 +174,21 @@ export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3
         const admin = await pool.connect();
         try {
           const u = (await admin.query('select id, email, created_at from auth.users where email = $1', [email])).rows[0];
+          return send(res, 200, await session(u));
+        } finally {
+          admin.release();
+        }
+      }
+      if (url.pathname === '/auth/v1/token' && url.searchParams.get('grant_type') === 'pkce') {
+        const c = authCodes.get(String(body?.auth_code ?? ''));
+        const verifier = String(body?.code_verifier ?? '');
+        const ok = c && !c.used && b64url(createHash('sha256').update(verifier).digest()) === c.challenge;
+        if (c) c.used = true; // one attempt per code
+        if (!ok) return authError(res, 400, 'bad_code_verifier', 'code challenge does not match previously saved code verifier');
+        const admin = await pool.connect();
+        try {
+          await admin.query('insert into auth.users (email) values ($1) on conflict (email) do nothing', [c.email]);
+          const u = (await admin.query('select id, email, created_at from auth.users where email = $1', [c.email])).rows[0];
           return send(res, 200, await session(u));
         } finally {
           admin.release();
@@ -245,6 +285,10 @@ export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3
     },
     setOffline: (on) => {
       offline = on;
+    },
+    /** Round 13: who signs in at the stand-in provider next ({ email }), or { cancel: true }. */
+    setProviderIdentity: (identity) => {
+      providerIdentity = identity;
     },
     deleteUser: async (id) => {
       const c = await pool.connect();

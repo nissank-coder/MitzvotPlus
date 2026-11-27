@@ -94,6 +94,11 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           DB_FAULT: supabase/tests/fault-injection.sql
         run: "! node scripts/db/test-db.mjs > /dev/null"
+      - name: Fault injection, round 13 – backup generation and goal versions (must FAIL)
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_FAULT: supabase/tests/fault-injection-r13.sql
+        run: "! node scripts/db/test-db.mjs > /dev/null"
       - name: Integration – the app's account + sync code against the local Supabase stand-in
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
@@ -128,6 +133,8 @@ jobs:
           node scripts/e2e/scenarios.mjs --shots reports/e2e-shots 2>&1 | tee reports/e2e.txt
       - name: Design round 1.1 regressions (undo of the right entry, blessing goal, partial progress, 44px)
         run: node scripts/e2e/round-1-1.mjs --with-demo 2>&1 | tee reports/round-1-1.txt
+      - name: Round 13 – core fixes (habit editor, dialogs, minyan choice, double tap, every entry reachable)
+        run: node scripts/e2e/round-13.mjs 2>&1 | tee reports/round-13.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

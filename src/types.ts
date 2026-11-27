@@ -124,6 +124,12 @@ export type GoalSnapshot = {
   dailyGoal: number;
   weeklyGoal: number;
   blessingGoal: number;
+  /**
+   * When the blessing goal of this snapshot was set (ms, the device clock). Round 13 (review B2):
+   * two phones that changed the goal from the same day are merged by it – the later choice wins.
+   * Absent for snapshots made before round 13 (treated as 0, i.e. older than any new choice).
+   */
+  blessingSetAt?: number;
   habits?: HabitSelection[];
   habitTarget?: number;
 };
@@ -181,6 +187,15 @@ export type AppState = {
     goalsHash?: string | null;
     /** Set when the user deleted the cloud copy: re-enabling backup asks before uploading again. */
     cloudDeletedAt?: number | null;
+    /**
+     * Round 13 (review B1): the backup generation this device's queue was built for (absent = 1) and
+     * the floor of "only from now" (entries recorded before it are never sent). Both come from the
+     * server, which enforces them for every device of the account.
+     */
+    backupEpoch?: number;
+    backupFloor?: number | null;
+    /** Round 13 (review B2): the version of the server's goal history this device last saw. */
+    goalsVersion?: number;
   };
   /** Personal challenges joined (round 9, C1). */
   challenges: ChallengeEnrollment[];

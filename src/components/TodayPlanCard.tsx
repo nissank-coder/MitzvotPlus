@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { actionDef, categoryStyle } from '../data/actions';
 import { formatClock } from '../lib/jewishCalendar';
 import { useAppStore } from '../store/AppStore';
+import { useRecordFlow } from './RecordFlow';
 import { ActionRow } from './ui';
 import { Card } from './Card';
 import { SectionHeader } from './SectionHeader';
@@ -11,9 +12,10 @@ const TIME_BOUND = new Set(['shema']);
 
 /** "The mitzvot of today" – built from the Hebrew calendar and the user's profile. */
 export function TodayPlanCard() {
-  const { calendar, addAction, previewPoints } = useAppStore();
+  const { calendar, previewPoints } = useAppStore();
+  // One recording flow (round 13, U5): a prayer asks "במניין או ביחידות" in the shared sheet.
+  const { record } = useRecordFlow();
   const { plan, city, now } = calendar;
-  const [minyan, setMinyan] = useState<Record<string, boolean>>({});
   if (plan.length === 0) return null;
   const doneCount = plan.filter((p) => p.done).length;
 
@@ -31,29 +33,16 @@ export function TodayPlanCard() {
         const late = Boolean(!item.done && item.deadline && now > item.deadline);
         // An action whose name claims "in its time" cannot be recorded after the time (A07).
         const closed = late && TIME_BOUND.has(item.key);
-        const withMinyan = Boolean(def.minyanBonus && minyan[item.key]);
         return (
           <ActionRow
             key={item.key}
             icon={def.icon}
             title={item.title}
             subtitle={closed ? 'הזמן עבר – לא נרשם כ"בזמנה"' : late ? 'הזמן עבר · נרשם ללא בונוס זמן' : parts.join(' · ') || undefined}
-            points={closed ? 0 : previewPoints(item.key, { minyan: withMinyan })}
+            points={closed ? 0 : previewPoints(item.key, {})}
             done={item.done}
-            onPress={closed ? undefined : () => addAction(item.key, { minyan: withMinyan })}
-            trailing={
-              def.minyanBonus && !item.done ? (
-                <label className="flex flex-row items-center gap-1 text-[11px] font-bold text-[#718397] shrink-0 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(minyan[item.key])}
-                    onChange={(e) => setMinyan((prev) => ({ ...prev, [item.key]: e.target.checked }))}
-                    className="accent-[#2AAE9B] w-4 h-4"
-                  />
-                  במניין
-                </label>
-              ) : null
-            }
+            onPress={closed ? undefined : () => record(item.key)}
+            trailing={def.minyanBonus && !item.done ? <span className="text-[11px] font-bold text-[#718397] shrink-0">במניין או ביחידות</span> : null}
             color={style.color}
             background={style.background}
             last={index === plan.length - 1}

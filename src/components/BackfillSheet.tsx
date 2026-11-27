@@ -7,6 +7,7 @@ import { dateFromKey } from '../lib/dates';
 import { useAppStore } from '../store/AppStore';
 import { ds } from '../theme';
 import { AppIcon } from './AppIcon';
+import { ModalLayer } from './Modal';
 
 const FULL_SHABBAT: ActionKey[] = ['kiddush', 'shabbatMeal', 'havdalah'];
 
@@ -53,8 +54,12 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45" onClick={onClose} role="dialog" aria-modal="true" aria-label="רישום שבת">
-      <div dir="rtl" className="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-surface rounded-t-[28px] px-5 pt-2 sheet-safe" onClick={(e) => e.stopPropagation()}>
+    <ModalLayer
+      label="רישום שבת"
+      onClose={onClose}
+      backdropClassName="fixed inset-0 z-50 flex items-end justify-center bg-[#0E1630]/45"
+      panelClassName="w-full max-w-[460px] max-h-[88dvh] overflow-y-auto bg-surface rounded-t-[28px] px-5 pt-2 sheet-safe"
+    >
         <div aria-hidden="true" className="w-12 h-[5px] rounded-full bg-line mx-auto mb-4" />
         <h2 className="text-ink text-[22px] font-extrabold">מה עשית ב{sections.length > 1 ? 'ימים הקדושים' : sections[0]?.info.isShabbat ? 'שבת' : 'חג'}?</h2>
         <p className="text-ink-muted text-[14px] mt-1">המצוות יירשמו בתאריך שבו נעשו. שבת מלאה (קידוש, שלוש סעודות והבדלה) מזכה בבונוס.</p>
@@ -108,7 +113,6 @@ export function BackfillSheet({ days, onClose }: { days: string[]; onClose: () =
         <button type="button" onClick={() => { backfill([], days); onClose(); }} className="w-full min-h-[48px] mt-2 rounded-[16px] text-ink-muted text-[14px] font-bold active:bg-canvas">
           לא עכשיו – לא להציג שוב
         </button>
-      </div>
-    </div>
+    </ModalLayer>
   );
 }

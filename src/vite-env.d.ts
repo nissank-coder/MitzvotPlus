@@ -8,7 +8,11 @@ interface ImportMetaEnv {
   /** Backend (round 12) – development / staging only; never in a production build. */
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_SUPABASE_ANON_KEY?: string;
+  /** Round 13: the project's publishable key (sb_publishable_…), the newer name of the public key. */
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
   readonly VITE_BACKEND_ENV?: string;
+  /** Round 13: social sign-in shown in the account section, e.g. "google,apple" (dev/staging only). */
+  readonly VITE_AUTH_PROVIDERS?: string;
 }
 
 /** Injected by vite.config.ts (scripts/build-info.mjs). */

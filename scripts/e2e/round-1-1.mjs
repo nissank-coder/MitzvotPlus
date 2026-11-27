@@ -22,7 +22,7 @@ const check = (cond, name, detail = '') => (cond ? passed.push(name) : failures.
 async function serve(outDir, env, port) {
   const b = spawnSync('npx', ['vite', 'build', '--outDir', outDir, '--emptyOutDir'], { env: { ...process.env, ...env }, encoding: 'utf8' });
   if (b.status !== 0) throw new Error(b.stderr);
-  const proc = spawn('npx', ['vite', 'preview', '--outDir', outDir, '--port', String(port), '--strictPort'], { stdio: 'ignore' });
+  const proc = spawn('npx', ['vite', 'preview', '--outDir', outDir, '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true });
   const url = `http://localhost:${port}`;
   for (let i = 0; i < 80; i += 1) {
     try {
@@ -30,7 +30,14 @@ async function serve(outDir, env, port) {
     } catch {}
     await new Promise((r) => setTimeout(r, 250));
   }
-  return { url, stop: () => { proc.kill(); fs.rmSync(outDir, { recursive: true, force: true }); } };
+  // Own process group: stopping it stops vite too (a leftover server would serve a deleted build).
+  const stop = () => {
+    try {
+      process.kill(-proc.pid);
+    } catch {}
+    fs.rmSync(outDir, { recursive: true, force: true });
+  };
+  return { url, stop };
 }
 
 const iso = (d, h, m = 0) => new Date(`${d}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00+02:00`).getTime();
@@ -122,8 +129,9 @@ try {
   {
     const NOW = iso('2026-11-24', 18);
     const { p, ctx } = await page(browser, prod.url, NOW, onboarded(NOW));
-    await p.click('[aria-label="רשמתי: שלוש תפילות"]');
+    await p.click('[aria-label="רישום תפילה: שלוש תפילות"]');
     await p.locator('[role=dialog] button', { hasText: 'מנחה' }).click();
+  await p.locator('[role=dialog] button', { hasText: 'מנחה ביחידות' }).click(); // round 13 (U5): the minyan choice
     await p.waitForTimeout(900);
     const t = await toastText(p);
     check(/שלוש תפילות: 1 מתוך 3/.test(t), 'P1: the toast reports partial progress of the habit', t);
