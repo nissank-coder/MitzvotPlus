@@ -1,0 +1,78 @@
+{
+  "project": "https://xietijnljqrucdirwfxb.supabase.co",
+  "at": "2026-11-27T12:52:39.555Z",
+  "readOnly": true,
+  "service": {
+    "auth": "up",
+    "rest": "answers (401)"
+  },
+  "key": "valid public key",
+  "migrations": {
+    "20261126000001_core": {
+      "authoritative": true,
+      "marker": "export_my_data(): present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261126000002_social": {
+      "authoritative": true,
+      "marker": "friendships: present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261126000003_seed_rules_and_privacy": {
+      "authoritative": true,
+      "markerState": "no-marker",
+      "applied": true
+    },
+    "20261127000001_hardening": {
+      "authoritative": true,
+      "marker": "share_achievement(): present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261128000001_backup_generation": {
+      "authoritative": true,
+      "marker": "set_backup_scope(): present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261128000002_learning_together": {
+      "authoritative": true,
+      "marker": "create_challenge_invite(): present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261128000003_backup_from_now": {
+      "authoritative": true,
+      "marker": "backup_from_now(): present-closed",
+      "markerState": "present-closed",
+      "applied": true
+    },
+    "20261128000004_export_together": {
+      "authoritative": true,
+      "markerState": "no-marker",
+      "applied": true
+    }
+  },
+  "anon": {
+    "pull_events()": "present-closed",
+    "backup_state()": "present-closed",
+    "get_blessing_goals()": "present-closed",
+    "activity_events": "present-closed",
+    "profiles": "present-closed",
+    "daily_scores": "present-closed",
+    "blessing_goal_history": "present-closed",
+    "social_profiles": "present-closed",
+    "together_members": "present-closed"
+  },
+  "auth": {
+    "email": true,
+    "google": false,
+    "apple": false,
+    "signupDisabled": false,
+    "autoconfirm": false
+  },
+  "findings": [],
+  "migrationsSource": "Management API (authoritative)"
+}

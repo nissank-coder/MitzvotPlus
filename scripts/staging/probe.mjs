@@ -65,6 +65,7 @@ const MARKERS = {
   '20261128000001_backup_generation': { kind: 'rpc', name: 'set_backup_scope', body: { p_epoch: 1, p_all: false } },
   '20261128000002_learning_together': { kind: 'rpc', name: 'create_challenge_invite', body: { p_definition: 'learn-3-of-7' } },
   '20261128000003_backup_from_now': { kind: 'rpc', name: 'backup_from_now', body: {} },
+  '20261128000004_export_together': { kind: 'authoritative-only' }, // replaces export_my_data: no new name to look for
 };
 
 const classify = (status, code, msg) => {

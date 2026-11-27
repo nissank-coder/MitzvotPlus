@@ -99,6 +99,11 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           DB_FAULT: supabase/tests/fault-injection-r13.sql
         run: "! node scripts/db/test-db.mjs > /dev/null"
+      - name: Fault injection, learning together – cheers without their daily limit, challenge tables readable (must FAIL)
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_FAULT: supabase/tests/fault-injection-together.sql
+        run: "! node scripts/db/test-db.mjs > /dev/null"
       - name: Integration – the app's account + sync code against the local Supabase stand-in
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres

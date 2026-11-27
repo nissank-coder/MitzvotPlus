@@ -567,6 +567,9 @@ try {
   await as(TC, 'select public.leave_together($1)', [inv2.challengeId]);
   check(memberOf(await progOf(TA, inv2.challengeId), TC)?.visibility === 'left' && (await progOf(TC, inv2.challengeId))?.state === 'unavailable', '20: leaving: the other side sees "left"; the one who left sees nothing more');
 
+  const ex = await tg(TA, 'select public.export_my_data() r');
+  check(Array.isArray(ex?.togetherChallenges) && ex.togetherChallenges.length >= 2 && ex.togetherCheersReceived?.length >= 1 && !JSON.stringify(ex).includes(TB), "20: A's own export includes the challenges and cheers – and nothing of the partner's", JSON.stringify(ex?.togetherChallenges?.length));
+
   // Turning backup on for the challenge: "only from now" sets the floor – once, and only before anything was backed up.
   const TF = await newUser();
   await as(TF, 'select public.set_consent(true, true)');
