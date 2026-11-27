@@ -36,7 +36,7 @@ export function SaveStatusBanner() {
         type="button"
         onClick={retry}
         disabled={busy}
-        className="h-9 px-3 rounded-full bg-[#C95B53] text-white text-[12px] font-black shrink-0 disabled:opacity-60"
+        className="min-h-[44px] px-3 rounded-full bg-danger text-white text-[12px] font-extrabold shrink-0 disabled:opacity-60"
       >
         {busy ? 'שומר…' : 'נסו שוב'}
       </button>

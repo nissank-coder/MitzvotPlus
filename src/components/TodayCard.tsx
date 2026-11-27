@@ -35,25 +35,25 @@ export function TodayCard({ onOpenZmanim }: { onOpenZmanim: () => void }) {
   ];
 
   return (
-    <div dir="rtl" className="rounded-[22px] bg-white border border-[#DDE8EE] card-shadow p-4 mb-3">
+    <div dir="rtl" className="rounded-[22px] bg-white border border-line card-shadow p-4 mb-3">
       <div className="flex flex-row items-start justify-between gap-3">
         <div className="flex flex-col items-start">
-          <span className="text-[#718397] text-[12px] font-bold">יום {WEEKDAYS[day.weekday]}</span>
-          <span className="text-[#17324D] text-[20px] font-black leading-tight">{day.hebrewDate}</span>
-          {day.parsha ? <span className="text-[#1B6F8F] text-[12px] font-extrabold mt-0.5">{day.parsha}</span> : null}
+          <span className="text-ink-muted text-[12px] font-bold">יום {WEEKDAYS[day.weekday]}</span>
+          <span className="text-ink text-[20px] font-black leading-tight">{day.hebrewDate}</span>
+          {day.parsha ? <span className="text-brand text-[12px] font-extrabold mt-0.5">{day.parsha}</span> : null}
         </div>
         {next ? (
           <button
             type="button"
             onClick={onOpenZmanim}
-            className="flex flex-col items-end rounded-[16px] bg-[#EAF4FB] px-3 py-2 hover:bg-[#DDEEF8] transition-colors"
+            className="flex flex-col items-end rounded-[16px] bg-brand-soft px-3 py-2 hover:bg-[#DDEEF8] transition-colors"
           >
-            <span className="text-[#718397] text-[11px] font-bold flex flex-row items-center gap-1">
+            <span className="text-ink-muted text-[11px] font-bold flex flex-row items-center gap-1">
               <AppIcon name="clock" size={13} color={colors.primary} />
               {next.label}
             </span>
-            <span className="text-[#17324D] text-[17px] font-black leading-tight">{formatClock(next.time, city)}</span>
-            <span className="text-[#1B6F8F] text-[10px] font-bold">{minutesUntil(next.time, now)}</span>
+            <span className="text-ink text-[17px] font-black leading-tight">{formatClock(next.time, city)}</span>
+            <span className="text-brand text-[10px] font-bold">{minutesUntil(next.time, now)}</span>
           </button>
         ) : null}
       </div>

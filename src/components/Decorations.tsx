@@ -8,8 +8,8 @@ export function CitySilhouette({ opacity = 0.32 }: { opacity?: number }) {
       <div className="absolute bottom-[20px] left-[60px] w-[34px] h-[48px] bg-[#1B6F8F] rounded-t-[5px]" />
       <div className="absolute bottom-[20px] left-[92px] w-[56px] h-[28px] bg-[#1B6F8F] rounded-t-[5px]" />
       <div className="absolute bottom-[24px] left-[42px] w-[13px] h-[62px] bg-[#1B6F8F] rounded-t-[7px]" />
-      <div className="absolute bottom-[20px] left-[10px] w-[8px] h-[42px] bg-[#2AAE9B] rounded-t-[12px]" />
-      <div className="absolute bottom-[20px] left-[142px] w-[8px] h-[36px] bg-[#2AAE9B] rounded-t-[12px]" />
+      <div className="absolute bottom-[20px] left-[10px] w-[8px] h-[42px] bg-brand rounded-t-[12px]" />
+      <div className="absolute bottom-[20px] left-[142px] w-[8px] h-[36px] bg-brand rounded-t-[12px]" />
       <div className="absolute top-[15px] left-[112px] w-[34px] h-[34px] rounded-full bg-[#F4B942]" />
     </div>
   );

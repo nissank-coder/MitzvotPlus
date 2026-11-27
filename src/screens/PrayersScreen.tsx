@@ -38,7 +38,7 @@ export function PrayersScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
     <FeatureScreen title="תפילות וזמנים" subtitle={`נוסח ${nusachLabel[state.profile.nusach]} · ${city.name}`} icon="prayer" onBack={onBack} onOpenProfile={onOpenProfile}>
       <Card className="p-4 mb-4">
         <SectionHeader title="התפילות של היום" icon="prayer" />
-        <p dir="rtl" className="mb-2 text-[13px] text-[#5C6F82]">בבחירת תפילה נשאל אם התפללת במניין או ביחידות.</p>
+        <p dir="rtl" className="mb-2 text-[13px] text-ink-muted">בבחירת תפילה נשאל אם התפללת במניין או ביחידות.</p>
         {prayers.map((p, i) => {
           const def = actionDef(p.key);
           const style = categoryStyle[def.category];
@@ -80,10 +80,10 @@ export function PrayersScreen({ onBack, onOpenProfile, onOpenSiddur }: Props) {
             <div
               key={z.key}
               dir="rtl"
-              className={`min-h-[44px] flex flex-row items-center justify-between ${i < zmanList.length - 1 ? 'border-b border-[#EAF0F4]' : ''}`}
+              className={`min-h-[44px] flex flex-row items-center justify-between ${i < zmanList.length - 1 ? 'border-b border-line' : ''}`}
             >
-              <span className={`text-[14px] font-extrabold ${past ? 'text-[#A7B4C0]' : 'text-[#17324D]'}`}>{z.label}</span>
-              <span className={`text-[15px] font-black tabular-nums ${past ? 'text-[#A7B4C0]' : 'text-[#1B6F8F]'}`}>{formatClock(z.time, city)}</span>
+              <span className={`text-[14px] font-extrabold ${past ? 'text-ink-muted' : 'text-ink'}`}>{z.label}</span>
+              <span className={`text-[15px] font-black tabular-nums ${past ? 'text-ink-muted' : 'text-brand'}`}>{formatClock(z.time, city)}</span>
             </div>
           );
         })}

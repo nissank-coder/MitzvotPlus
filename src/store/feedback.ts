@@ -52,6 +52,22 @@ export function addedSince(prev: FeedbackSnapshot, logs: ActivityLog[]): Activit
   return logs.filter((l) => !prev.ids.has(l.id) && !l.remote).sort((a, b) => b.createdAt - a.createdAt);
 }
 
+const HEBREW_COUNT: Record<number, string> = { 1: 'אחת', 2: 'שתיים', 3: 'שלוש' };
+
+/**
+ * Partial progress in everyday words (round 14, review v4 §5): "תפילה אחת מתוך שלוש היום",
+ * "12 ברכות מתוך 20 היום"; any other habit: "<habit>: 2 מתוך 3". The rules of counting are unchanged.
+ */
+export function partialPhrase(habit: { sel: { id: string }; title: string; value: number; needed: number }): string {
+  const v = Math.min(habit.value, habit.needed);
+  if (habit.sel.id === 'three-prayers') {
+    const one = v === 1 ? 'תפילה אחת' : v === 2 ? 'שתי תפילות' : `${v} תפילות`;
+    return `${one} מתוך ${HEBREW_COUNT[habit.needed] ?? habit.needed} היום`;
+  }
+  if (habit.sel.id.startsWith('blessings-')) return `${v === 1 ? 'ברכה אחת' : `${v} ברכות`} מתוך ${habit.needed} היום`;
+  return `${habit.title}: ${v} מתוך ${habit.needed}`;
+}
+
 export function feedbackFor(prev: FeedbackSnapshot, added: ActivityLog[], state: Pick<AppState, 'blessingGoal'>, derived: Derived): Feedback | null {
   if (added.length === 0) return null;
   const today = added.filter((l) => l.dateKey === derived.todayKey);
@@ -62,21 +78,23 @@ export function feedbackFor(prev: FeedbackSnapshot, added: ActivityLog[], state:
   const logTitle = added.length === 1 ? subject.title : blessingsOnly ? `${added.length} ברכות` : `${added.length} רישומים`;
   const title = late ? `נרשם בדיעבד: ${logTitle}` : added.length === 1 ? `נרשם: ${logTitle}` : `נרשמו ${logTitle}`;
   const base = { logIds, logTitle };
+  // Round 14 (review v4 §5): a completion says what was recorded too – never only "completed".
+  const what = added.length === 1 ? `נרשם: ${logTitle}` : `נרשמו ${logTitle}`;
 
   if (!late) {
     const goal = state.blessingGoal;
     if (prev.blessings < goal && derived.blessingTotal >= goal) {
-      return { ...base, kind: 'goal', title: `הושלם יעד הברכות: ${goal}`, detail: 'השלמת את היעד היומי. יישר כוח!' };
+      return { ...base, kind: 'goal', title: `הושלם יעד הברכות: ${goal}`, detail: `${what} · השלמת את היעד היומי. יישר כוח!` };
     }
-    if (derived.todayGoalMet && !prev.goalMet) return { ...base, kind: 'goal', title: 'היעד היומי הושלם', detail: 'יישר כוח' };
+    if (derived.todayGoalMet && !prev.goalMet) return { ...base, kind: 'goal', title: 'היעד היומי הושלם', detail: `${what} · יישר כוח` };
     const completed = derived.habitsToday.find((h) => h.done && (prev.habits[h.sel.id] ?? 0) < h.needed && h.value > (prev.habits[h.sel.id] ?? 0));
     if (completed && derived.habitsDoneToday > prev.habitsDone) {
-      return { ...base, kind: 'habit', title: `הרגל הושלם: ${completed.title}`, detail: `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` };
+      return { ...base, kind: 'habit', title: `הרגל הושלם: ${completed.title}`, detail: `${what} · ${derived.habitsDoneToday}/${derived.habitTarget} הרגלים היום` };
     }
     const partial = derived.habitsToday.find((h) => !h.done && h.needed > 1 && h.value > (prev.habits[h.sel.id] ?? 0));
     if (partial) {
       const left = partial.needed - partial.value;
-      return { ...base, kind: 'saved', title, detail: `${partial.title}: ${Math.min(partial.value, partial.needed)} מתוך ${partial.needed} · עוד ${left}` };
+      return { ...base, kind: 'saved', title, detail: `${partialPhrase(partial)} · עוד ${left}` };
     }
     if (blessingsOnly) return { ...base, kind: 'saved', title, detail: `${derived.blessingTotal} מתוך ${goal} ברכות היום` };
   }

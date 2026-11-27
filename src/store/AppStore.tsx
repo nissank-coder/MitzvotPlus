@@ -121,6 +121,7 @@ type StoreValue = {
   updateSettings: (settings: Partial<AppSettings>) => void;
   updateProfile: (profile: Partial<UserProfile>) => void;
   toggleTrack: (key: string) => void;
+  keepTracks: () => void;
   toggleGroup: (key: string) => void;
   loadDemo: () => void;
   resetAll: () => void;
@@ -289,7 +290,8 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
         ? { ...prev, detail: prev.detail ? `${prev.detail} · ${extra}` : extra }
         : first
           ? { id: at, kind: 'award', title: extra, detail: first.def.explanation }
-          : { id: at, kind: 'challenge', title: extra, detail: 'נשמר בהיסטוריית המסלולים' },
+          : // Round 14: what was actually done, and what next (review v4 §5).
+            { id: at, kind: 'challenge', title: extra, detail: `${done[0]!.value} מתוך ${done[0]!.target} · אפשר לבחור אתגר נוסף במסלולים` },
     );
   }, [hydrated, derived, saveStatus, isLogSaved]);
 
@@ -473,6 +475,7 @@ export function AppStoreProvider({ children }: PropsWithChildren): React.ReactEl
       updateSettings: (settings) => dispatch({ type: 'updateSettings', payload: settings }),
       updateProfile: (profile) => dispatch({ type: 'updateProfile', payload: profile, dateKey: todayKey }),
       toggleTrack: (key) => dispatch({ type: 'toggleTrack', payload: { key } }),
+      keepTracks: () => dispatch({ type: 'keepTracks' }),
       toggleGroup: (key) => dispatch({ type: 'toggleGroup', payload: { key } }),
       loadDemo: () => dispatch({ type: 'loadDemo' }),
       resetAll: () => dispatch({ type: 'resetAll' }),

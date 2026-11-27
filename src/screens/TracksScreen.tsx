@@ -38,10 +38,10 @@ export function TracksScreen({ onOpenFeature }: Props) {
   const completed = derived.challenges.filter((c) => c.state === 'completed');
 
   return (
-    <div dir="rtl" className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-4 flex flex-col gap-4">
+    <div dir="rtl" className="flex-1 bg-canvas px-4 pb-8 pt-4 flex flex-col gap-4">
       <header className="flex flex-col">
-        <h1 className="text-[24px] font-black text-[#17324D]">מסלולים ואתגרים</h1>
-        <span className="text-[13px] text-[#5C6F82]">אתה בוחר את הקצב. אפשר לעזוב בכל רגע.</span>
+        <h1 className="text-[24px] font-black text-ink">מסלולים ואתגרים</h1>
+        <span className="text-[13px] text-ink-muted">אתה בוחר את הקצב. אפשר לעזוב בכל רגע.</span>
       </header>
 
       {active.length > 0 ? (
@@ -63,11 +63,11 @@ export function TracksScreen({ onOpenFeature }: Props) {
         {derived.joinableChallenges.map((c) => (
           <Card key={c.id} className="p-4 flex flex-row items-center gap-3">
             <div className="flex-1 flex flex-col gap-0.5">
-              <span className="text-[15px] font-extrabold text-[#17324D]">
+              <span className="text-[15px] font-extrabold text-ink">
                 {c.title}
-                {c.private ? <span className="text-[11px] text-[#1B6F8F] mr-1.5">· פרטי</span> : null}
+                {c.private ? <span className="text-[11px] text-brand mr-1.5">· פרטי</span> : null}
               </span>
-              <span className="text-[12px] text-[#5C6F82]">
+              <span className="text-[12px] text-ink-muted">
                 {c.description} · {'days' in c.window ? `${c.window.days} ימים` : 'שבוע'}
               </span>
             </div>
@@ -75,32 +75,32 @@ export function TracksScreen({ onOpenFeature }: Props) {
               type="button"
               onClick={() => joinChallenge(c.id)}
               aria-label={`הצטרפות לאתגר: ${c.title}`}
-              className="min-h-[42px] px-4 rounded-[12px] border border-[#2AAE9B] text-[#1E8C7C] bg-white text-[13px] font-black shrink-0"
+              className="min-h-[44px] px-4 rounded-[12px] border border-brand text-brand bg-surface text-[13px] font-extrabold shrink-0"
             >
               הצטרפות
             </button>
           </Card>
         ))}
         {group.map((c) => (
-          <div key={c.id} className="rounded-[22px] bg-[#F0F5F8] p-4 flex flex-row items-center gap-3">
+          <div key={c.id} className="rounded-[var(--radius-card)] bg-canvas border border-dashed border-line p-4 flex flex-row items-center gap-3">
             <AppIcon name="community" size={22} color={colors.textMuted} />
             <div className="flex-1 flex flex-col">
-              <span className="text-[14px] font-extrabold text-[#17324D]">{c.title}</span>
-              <span className="text-[12px] text-[#5C6F82]">{c.description}</span>
+              <span className="text-[14px] font-extrabold text-ink">{c.title}</span>
+              <span className="text-[12px] text-ink-muted">{c.description}</span>
             </div>
-            <span className="text-[12px] font-bold text-[#5C6F82]">בקרוב</span>
+            <span className="text-[12px] font-bold text-ink-muted">בקרוב</span>
           </div>
         ))}
       </section>
 
       <Card className="p-4 flex flex-row items-center gap-3">
         <div className="flex-1 flex flex-col">
-          <span className="text-[15px] font-extrabold text-[#17324D]">ההרגלים שלי</span>
-          <span className="text-[12px] text-[#5C6F82]">
+          <span className="text-[15px] font-extrabold text-ink">ההרגלים שלי</span>
+          <span className="text-[12px] text-ink-muted">
             {derived.hasHabits ? derived.habitsToday.map((h) => h.title).join(' · ') : 'עוד לא נבחרו הרגלים'}
           </span>
         </div>
-        <button type="button" onClick={() => setHabitsOpen(true)} className="min-h-[42px] px-4 rounded-[12px] bg-[#2AAE9B] text-white text-[13px] font-black">
+        <button type="button" onClick={() => setHabitsOpen(true)} className="min-h-[44px] px-4 rounded-[12px] bg-brand text-on-brand text-[13px] font-extrabold">
           {derived.hasHabits ? 'עריכה' : 'בחירה'}
         </button>
       </Card>
@@ -122,12 +122,12 @@ export function TracksScreen({ onOpenFeature }: Props) {
               key={i.key}
               type="button"
               onClick={() => onOpenFeature(i.key)}
-              className="min-h-[72px] rounded-[18px] bg-white border border-[#DDE8EE] p-3 flex flex-row items-center gap-2.5 text-right"
+              className="min-h-[72px] rounded-[18px] bg-white border border-line p-3 flex flex-row items-center gap-2.5 text-right"
             >
               <AppIcon name={i.icon} size={20} color={colors.primary} />
               <span className="flex flex-col">
-                <span className="text-[14px] font-extrabold text-[#17324D]">{i.title}</span>
-                <span className="text-[11px] text-[#5C6F82]">{i.note}</span>
+                <span className="text-[14px] font-extrabold text-ink">{i.title}</span>
+                <span className="text-[11px] text-ink-muted">{i.note}</span>
               </span>
             </button>
           ))}

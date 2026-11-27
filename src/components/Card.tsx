@@ -6,7 +6,7 @@ type Props = PropsWithChildren<{
 
 export function Card({ children, className = '' }: Props) {
   return (
-    <div className={`bg-white rounded-[22px] border border-[#DDE8EE] card-shadow ${className}`}>
+    <div className={`bg-surface rounded-[var(--radius-card)] border border-line ${className}`}>
       {children}
     </div>
   );

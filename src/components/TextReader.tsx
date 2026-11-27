@@ -12,10 +12,10 @@ export function FontSizeControl() {
   const set = (v: number) => updateSettings({ readerFontSize: Math.min(FONT_MAX, Math.max(FONT_MIN, v)) });
   return (
     <div dir="rtl" className="flex flex-row items-center gap-2" role="group" aria-label="גודל גופן">
-      <button type="button" onClick={() => set(size + 2)} aria-label="הגדלת גופן" className="w-10 h-10 rounded-full bg-white border border-[#DDE8EE] text-[#17324D] text-[18px] font-black">
+      <button type="button" onClick={() => set(size + 2)} disabled={size >= FONT_MAX} aria-label="הגדלת גופן" className="w-11 h-11 rounded-full bg-surface border border-line text-ink text-[18px] font-extrabold disabled:opacity-40">
         א+
       </button>
-      <button type="button" onClick={() => set(size - 2)} aria-label="הקטנת גופן" className="w-10 h-10 rounded-full bg-white border border-[#DDE8EE] text-[#17324D] text-[14px] font-black">
+      <button type="button" onClick={() => set(size - 2)} disabled={size <= FONT_MIN} aria-label="הקטנת גופן" className="w-11 h-11 rounded-full bg-surface border border-line text-ink text-[14px] font-extrabold disabled:opacity-40">
         א−
       </button>
     </div>
@@ -30,11 +30,11 @@ export function TextReader({ segments }: { segments: Segment[] }) {
     <div dir="rtl" lang="he" className="flex flex-col gap-3">
       {segments.map((seg, i) =>
         seg.note ? (
-          <p key={i} className="reader-text text-[#718397]" style={{ fontSize: Math.round(size * 0.72) }}>
+          <p key={i} className="reader-text text-ink-muted" style={{ fontSize: Math.round(size * 0.72) }}>
             {seg.text}
           </p>
         ) : (
-          <p key={i} className="reader-text text-[#17324D] whitespace-pre-line" style={{ fontSize: size }}>
+          <p key={i} className="reader-text text-ink whitespace-pre-line" style={{ fontSize: size }}>
             {seg.text}
           </p>
         ),

@@ -1,8 +1,23 @@
 /**
  * An initial selection of the 613 mitzvot – those most relevant to daily life today.
- * Each entry cites its source verse. The structure is ready for the full list
- * (e.g. imported from Sefer HaMitzvot / Sefer HaChinuch) once reviewed by a rabbi.
+ * Each entry cites its source verse.
+ *
+ * Round 14 (review v4 §4): the structure of a full, reviewed collection. Fields added now are
+ * filled only from an identified, checked source – nothing is generated as a halachic explanation:
+ *  - review: the state of the entry's text. Every current entry is PENDING_REVIEW (written for the
+ *    app, never reviewed); APPROVED needs a named reviewer (docs/review-r14/MITZVOT_PLAN_HE.md);
+ *  - count: the entry's number in ONE counting system (Rambam, Sefer HaMitzvot), only once mapped
+ *    and checked – none is shown before that;
+ *  - sources / expanded / example: an exact source and a longer explanation, once written and checked.
+ * Learning about a mitzvah ("mitzvahStudy") is not doing it: `doing` names the app's own entry for
+ * doing it, when there is an unambiguous one (MitzvotScreen offers both, separately).
+ * The consistency of the collection is checked by scripts/content/check-mitzvot.mjs.
  */
+import type { ActionKey } from './actions';
+
+export type ReviewState = 'PENDING_REVIEW' | 'APPROVED';
+export type CountingSystem = 'rambam-sefer-hamitzvot';
+
 export type MitzvahEntry = {
   id: string;
   title: string;
@@ -14,7 +29,35 @@ export type MitzvahEntry = {
   constant?: boolean;
   summary: string;
   practice: string;
+  /** Round 14: the state of the text (see above). Absent = PENDING_REVIEW. */
+  review?: ReviewState;
+  reviewedBy?: string;
+  /** Round 14: the number in one counting system – only once mapped and checked. */
+  count?: { system: CountingSystem; number: number };
+  /** Round 14: exact sources (book, place) – only from an identified, checked source. */
+  sources?: Array<{ label: string; sefariaRef?: string }>;
+  expanded?: string;
+  example?: string;
 };
+
+/** The app's entry for DOING a mitzvah, where there is exactly one (learning about it is separate). */
+export const DOING: Readonly<Record<string, ActionKey>> = Object.freeze({
+  'tefillin-yad': 'tefillin',
+  'tefillin-rosh': 'tefillin',
+  'kriat-shema': 'shema',
+  'birkat-hamazon': 'birkatHamazon',
+  'talmud-torah': 'torahStudy',
+  'kibud-av-vaem': 'parents',
+  tzedakah: 'charity',
+  'zachor-shabbat': 'kiddush',
+  'sefirat-haomer': 'omer',
+  shofar: 'shofar',
+  sukkah: 'sukkah',
+  lulav: 'lulav',
+  chalah: 'challah',
+});
+
+export const reviewOf = (m: MitzvahEntry): ReviewState => m.review ?? 'PENDING_REVIEW';
 
 export const MITZVOT_TOTAL = 613;
 

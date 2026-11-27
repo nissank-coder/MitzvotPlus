@@ -17,13 +17,13 @@ const PERIODS: Array<{ key: Period; label: string }> = [
 ];
 
 const CELL: Record<string, string> = {
-  goal: 'bg-[#2AAE9B]',
+  goal: 'bg-brand',
   partial: 'bg-[#A8DCD4]',
-  open: 'bg-white border-2 border-[#2AAE9B]',
+  open: 'bg-white border-2 border-brand',
   empty: 'bg-[#E6EEF3]',
   rest: 'bg-[repeating-linear-gradient(135deg,#EEF3F6_0_5px,#F8FAFB_5px_10px)] border border-dashed border-[#C4D3DC]',
   future: 'border border-dashed border-[#C4D3DC]',
-  before: 'bg-[#F4F8FB] border border-[#EAF0F4]',
+  before: 'bg-canvas border border-line',
 };
 
 /**
@@ -57,10 +57,10 @@ export function ProgressScreen() {
   })();
 
   return (
-    <div dir="rtl" className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-4 flex flex-col gap-4">
+    <div dir="rtl" className="flex-1 bg-canvas px-4 pb-8 pt-4 flex flex-col gap-4">
       <header className="flex flex-col">
-        <h1 className="text-[24px] font-black text-[#17324D]">ההתקדמות שלי</h1>
-        <span className="text-[13px] text-[#5C6F82]">ביחס לעצמך בלבד · {derived.stage.name}</span>
+        <h1 className="text-[24px] font-black text-ink">ההתקדמות שלי</h1>
+        <span className="text-[13px] text-ink-muted">ביחס לעצמך בלבד · {derived.stage.name}</span>
       </header>
 
       <div className="flex flex-row gap-1 bg-[#E6EEF3] rounded-[14px] p-1" role="tablist" aria-label="תקופה">
@@ -71,7 +71,7 @@ export function ProgressScreen() {
             role="tab"
             aria-selected={period === p.key}
             onClick={() => setPeriod(p.key)}
-            className={`flex-1 min-h-[44px] rounded-[11px] text-[14px] font-extrabold ${period === p.key ? 'bg-white text-[#17324D] shadow-sm' : 'text-[#5C6F82]'}`}
+            className={`flex-1 min-h-[44px] rounded-[11px] text-[14px] font-extrabold ${period === p.key ? 'bg-white text-ink shadow-sm' : 'text-ink-muted'}`}
           >
             {p.label}
           </button>
@@ -82,15 +82,15 @@ export function ProgressScreen() {
       <Card className="p-4 flex flex-col gap-3">
         {period === 'day' ? (
           <>
-            <span className="text-[12px] font-extrabold text-[#1B6F8F]">היעד של היום</span>
-            <span className="text-[22px] font-black text-[#17324D]">
+            <span className="text-[12px] font-extrabold text-brand">היעד של היום</span>
+            <span className="text-[22px] font-black text-ink">
               {derived.hasHabits ? `${derived.habitsDoneToday}/${derived.habitTarget} הרגלים` : `${derived.todayCount}/${state.dailyGoal} פעולות`}
             </span>
             {derived.habitsToday.map((h) => (
               <div key={h.sel.id} className="flex flex-col gap-1">
-                <div className="flex flex-row justify-between text-[13px] font-bold text-[#17324D]">
+                <div className="flex flex-row justify-between text-[13px] font-bold text-ink">
                   <span>{h.title}</span>
-                  <span className="text-[#5C6F82]">{h.done ? 'בוצע' : `${Math.min(h.value, h.needed)}/${h.needed}`}</span>
+                  <span className="text-ink-muted">{h.done ? 'בוצע' : `${Math.min(h.value, h.needed)}/${h.needed}`}</span>
                 </div>
                 <Bar value={Math.min(h.value, h.needed)} max={h.needed} label={h.title} />
               </div>
@@ -98,20 +98,20 @@ export function ProgressScreen() {
           </>
         ) : (
           <>
-            <span className="text-[12px] font-extrabold text-[#1B6F8F]">
+            <span className="text-[12px] font-extrabold text-brand">
               {periodName} · {stats.goalDays} מתוך {stats.eligibleDays} ימים ביעד
             </span>
-            <span className="text-[24px] font-black text-[#17324D]">{stats.percent === null ? 'עוד אין ימים סגורים' : `${stats.percent}% השלמת יעד`}</span>
-            <span className={`text-[13px] font-bold ${stats.previous && stats.goalDays > stats.previous.goalDays ? 'text-[#2E7D5B]' : 'text-[#5C6F82]'}`}>{comparison}</span>
+            <span className="text-[24px] font-black text-ink">{stats.percent === null ? 'עוד אין ימים סגורים' : `${stats.percent}% השלמת יעד`}</span>
+            <span className={`text-[13px] font-bold ${stats.previous && stats.goalDays > stats.previous.goalDays ? 'text-[#2E7D5B]' : 'text-ink-muted'}`}>{comparison}</span>
             <div className={`grid gap-1.5 ${period === 'week' ? 'grid-cols-7' : 'grid-cols-7'}`} aria-label="ימי התקופה">
               {stats.days.map((d) => (
                 <div key={d.key} className="flex flex-col items-center gap-1">
                   <div className={`w-full rounded-[8px] ${period === 'week' ? 'h-[56px]' : 'h-[26px]'} ${CELL[d.state]}`} title={d.key} />
-                  <span className={`text-[10px] font-bold ${d.key === derived.todayKey ? 'text-[#1B6F8F]' : 'text-[#5C6F82]'}`}>{d.label}</span>
+                  <span className={`text-[10px] font-bold ${d.key === derived.todayKey ? 'text-brand' : 'text-ink-muted'}`}>{d.label}</span>
                 </div>
               ))}
             </div>
-            <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-[11px] text-[#5C6F82]">
+            <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-[11px] text-ink-muted">
               <Legend cls={CELL.goal!} label="יעד הושלם" />
               <Legend cls={CELL.partial!} label="חלקי" />
               <Legend cls={CELL.open!} label="היום – בתהליך" />
@@ -133,13 +133,13 @@ export function ProgressScreen() {
       <Card className="p-4 flex flex-col gap-3">
         <SectionHeader title={`לפי סוג פעילות · ${periodName}`} icon="chart" />
         {stats.byCategory.length === 0 ? (
-          <p className="text-[13px] text-[#5C6F82]">עוד אין רישומים בתקופה הזו.</p>
+          <p className="text-[13px] text-ink-muted">עוד אין רישומים בתקופה הזו.</p>
         ) : (
           stats.byCategory.map((c) => (
             <div key={c.category} className="flex flex-col gap-1">
-              <div className="flex flex-row justify-between text-[13px] font-bold text-[#17324D]">
+              <div className="flex flex-row justify-between text-[13px] font-bold text-ink">
                 <span>{c.title}</span>
-                <span className="text-[#5C6F82]">
+                <span className="text-ink-muted">
                   {period === 'day' ? `${c.entries} רישומים` : `${c.days} ימים · ${c.entries} רישומים`}
                 </span>
               </div>
@@ -153,14 +153,14 @@ export function ProgressScreen() {
       <Card className="p-4 flex flex-col gap-3">
         <SectionHeader title={`הישגים · ${earned}/${derived.achievements.filter((a) => !a.def.future).length}`} icon="trophy" />
         {nextAchievement ? (
-          <div className="rounded-[16px] bg-[#F4F8FB] p-3 flex flex-col gap-1.5">
-            <div className="flex flex-row justify-between text-[13px] font-extrabold text-[#17324D]">
+          <div className="rounded-[16px] bg-canvas p-3 flex flex-col gap-1.5">
+            <div className="flex flex-row justify-between text-[13px] font-extrabold text-ink">
               <span>ההישג הבא: {nextAchievement.def.title}</span>
-              <span className="text-[#5C6F82]">
+              <span className="text-ink-muted">
                 {nextAchievement.value}/{nextAchievement.def.threshold}
               </span>
             </div>
-            <span className="text-[12px] text-[#5C6F82]">
+            <span className="text-[12px] text-ink-muted">
               {nextAchievement.def.explanation} · עוד {nextAchievement.def.threshold - nextAchievement.value} {nextAchievement.def.unit}
             </span>
             <Bar value={nextAchievement.value} max={nextAchievement.def.threshold} label={nextAchievement.def.title} />
@@ -171,19 +171,19 @@ export function ProgressScreen() {
             <AchievementBadge key={a.def.id} view={a} />
           ))}
         </div>
-        <p className="text-[11px] text-[#5C6F82]">ההישגים מודדים התמדה, לא את ערכו של אדם. הישגים פרטיים לא משותפים.</p>
+        <p className="text-[11px] text-ink-muted">ההישגים מודדים התמדה, לא את ערכו של אדם. הישגים פרטיים לא משותפים.</p>
       </Card>
 
       {/* Stage */}
       <Card className="p-4 flex flex-col gap-2">
         <SectionHeader title="שלב במסע" icon="target" />
-        <span className="text-[17px] font-black text-[#17324D]">
+        <span className="text-[17px] font-black text-ink">
           שלב {derived.stage.index}: {derived.stage.name}
         </span>
         {derived.stage.next ? (
           <>
             <Bar value={derived.stage.progress * 100} max={100} label="התקדמות בשלב" />
-            <span className="text-[12px] text-[#5C6F82]">
+            <span className="text-[12px] text-ink-muted">
               עוד {derived.stage.next.toGo} ימי יעד לשלב "{derived.stage.next.name}"
             </span>
           </>
@@ -194,7 +194,7 @@ export function ProgressScreen() {
       <Card className="p-4 flex flex-col gap-3">
         <SectionHeader title="היסטוריית אתגרים" icon="calendar" />
         {history.length === 0 ? (
-          <p className="text-[13px] text-[#5C6F82]">עוד אין אתגרים שהסתיימו.</p>
+          <p className="text-[13px] text-ink-muted">עוד אין אתגרים שהסתיימו.</p>
         ) : (
           history
             .slice()
@@ -207,14 +207,14 @@ export function ProgressScreen() {
       <Card className="p-4 flex flex-col">
         <SectionHeader title={`יומן · ${periodName} (${journal.length})`} icon="scroll" />
         {journal.length === 0 ? (
-          <p className="text-[13px] text-[#5C6F82]">אין רישומים בתקופה.</p>
+          <p className="text-[13px] text-ink-muted">אין רישומים בתקופה.</p>
         ) : (
           journal.slice(0, journalLimit).map((log) => (
-            <div key={log.id} className="flex flex-row items-center gap-2 min-h-[44px] border-t border-[#EAF0F4]">
-              <span className="flex-1 text-[14px] font-bold text-[#17324D]">
+            <div key={log.id} className="flex flex-row items-center gap-2 min-h-[44px] border-t border-line">
+              <span className="flex-1 text-[14px] font-bold text-ink">
                 {log.title} <UnsavedMark logId={log.id} />
               </span>
-              <span className="text-[12px] text-[#5C6F82]">
+              <span className="text-[12px] text-ink-muted">
                 {period === 'day' ? formatTime(log.createdAt) : `${log.dateKey.slice(8)}/${log.dateKey.slice(5, 7)}`}
                 {log.backfill ? ' · בדיעבד' : ''}
               </span>
@@ -227,7 +227,7 @@ export function ProgressScreen() {
         )}
         {/* Every entry of the period can be reached for a correction (round 13, U6). */}
         {journal.length > journalLimit ? (
-          <button type="button" onClick={() => setJournalLimit((n) => n + JOURNAL_PAGE)} className="self-start min-h-[44px] px-2 text-[14px] font-bold text-[#1B6F8F]">
+          <button type="button" onClick={() => setJournalLimit((n) => n + JOURNAL_PAGE)} className="self-start min-h-[44px] px-2 text-[14px] font-bold text-brand">
             הצגת עוד {Math.min(JOURNAL_PAGE, journal.length - journalLimit)} (נותרו {journal.length - journalLimit})
           </button>
         ) : null}
@@ -261,9 +261,9 @@ function Legend({ cls, label }: { cls: string; label: string }) {
 
 function StatTile({ value, label }: { value: number; label: string }) {
   return (
-    <div className="rounded-[18px] bg-white border border-[#DDE8EE] card-shadow p-3 flex flex-col">
-      <span className="text-[22px] font-black text-[#17324D]">{value}</span>
-      <span className="text-[12px] font-bold text-[#5C6F82]">{label}</span>
+    <div className="rounded-[18px] bg-white border border-line card-shadow p-3 flex flex-col">
+      <span className="text-[22px] font-black text-ink">{value}</span>
+      <span className="text-[12px] font-bold text-ink-muted">{label}</span>
     </div>
   );
 }

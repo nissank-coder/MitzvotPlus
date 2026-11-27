@@ -42,7 +42,7 @@ export function TodayPlanCard() {
             points={closed ? 0 : previewPoints(item.key, {})}
             done={item.done}
             onPress={closed ? undefined : () => record(item.key)}
-            trailing={def.minyanBonus && !item.done ? <span className="text-[11px] font-bold text-[#718397] shrink-0">במניין או ביחידות</span> : null}
+            trailing={def.minyanBonus && !item.done ? <span className="text-[11px] font-bold text-ink-muted shrink-0">במניין או ביחידות</span> : null}
             color={style.color}
             background={style.background}
             last={index === plan.length - 1}

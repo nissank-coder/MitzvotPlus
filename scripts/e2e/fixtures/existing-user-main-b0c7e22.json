@@ -1,0 +1,305 @@
+{
+  "version": 2,
+  "onboarded": true,
+  "userName": "רחל",
+  "memberSince": 1795719176275,
+  "legacyPoints": 0,
+  "dailyGoal": 5,
+  "weeklyGoal": 25,
+  "blessingGoal": 50,
+  "logs": [
+    {
+      "id": "log-mwxwu05x-h-rsho",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583460000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583460000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05x-g-f135",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583400000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583400000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05x-f-7rpn",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583340000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583340000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05x-e-bp4l",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583280000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583280000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05x-d-vzq2",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583220000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583220000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05x-c-kxgk",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583160000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583160000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-b-r1aj",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583100000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583100000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-a-ufvm",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795583040000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795583040000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-9-j8wt",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795582980000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795582980000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-8-jwei",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795582920000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795582920000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-7-zm7u",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795582860000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795582860000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-6-g225",
+      "title": "ברכה",
+      "icon": "cup",
+      "points": 2,
+      "createdAt": 1795582800000,
+      "dateKey": "2026-11-25",
+      "kind": "blessing",
+      "actionKey": "blessing",
+      "category": "other",
+      "recordedAt": 1795582800000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-5-g8po",
+      "title": "הכרת הטוב",
+      "icon": "star",
+      "points": 10,
+      "createdAt": 1795593600000,
+      "dateKey": "2026-11-25",
+      "kind": "mitzvah",
+      "actionKey": "gratitude",
+      "recordedAt": 1795593600000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-4-umoc",
+      "title": "לימוד תורה",
+      "icon": "book",
+      "points": 10,
+      "createdAt": 1795507200000,
+      "dateKey": "2026-11-24",
+      "kind": "mitzvah",
+      "actionKey": "torahStudy",
+      "recordedAt": 1795507200000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-3-i26s",
+      "title": "לימוד תורה",
+      "icon": "book",
+      "points": 10,
+      "createdAt": 1795334400000,
+      "dateKey": "2026-11-22",
+      "kind": "mitzvah",
+      "actionKey": "torahStudy",
+      "recordedAt": 1795334400000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-2-nqxq",
+      "title": "הכרת הטוב",
+      "icon": "star",
+      "points": 10,
+      "createdAt": 1795248000000,
+      "dateKey": "2026-11-21",
+      "kind": "mitzvah",
+      "actionKey": "gratitude",
+      "recordedAt": 1795248000000,
+      "rules": "score-3"
+    },
+    {
+      "id": "log-mwxwu05w-1-949c",
+      "title": "לימוד תורה",
+      "icon": "book",
+      "points": 10,
+      "createdAt": 1795161600000,
+      "dateKey": "2026-11-20",
+      "kind": "mitzvah",
+      "actionKey": "torahStudy",
+      "recordedAt": 1795161600000,
+      "rules": "score-3"
+    }
+  ],
+  "speech": {
+    "since": null,
+    "bestMs": 0,
+    "resets": 0,
+    "completedMs": 0,
+    "undo": null
+  },
+  "savedContent": [],
+  "goalHistory": [
+    {
+      "from": "0000-00-00",
+      "dailyGoal": 5,
+      "weeklyGoal": 25,
+      "blessingGoal": 100,
+      "habits": [
+        {
+          "id": "learn-daily",
+          "perWeek": 7
+        },
+        {
+          "id": "gratitude",
+          "perWeek": 3
+        },
+        {
+          "id": "blessings-20",
+          "perWeek": 7
+        }
+      ],
+      "habitTarget": 3
+    },
+    {
+      "from": "2026-11-15",
+      "habits": [
+        {
+          "id": "learn-daily",
+          "perWeek": 7
+        },
+        {
+          "id": "gratitude",
+          "perWeek": 3
+        },
+        {
+          "id": "blessings-20",
+          "perWeek": 7
+        }
+      ],
+      "habitTarget": 3,
+      "dailyGoal": 5,
+      "weeklyGoal": 25,
+      "blessingGoal": 50
+    }
+  ],
+  "locationHistory": [
+    {
+      "from": "0000-00-00",
+      "cityId": "jerusalem"
+    }
+  ],
+  "challenges": [],
+  "awards": [],
+  "reflections": {},
+  "settings": {
+    "notifications": true,
+    "privateProfile": true
+  },
+  "joinedGroups": {},
+  "profile": {
+    "gender": "female",
+    "nusach": "sefard",
+    "cityId": "jerusalem"
+  },
+  "learningTracks": [
+    "dailyHalacha",
+    "chofetzchaim",
+    "psalms"
+  ],
+  "backfilledRestDays": []
+}

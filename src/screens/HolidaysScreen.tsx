@@ -52,16 +52,16 @@ export function HolidaysScreen({ onBack, onOpenProfile }: Props) {
           const days = daysBetween(derived.todayKey, h.dateKey);
           const when = days === 0 ? 'היום' : days === 1 ? 'מחר' : `בעוד ${days} ימים`;
           return (
-            <div key={guide.key} dir="rtl" className={`py-3 ${i < list.length - 1 ? 'border-b border-[#EAF0F4]' : ''}`}>
+            <div key={guide.key} dir="rtl" className={`py-3 ${i < list.length - 1 ? 'border-b border-line' : ''}`}>
               <button type="button" onClick={() => setOpenKey(isOpen ? null : guide.key)} aria-expanded={isOpen} className="w-full flex flex-row items-center gap-3 text-right">
-                <div className="w-10 h-10 rounded-[14px] bg-[#EAF7EF] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-[14px] bg-lime-soft flex items-center justify-center shrink-0">
                   <AppIcon name="calendar" size={19} color={colors.green} />
                 </div>
                 <div className="flex-1 flex flex-col">
-                  <span className="text-[#17324D] text-[15px] font-black">{guide.title}</span>
-                  <span className="text-[#718397] text-[11px]">{h.hebrewDate}</span>
+                  <span className="text-ink text-[15px] font-black">{guide.title}</span>
+                  <span className="text-ink-muted text-[11px]">{h.hebrewDate}</span>
                 </div>
-                <span className="text-[#1B6F8F] text-[12px] font-black">{when}</span>
+                <span className="text-brand text-[12px] font-black">{when}</span>
               </button>
               {isOpen ? (
                 <div className="mt-3">
@@ -82,11 +82,11 @@ function GuideBody({ guide, active }: { guide: HolidayGuide; active: boolean }) 
   const canLog = active && !calendar.day.isRestDay;
   return (
     <div dir="rtl">
-      <p className="text-[#17324D] text-[14px] leading-6">{guide.summary}</p>
+      <p className="text-ink text-[14px] leading-6">{guide.summary}</p>
       <ul className="mt-2 flex flex-col gap-1.5">
         {guide.laws.map((law) => (
-          <li key={law} className="flex flex-row items-start gap-2 text-[#17324D] text-[13px] leading-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2AAE9B] mt-2 shrink-0" />
+          <li key={law} className="flex flex-row items-start gap-2 text-ink text-[13px] leading-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand mt-2 shrink-0" />
             {law}
           </li>
         ))}
@@ -113,7 +113,7 @@ function GuideBody({ guide, active }: { guide: HolidayGuide; active: boolean }) 
           })}
         </div>
       ) : (
-        <p className="text-[#718397] text-[11px] mt-3">
+        <p className="text-ink-muted text-[11px] mt-3">
           מצוות היום: {guide.actions.map((k) => actionDef(k).title).join(' · ')}
         </p>
       )}

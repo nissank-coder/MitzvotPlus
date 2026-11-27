@@ -17,19 +17,19 @@ export function SectionHeader({ title, icon, actionLabel, onAction }: Props) {
       {actionLabel && onAction ? (
         <button type="button" onClick={onAction} className="min-h-[44px] flex flex-row items-center gap-0.5 bg-transparent border-0 px-1 hover:opacity-80">
           <AppIcon name="chevronLeft" size={16} color={colors.primary} />
-          <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-bold">
+          <span dir="rtl" className="text-brand text-[13px] font-bold">
             {actionLabel}
           </span>
         </button>
       ) : actionLabel ? (
-        <span dir="rtl" className="text-[#1B6F8F] text-[13px] font-bold">
+        <span dir="rtl" className="text-brand text-[13px] font-bold">
           {actionLabel}
         </span>
       ) : (
         <div />
       )}
       <div className="flex flex-row-reverse items-center gap-2">
-        <h2 dir="rtl" className="text-[#17324D] text-[20px] font-black leading-tight">
+        <h2 dir="rtl" className="text-ink text-[20px] font-black leading-tight">
           {title}
         </h2>
         {icon ? <AppIcon name={icon} size={20} color={colors.primary} /> : null}

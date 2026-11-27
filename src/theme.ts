@@ -23,32 +23,38 @@ export const ds = {
   white: '#FFFFFF',
 } as const;
 
+/**
+ * The colours of the screens built before the design rounds. Round 14 (review v4 §5): mapped onto the
+ * roles of the design system, so every active screen speaks one language – a primary action on a
+ * light surface is brand blue, lime marks progress on blue, success is lime (its text in lime-ink),
+ * text is ink. Category colours (gold, coral, purple) keep their meaning.
+ */
 export const colors = {
-  background: '#F4F8FB',
-  surface: '#FFFFFF',
-  surfaceAlt: '#EDF6F7',
-  text: '#17324D',
-  textMuted: '#718397',
-  primary: '#1B6F8F',
-  primaryDark: '#14536C',
-  teal: '#2AAE9B',
-  mint: '#BDECE3',
-  mintSoft: '#E8F8F4',
-  blueSoft: '#EAF4FB',
-  sky: '#D9EEF7',
+  background: ds.canvas,
+  surface: ds.surface,
+  surfaceAlt: ds.brandSoft,
+  text: ds.ink,
+  textMuted: ds.inkMuted,
+  primary: ds.brand,
+  primaryDark: ds.brandPress,
+  teal: ds.brand,
+  mint: '#C9D4F0',
+  mintSoft: ds.brandSoft,
+  blueSoft: ds.brandSoft,
+  sky: '#C9D4F0',
   gold: '#F4B942',
   goldSoft: '#FFF5DB',
   coral: '#E8796C',
   coralSoft: '#FDEDEA',
-  green: '#4DAA78',
-  greenSoft: '#EAF7EF',
+  green: ds.limeDeep,
+  greenSoft: ds.limeSoft,
   purple: '#7D78C9',
   purpleSoft: '#F0EEFB',
-  border: '#DDE8EE',
-  divider: '#EAF0F4',
+  border: ds.line,
+  divider: '#E8EDF6',
   white: '#FFFFFF',
   shadow: '#19344F',
-  danger: '#C95B53',
+  danger: ds.danger,
 };
 
 export const spacing = {

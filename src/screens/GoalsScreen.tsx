@@ -35,7 +35,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
   const chartMax = Math.max(state.dailyGoal, ...week.days.map((d) => d.count), 1);
 
   return (
-    <div className="flex-1 bg-[#F4F8FB] px-4 pb-8 pt-2">
+    <div className="flex-1 bg-canvas px-4 pb-8 pt-2">
       <AppHeader onProfilePress={onOpenProfile} />
 
       <FeatureHeader title="התקדמות ויעדים" subtitle="התמונה הגדולה של המסע שלך" icon="target" onBack={onBack} />
@@ -45,29 +45,29 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           <AppIcon name="crown" size={36} color={colors.gold} />
         </div>
         <div className="flex-1 flex flex-col items-end">
-          <span dir="rtl" className="text-[#718397] text-[13px] font-bold">
+          <span dir="rtl" className="text-ink-muted text-[13px] font-bold">
             נקודות התמדה – סך הכל
           </span>
-          <span className="text-[#17324D] text-[34px] font-black mt-0.5 leading-tight">
+          <span className="text-ink text-[34px] font-black mt-0.5 leading-tight">
             {derived.totalPoints.toLocaleString('he-IL')}
           </span>
           {!SYNC_ENABLED ? (
-            <span dir="rtl" className="text-[#718397] text-[10px] mt-0.5">
+            <span dir="rtl" className="text-ink-muted text-[10px] mt-0.5">
               נשמר במכשיר בלבד – לא אומת בשרת
             </span>
           ) : null}
-          <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
+          <span dir="rtl" className="text-ink-muted text-[11px] mt-1">
             {level.isMax
               ? `הגעת לדרגה הגבוהה ביותר – ${level.name}`
               : `${level.name} · עוד ${level.toNext.toLocaleString('he-IL')} נקודות לדרגה הבאה`}
           </span>
           <div className="w-full h-[7px] rounded-full bg-[#EAF0F4] mt-3 overflow-hidden">
-            <div className="h-full rounded-full bg-[#2AAE9B]" style={{ width: `${level.progress * 100}%` }} />
+            <div className="h-full rounded-full bg-brand" style={{ width: `${level.progress * 100}%` }} />
           </div>
         </div>
-        <div className="w-[60px] h-[60px] rounded-full bg-[#EAF4FB] flex flex-col items-center justify-center shrink-0">
-          <span className="text-[#1B6F8F] text-[22px] font-black leading-none">{level.level}</span>
-          <span className="text-[#1B6F8F] text-[9px] font-extrabold mt-0.5">דרגה</span>
+        <div className="w-[60px] h-[60px] rounded-full bg-brand-soft flex flex-col items-center justify-center shrink-0">
+          <span className="text-brand text-[22px] font-black leading-none">{level.level}</span>
+          <span className="text-brand text-[9px] font-extrabold mt-0.5">דרגה</span>
         </div>
       </Card>
 
@@ -107,17 +107,17 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
         <div className="h-[180px] flex flex-row-reverse items-end justify-between pt-3">
           {week.days.map((item) => (
             <div key={item.key} className="flex-1 h-full flex flex-col items-center justify-end">
-              <span className="text-[#718397] text-[10px] font-bold mb-1">{item.isFuture ? '' : item.count}</span>
-              <div className="w-5 h-[125px] rounded-full bg-[#EAF4FB] overflow-hidden flex items-end">
+              <span className="text-ink-muted text-[10px] font-bold mb-1">{item.isFuture ? '' : item.count}</span>
+              <div className="w-5 h-[125px] rounded-full bg-brand-soft overflow-hidden flex items-end">
                 {item.count > 0 && (
                   <div
-                    className={`w-full rounded-full ${item.isToday ? 'bg-[#1B6F8F]' : 'bg-[#2AAE9B]'}`}
+                    className={`w-full rounded-full ${item.isToday ? 'bg-[#1B6F8F]' : 'bg-brand'}`}
                     style={{ height: `${Math.max(8, (item.count / chartMax) * 100)}%` }}
                   />
                 )}
               </div>
               <span
-                className={`text-[13px] font-extrabold mt-2 ${item.isToday ? 'text-[#1B6F8F]' : 'text-[#17324D]'}`}
+                className={`text-[13px] font-extrabold mt-2 ${item.isToday ? 'text-brand' : 'text-ink'}`}
               >
                 {item.label}
               </span>
@@ -125,7 +125,7 @@ export function GoalsScreen({ onBack, onOpenProfile, onOpenBlessings, onOpenTora
           ))}
         </div>
         <div className="mt-4">
-          <p dir="rtl" className="text-[#718397] text-[13px] text-right">
+          <p dir="rtl" className="text-ink-muted text-[13px] text-right">
             השלמת {Math.round(weeklyProgress * 100)}% מהיעד השבועי
           </p>
           <div className="w-full h-2 rounded-full bg-[#EAF0F4] overflow-hidden mt-2">
@@ -174,15 +174,15 @@ function SummaryCard({
       type="button"
       onClick={onPress}
       disabled={!onPress}
-      className={`flex-1 min-h-[142px] rounded-[22px] bg-white border border-[#DDE8EE] flex flex-col items-center justify-center p-2 card-shadow transition-colors ${
-        onPress ? 'hover:border-[#2AAE9B]' : 'cursor-default'
+      className={`flex-1 min-h-[142px] rounded-[22px] bg-white border border-line flex flex-col items-center justify-center p-2 card-shadow transition-colors ${
+        onPress ? 'hover:border-brand' : 'cursor-default'
       }`}
     >
       <ProgressRing progress={progress} size={72} strokeWidth={7} color={color}>
         <AppIcon name={icon} size={18} color={color} />
       </ProgressRing>
-      <span className="text-[#17324D] text-[13px] font-black mt-2 text-center">{value}</span>
-      <span dir="rtl" className="text-[#718397] text-[10px] font-bold mt-0.5 text-center">
+      <span className="text-ink text-[13px] font-black mt-2 text-center">{value}</span>
+      <span dir="rtl" className="text-ink-muted text-[10px] font-bold mt-0.5 text-center">
         {title}
       </span>
     </button>
@@ -208,7 +208,7 @@ function Badge({
 }) {
   return (
     <div
-      className={`min-h-[78px] rounded-[22px] bg-white border border-[#DDE8EE] p-3 flex flex-row-reverse items-center gap-3 ${
+      className={`min-h-[78px] rounded-[22px] bg-white border border-line p-3 flex flex-row-reverse items-center gap-3 ${
         earned ? '' : 'opacity-75'
       }`}
     >
@@ -219,10 +219,10 @@ function Badge({
         <AppIcon name={icon} size={25} color={color} />
       </div>
       <div className="flex-1 flex flex-col items-end">
-        <span dir="rtl" className="text-[#17324D] text-[15px] font-black">
+        <span dir="rtl" className="text-ink text-[15px] font-black">
           {title}
         </span>
-        <span dir="rtl" className="text-[#718397] text-[11px] mt-1">
+        <span dir="rtl" className="text-ink-muted text-[11px] mt-1">
           {subtitle}
         </span>
         {!earned && (

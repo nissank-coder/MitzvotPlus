@@ -17,14 +17,15 @@
     "check:release": "node scripts/ci/check-release.mjs",
     "check:secrets": "node scripts/ci/check-secrets.mjs",
     "check:licenses": "node scripts/ci/check-licenses.mjs",
-    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions && npm run check:seed",
+    "verify": "npm run typecheck && npm test && npm run build && npm run check:release && npm run check:secrets && npm run check:licenses && npm run check:versions && npm run check:seed && npm run check:mitzvot",
     "e2e": "npm run build && node scripts/e2e/scenarios.mjs",
     "check:distribution": "node scripts/ci/check-distribution.mjs",
     "check:versions": "node scripts/ci/check-versions.mjs",
     "test:db": "node scripts/db/test-db.mjs",
     "test:integration": "vitest run --config vitest.integration.config.mjs",
     "e2e:staging": "node scripts/e2e/staging-account.mjs",
-    "check:seed": "node scripts/db/gen-seed.mjs --check"
+    "check:seed": "node scripts/db/gen-seed.mjs --check",
+    "check:mitzvot": "node scripts/content/check-mitzvot.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.1",

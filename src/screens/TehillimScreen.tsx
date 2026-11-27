@@ -61,19 +61,19 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
       onBack={view.kind === 'read' ? () => setView({ kind: 'list' }) : onBack}
       onOpenProfile={onOpenProfile}
     >
-      {failed ? <p dir="rtl" className="text-[#718397]">לא ניתן לטעון את ספר תהילים.</p> : null}
-      {!pack && !failed ? <p dir="rtl" className="text-[#718397] p-4">טוען…</p> : null}
+      {failed ? <p dir="rtl" className="text-ink-muted">לא ניתן לטעון את ספר תהילים.</p> : null}
+      {!pack && !failed ? <p dir="rtl" className="text-ink-muted p-4">טוען…</p> : null}
 
       {pack && view.kind === 'list' ? (
         <>
           <Card className="p-4 mb-4">
             <SectionHeader title="תהילים היום" icon="calendar" actionLabel={calendar.day.hebrewDate} />
-            <p dir="rtl" className="text-[#17324D] text-[16px] font-black">פרקים {todayLabel}</p>
-            <p dir="rtl" className="text-[#718397] text-[12px] mt-1">לפי חלוקת הספר לימי החודש העברי</p>
+            <p dir="rtl" className="text-ink text-[16px] font-black">פרקים {todayLabel}</p>
+            <p dir="rtl" className="text-ink-muted text-[12px] mt-1">לפי חלוקת הספר לימי החודש העברי</p>
             <button
               type="button"
               onClick={() => setView({ kind: 'read', ranges: today, label: todayLabel })}
-              className="w-full min-h-[48px] mt-3 rounded-full bg-[#2AAE9B] text-white text-[15px] font-black"
+              className="w-full min-h-[48px] mt-3 rounded-full bg-brand text-white text-[15px] font-black"
             >
               לקריאת תהילים היום
             </button>
@@ -88,7 +88,7 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
                   type="button"
                   aria-label={`פרק ${num(c.chapter)}`}
                   onClick={() => setView({ kind: 'read', ranges: [{ from: c.chapter, to: c.chapter }], label: num(c.chapter) })}
-                  className="h-11 rounded-[12px] bg-[#F4F8FB] border border-[#DDE8EE] text-[#17324D] text-[14px] font-black hover:bg-[#EAF4FB]"
+                  className="h-11 rounded-[12px] bg-canvas border border-line text-ink text-[14px] font-black hover:bg-brand-soft"
                 >
                   {num(c.chapter)}
                 </button>
@@ -106,7 +106,7 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
               type="button"
               onClick={() => markSaid(view.label)}
               disabled={saidToday}
-              className={`h-10 px-4 rounded-full text-[13px] font-black ${saidToday ? 'bg-[#EAF7EF] text-[#4DAA78]' : 'bg-[#2AAE9B] text-white'}`}
+              className={`h-10 px-4 rounded-full text-[13px] font-black ${saidToday ? 'bg-lime-soft text-lime-ink' : 'bg-brand text-white'}`}
             >
               {saidToday ? 'נרשם ✓' : `אמרתי (+${actionDef('tehillim').points})`}
             </button>
@@ -114,14 +114,14 @@ export function TehillimScreen({ onBack, onOpenProfile }: Props) {
           <ReviewNotice />
           <Card className="p-4">
             {chapters.map((ch, i) => (
-              <section key={`${ch.chapter}-${ch.firstVerse}`} className={i > 0 ? 'mt-6 pt-5 border-t border-[#EAF0F4]' : ''}>
-                <h2 dir="rtl" className="text-[#1B6F8F] text-[15px] font-black mb-2">
+              <section key={`${ch.chapter}-${ch.firstVerse}`} className={i > 0 ? 'mt-6 pt-5 border-t border-line' : ''}>
+                <h2 dir="rtl" className="text-brand text-[15px] font-black mb-2">
                   פרק {num(ch.chapter)}
                 </h2>
                 <TextReader segments={ch.verses.map((v, k) => ({ text: `${num(ch.firstVerse + k)} ${v}` }))} />
               </section>
             ))}
-            <p dir="ltr" className="text-[10px] text-[#A7B4C0] mt-4 text-left">
+            <p dir="ltr" className="text-[10px] text-ink-muted mt-4 text-left">
               {pack.source.versionTitle} · {pack.source.license} · דרך ספריא
             </p>
           </Card>

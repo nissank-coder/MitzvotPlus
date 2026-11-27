@@ -135,6 +135,8 @@ jobs:
         run: node scripts/e2e/round-1-1.mjs --with-demo 2>&1 | tee reports/round-1-1.txt
       - name: Round 13 – core fixes (habit editor, dialogs, minyan choice, double tap, every entry reachable)
         run: node scripts/e2e/round-13.mjs 2>&1 | tee reports/round-13.txt
+      - name: Round 14 – existing user from main, clean install, learning reader (retry, 429, offline, full text), no flash
+        run: node scripts/e2e/round-14.mjs 2>&1 | tee reports/round-14.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

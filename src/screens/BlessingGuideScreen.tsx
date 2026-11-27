@@ -30,7 +30,7 @@ export function BlessingGuideScreen({ onBack, onOpenProfile, onOpenSiddur }: Pro
   return (
     <FeatureScreen title="מה מברכים?" subtitle="ברכות הנהנין, הריח, הראייה והמצוות" icon="cup" onBack={onBack} onOpenProfile={onOpenProfile}>
       <Card className="p-4 mb-4">
-        <label htmlFor="food-search" dir="rtl" className="block text-[#17324D] text-[15px] font-black mb-2">
+        <label htmlFor="food-search" dir="rtl" className="block text-ink text-[15px] font-black mb-2">
           חיפוש מאכל או משקה
         </label>
         <input
@@ -39,19 +39,19 @@ export function BlessingGuideScreen({ onBack, onOpenProfile, onOpenSiddur }: Pro
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="לדוגמה: תמרים, אורז, קפה"
-          className="w-full min-h-[46px] rounded-[16px] border border-[#DDE8EE] px-4 text-[15px] text-[#17324D] outline-none focus:border-[#2AAE9B]"
+          className="w-full min-h-[46px] rounded-[16px] border border-line px-4 text-[15px] text-ink outline-none focus:border-brand"
         />
         {query.trim() && results.length === 0 ? (
-          <p dir="rtl" className="text-[#718397] text-[13px] mt-3">לא נמצא במאגר. מומלץ לשאול רב.</p>
+          <p dir="rtl" className="text-ink-muted text-[13px] mt-3">לא נמצא במאגר. מומלץ לשאול רב.</p>
         ) : null}
         {results.map((f) => (
-          <div key={f.name} dir="rtl" className="mt-3 rounded-[16px] bg-[#F4F8FB] p-3">
-            <p className="text-[#17324D] text-[16px] font-black">{f.name}</p>
+          <div key={f.name} dir="rtl" className="mt-3 rounded-[16px] bg-canvas p-3">
+            <p className="text-ink text-[16px] font-black">{f.name}</p>
             <div className="flex flex-row flex-wrap gap-2 mt-2">
-              <span className="px-2.5 py-1 rounded-full bg-[#E8F8F4] text-[#1E7D6F] text-[12px] font-black">לפני: {firstLabel[f.first]}</span>
-              <span className="px-2.5 py-1 rounded-full bg-[#EAF4FB] text-[#1B6F8F] text-[12px] font-black">אחרי: {afterLabel[f.after]}</span>
+              <span className="px-2.5 py-1 rounded-full bg-brand-soft text-brand text-[12px] font-black">לפני: {firstLabel[f.first]}</span>
+              <span className="px-2.5 py-1 rounded-full bg-brand-soft text-brand text-[12px] font-black">אחרי: {afterLabel[f.after]}</span>
             </div>
-            {f.note ? <p className="text-[#718397] text-[11px] mt-2">{f.note}</p> : null}
+            {f.note ? <p className="text-ink-muted text-[11px] mt-2">{f.note}</p> : null}
           </div>
         ))}
       </Card>
@@ -69,14 +69,14 @@ export function BlessingGuideScreen({ onBack, onOpenProfile, onOpenSiddur }: Pro
         {blessingTexts
           .filter((b) => b.group === group)
           .map((b, i, arr) => (
-            <div key={b.id} dir="rtl" className={`py-3 ${i < arr.length - 1 ? 'border-b border-[#EAF0F4]' : ''}`}>
+            <div key={b.id} dir="rtl" className={`py-3 ${i < arr.length - 1 ? 'border-b border-line' : ''}`}>
               <div className="flex flex-row items-center justify-between gap-3">
-                <span className="text-[#17324D] text-[15px] font-black">{b.title}</span>
+                <span className="text-ink text-[15px] font-black">{b.title}</span>
                 <button
                   type="button"
                   onClick={() => bless(b)}
-                  className={`h-8 px-3 rounded-full text-[12px] font-black transition-colors ${
-                    flash === b.id ? 'bg-[#EAF7EF] text-[#4DAA78]' : 'bg-[#2AAE9B] text-white hover:bg-[#239988]'
+                  className={`min-h-[44px] px-3 rounded-full text-[12px] font-extrabold transition-colors ${
+                    flash === b.id ? 'bg-lime-soft text-lime-ink' : 'bg-brand text-white hover:bg-brand-press'
                   }`}
                 >
                   {flash === b.id ? 'נרשם ✓' : 'בירכתי'}
@@ -87,16 +87,16 @@ export function BlessingGuideScreen({ onBack, onOpenProfile, onOpenSiddur }: Pro
                   <button
                     type="button"
                     onClick={() => onOpenSiddur(b.id === 'birkatHamazon' ? 'birkat-hamazon' : 'meein-shalosh')}
-                    className="text-[#1B6F8F] text-[13px] font-extrabold hover:underline"
+                    className="text-brand text-[13px] font-extrabold hover:underline"
                   >
                     לנוסח המלא בסידור ←
                   </button>
                 </div>
               ) : (
-                <p className="text-[#17324D] text-[17px] leading-8 mt-1">{b.text}</p>
+                <p className="text-ink text-[17px] leading-8 mt-1">{b.text}</p>
               )}
               {b.note ? (
-                <p className="text-[#718397] text-[11px] mt-1 flex flex-row items-center gap-1">
+                <p className="text-ink-muted text-[11px] mt-1 flex flex-row items-center gap-1">
                   <AppIcon name="lightbulb" size={12} color={colors.gold} />
                   {b.note}
                 </p>
