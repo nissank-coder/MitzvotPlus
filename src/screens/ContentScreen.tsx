@@ -20,7 +20,7 @@ export function ContentScreen({ onOpenFeature, onOpenProfile }: { onOpenFeature:
     { key: 'blessingGuide', title: 'מה מברכים?', subtitle: 'ברכות הנהנין, הריח והראייה', icon: 'cup', color: colors.gold, background: colors.goldSoft },
     { key: 'blessings', title: 'מונה 100 ברכות', subtitle: `${derived.blessingTotal} ברכות היום`, icon: 'star', color: colors.teal, background: colors.mintSoft },
     { key: 'learning', title: 'לימוד יומי', subtitle: 'הלכה, תהילים, דף יומי ועוד', icon: 'bookmark', color: colors.purple, background: colors.purpleSoft },
-    { key: 'mitzvot', title: 'תרי״ג מצוות', subtitle: `היום: ${mitzvahOfDay(derived.todayKey).title}`, icon: 'scroll', color: colors.purple, background: colors.purpleSoft },
+    { key: 'mitzvot', title: 'ספריית מצוות', subtitle: `היום: ${mitzvahOfDay(derived.todayKey).title}`, icon: 'scroll', color: colors.purple, background: colors.purpleSoft },
     { key: 'holidays', title: 'חגים ומועדים', subtitle: nextHoliday ?? 'הלכות ומצוות לכל מועד', icon: 'calendar', color: colors.green, background: colors.greenSoft },
     { key: 'torah', title: 'דבר תורה', subtitle: 'מחשבה קצרה ליום', icon: 'book', color: colors.purple, background: colors.purpleSoft },
     { key: 'speech', title: 'שמירת הלשון', subtitle: 'טיימר ושיא אישי', icon: 'chat', color: colors.coral, background: colors.coralSoft },

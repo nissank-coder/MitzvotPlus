@@ -1,0 +1,153 @@
+{
+  "build": "production",
+  "commit": "6fddb19a461d20085618c112779be0e64202d163",
+  "captures": [
+    {
+      "scenario": "29-onboarding",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "33-mitzvot",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "36-learning-reader",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "37-learning-reader-failure",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "38-learning-suggestions",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "40-add-sheet-chesed",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "41-mitzvot-deed-recorded",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "29-onboarding",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "33-mitzvot",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "36-learning-reader",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "37-learning-reader-failure",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "38-learning-suggestions",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "40-add-sheet-chesed",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "41-mitzvot-deed-recorded",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "29-onboarding",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "33-mitzvot",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "36-learning-reader",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "37-learning-reader-failure",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "38-learning-suggestions",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "40-add-sheet-chesed",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "41-mitzvot-deed-recorded",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    }
+  ]
+}

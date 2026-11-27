@@ -35,9 +35,31 @@ for (const m of mitzvot) {
 }
 for (const id of Object.keys(DOING)) if (!mitzvot.some((m) => m.id === id)) problems.push(`DOING: unknown entry ${id}`);
 
+// Round 14.1: the proposed Rambam mapping (docs/review-r14.1/mitzvot) – one method, no number twice,
+// the kind of the entry, in range, every entry once; never APPROVED in the proposal file itself.
+const PROPOSAL = 'docs/review-r14.1/mitzvot/rambam-mapping-proposal.json';
+let proposal = null;
+if (fs.existsSync(PROPOSAL)) {
+  proposal = JSON.parse(fs.readFileSync(PROPOSAL, 'utf8'));
+  const used = new Map();
+  for (const r of proposal.rows) {
+    const m = mitzvot.find((x) => x.id === r.id);
+    if (!m) problems.push(`proposal: unknown entry ${r.id}`);
+    if (r.status !== 'PROPOSED') problems.push(`proposal: ${r.id} is ${r.status} – approval belongs to the entry, with a reviewer`);
+    if (!r.proposed) continue;
+    if (r.proposed.method !== 'rambam-sefer-hamitzvot') problems.push(`proposal: ${r.id} uses ${r.proposed.method} – one method only`);
+    if (m && r.proposed.kind !== m.type) problems.push(`proposal: ${r.id} is ${m.type}, mapped as ${r.proposed.kind}`);
+    if (r.proposed.number < 1 || r.proposed.number > RANGE[r.proposed.kind]) problems.push(`proposal: ${r.id} number ${r.proposed.number} out of range`);
+    const k = `${r.proposed.kind}:${r.proposed.number}`;
+    if (used.has(k)) problems.push(`proposal: ${k} used by ${used.get(k)} and ${r.id}`);
+    used.set(k, r.id);
+  }
+  for (const m of mitzvot) if (!proposal.rows.some((r) => r.id === m.id)) problems.push(`proposal: ${m.id} missing`);
+}
+
 const approved = mitzvot.filter((m) => m.review === 'APPROVED').length;
 const counted = mitzvot.filter((m) => m.count).length;
-console.log(`Mitzvot: ${mitzvot.length} of ${MITZVOT_TOTAL} (${mitzvot.filter((m) => m.type === 'aseh').length} aseh, ${mitzvot.filter((m) => m.type === 'lav').length} lav) · approved ${approved} · numbered ${counted} · doing-links ${Object.keys(DOING).length}`);
+console.log(`Mitzvot: ${mitzvot.length} entries (${mitzvot.filter((m) => m.type === 'aseh').length} aseh, ${mitzvot.filter((m) => m.type === 'lav').length} lav) · approved ${approved} · numbered (approved) ${counted} of ${MITZVOT_TOTAL} · doing-links ${Object.keys(DOING).length}${proposal ? ` · Rambam proposal ${proposal.summary.mapped} mapped, ${proposal.summary.notCounted} not counted` : ''}`);
 if (problems.length) {
   for (const p of problems) console.log(`  FAIL ${p}`);
   process.exit(1);

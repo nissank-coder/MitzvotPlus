@@ -1,0 +1,1622 @@
+{
+  "generatedAt": "2026-11-27T08:53:08.259Z",
+  "book": "Siddur Ashkenaz",
+  "editions": [
+    {
+      "versionTitle": "Torat Emet 357",
+      "license": "unknown",
+      "versionSource": "http://www.toratemetfreeware.com/index.html?downloads",
+      "allowed": false
+    },
+    {
+      "versionTitle": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981",
+      "license": "CC-BY",
+      "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH002211687",
+      "allowed": true
+    },
+    {
+      "versionTitle": "The Metsudah siddur, 1981",
+      "license": "CC-BY",
+      "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH002211687",
+      "allowed": true
+    },
+    {
+      "versionTitle": "Daat Siddur Ashkenaz",
+      "license": "Public Domain",
+      "versionSource": "http://www.daat.ac.il/daat/sidurim/tohen3.htm",
+      "allowed": true
+    },
+    {
+      "versionTitle": "Shema with Cantillation ",
+      "license": "unknown",
+      "versionSource": "Tanakh: The Holy Scriptures, published by JPS (On Sefaria)",
+      "allowed": false
+    },
+    {
+      "versionTitle": "Wikipedia",
+      "license": "unknown",
+      "versionSource": "https://he.wikipedia.org/wiki/%D7%91%D7%A8%D7%9B%D7%AA_%D7%91%D7%A8%D7%95%D7%9A_%D7%94%27_%D7%9C%D7%A2%D7%95%D7%9C%D7%9D",
+      "allowed": false
+    },
+    {
+      "versionTitle": "Siddur Veshinantam ",
+      "license": "unknown",
+      "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH003930085/NLI",
+      "allowed": false
+    },
+    {
+      "versionTitle": "Tanach with Nikkud",
+      "license": "unknown",
+      "versionSource": "http://sefaria.org",
+      "allowed": false
+    }
+  ],
+  "weekday": {
+    "sections": 175,
+    "coveredByEdition": {
+      "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+      "The Metsudah siddur, 1981": 169,
+      "Daat Siddur Ashkenaz": 3
+    },
+    "proposedBase": {
+      "versionTitle": "The Metsudah siddur, 1981",
+      "covers": 169
+    },
+    "prayers": [
+      {
+        "id": "upon-arising",
+        "title": "השכמת הבוקר",
+        "sections": 7,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 7,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Modeh Ani",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Netilat Yadayim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Asher Yatzar",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Elokai Neshama",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Tzitzit",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Tallit",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Tefillin",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 13,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "shacharit",
+        "title": "שחרית לימות החול",
+        "sections": 96,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 95,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Torah Blessings",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Torah Study",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Ma Tovu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Adon Olam",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 10,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Yigdal",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 27,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Morning Blessings",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 18,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Akedah",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Sovereignty of Heaven",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 10,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Kiyor",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Terumat HaDeshen",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Korban HaTamid",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Ketoret",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Order of the Temple Service",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Laws of Sacrifices",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Baraita of Rabbi Yishmael",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 14,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Korbanot, Kaddish DeRabbanan",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Introductory Psalm",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Mourner's Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Barukh She'amar",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Hodu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Mizmor Letoda",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Yehi Chevod",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Ashrei",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 146",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 147",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 148",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 149",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 150",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Closing Verses",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Vayevarech David",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Ata Hu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Az Yashir",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Yishtabach",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 130",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Half Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Barchu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, First Blessing before Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Second Blessing before Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 12,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Blessing after Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Patriarchs",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Divine Might",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 11,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Holiness of God",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kedushah",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 14,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Knowledge",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Repentance",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Forgiveness",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Redemption",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Healing",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Prosperity",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Gathering the Exiles",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Justice",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Against Enemies",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, The Righteous",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Rebuilding Jerusalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kingdom of David",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Response to Prayer",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Temple Service",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Thanksgiving",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 12,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Birkat Kohanim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Vidui and 13 Middot",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Avinu Malkenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 54,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Tachanun, For Monday and Thursday",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Tachanun, Nefilat Apayim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Tachanun, God of Israel",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 11,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Tachanun, Shomer Yisrael",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Post Amidah, Tachanun, Half Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, El Erech Appayim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Vayehi Binsoa",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Berich Shmei",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Lekha Hashem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Av Harachamim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Vetigaleh Veteraeh",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Birkat HaTorah",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Birkat Hagomel",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Half Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Raising the Torah",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Prayers for Welfare of the People",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, Yehalelu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, LeDavid Mizmor",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, Uvenucho Yomar",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Ashrei",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Lamenatze'ach",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Uva Letzion",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 11,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Kaddish Shalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Alenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Mourner's Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Song of the Day",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 19,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Barchi Nafshi",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, LeDavid",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Ein Kelohenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Pitum HaKetoret",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Mourner's Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Barchu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "mincha",
+        "title": "מנחה לימות החול",
+        "sections": 30,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 29,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Ashrei",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Patriarchs",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Divine Might",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 11,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Holiness of God",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Keduasha",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 14,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Knowledge",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Repentance",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Forgiveness",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Redemption",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Healing",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Prosperity",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Gathering the Exiles",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Justice",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Against Enemies",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, The Righteous",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Rebuilding Jerusalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Kingdom of David",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Response to Prayer",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Temple Service",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Thanksgiving",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 12,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Birkat Kohanim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Peace",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Amida, Concluding Passage",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Vidui and 13 Middot",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Avinu Malkenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 53,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Tachanun, Nefilat Appayim",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Tachanun, Shomer Yisrael",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Kaddish Shalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 8,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Concluding Prayers, Alenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Minchah, Concluding Prayers, Mourner's Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "maariv",
+        "title": "ערבית לימות החול",
+        "sections": 37,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 36,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Vehu Rachum",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Barchu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, First Blessing before Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, Second Blessing before Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 12,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, First Blessing after Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, Second Blessing after Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, Third Blessing after Shema",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Blessings of the Shema, Half Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Patriarchs",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 6,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Divine Might",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 10,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Holiness of God",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Knowledge",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 3,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Repentance",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Forgiveness",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Redemption",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Healing",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Prosperity",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 5,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Gathering the Exiles",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Justice",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Against Enemies",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, The Righteous",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Rebuilding Jerusalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Kingdom of David",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Response to Prayer",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 1,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Temple Service",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Thanksgiving",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 10,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Peace",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Amidah, Concluding Passage",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 4,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Kaddish Shalem",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Additions for Motza'ei Shabbat, Viyehi Noam",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 11,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Additions for Motza'ei Shabbat, Veyiten Lekha",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Sefirat HaOmer",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 65,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Alenu",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 2,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Mourner's Kaddish",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 7,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, LeDavid",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 9,
+              "Daat Siddur Ashkenaz": 0
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Birkat HaLevana",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 18,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "bedtime-shema",
+        "title": "קריאת שמע שעל המיטה",
+        "sections": 1,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 1,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Weekday, Maariv, Keri'at Shema al Hamita",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 37,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "birkat-hamazon",
+        "title": "ברכת המזון",
+        "sections": 1,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 1,
+          "Daat Siddur Ashkenaz": 0
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Berachot, Birkat HaMazon",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 89,
+              "Daat Siddur Ashkenaz": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "blessings-after",
+        "title": "ברכות אחרונות (מעין שלוש, בורא נפשות)",
+        "sections": 2,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 0,
+          "Daat Siddur Ashkenaz": 2
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Brachot Achronot, Al Hamichyah",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 12
+            }
+          },
+          {
+            "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Brachot Achronot, Borei Nefashot",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 3
+            }
+          }
+        ]
+      },
+      {
+        "id": "tefillat-haderech",
+        "title": "תפילת הדרך",
+        "sections": 1,
+        "byEdition": {
+          "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+          "The Metsudah siddur, 1981": 0,
+          "Daat Siddur Ashkenaz": 1
+        },
+        "detail": [
+          {
+            "ref": "Siddur Ashkenaz, Berachot, Tefillat HaDerech",
+            "has": {
+              "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981": 0,
+              "The Metsudah siddur, 1981": 0,
+              "Daat Siddur Ashkenaz": 6
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "ref": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Prayers for Welfare of the People",
+      "prayer": "shacharit",
+      "group": "weekday",
+      "foundIn": []
+    },
+    {
+      "ref": "Siddur Ashkenaz, Weekday, Minchah, Post Amidah, Vidui and 13 Middot",
+      "prayer": "mincha",
+      "group": "weekday",
+      "foundIn": []
+    },
+    {
+      "ref": "Siddur Ashkenaz, Weekday, Maariv, Additions for Motza'ei Shabbat, Veyiten Lekha",
+      "prayer": "maariv",
+      "group": "weekday",
+      "foundIn": [
+        {
+          "versionTitle": "Siddur Veshinantam ",
+          "license": "unknown",
+          "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH003930085/NLI",
+          "segments": 10
+        }
+      ]
+    },
+    {
+      "ref": "Siddur Ashkenaz, Shabbat, Kabbalat Shabbat, Bameh Madlikin",
+      "prayer": "kabbalat-shabbat",
+      "group": "shabbat",
+      "foundIn": [
+        {
+          "versionTitle": "Torat Emet 357",
+          "license": "unknown",
+          "versionSource": "http://www.toratemetfreeware.com/index.html?downloads",
+          "segments": 9
+        }
+      ]
+    },
+    {
+      "ref": "Siddur Ashkenaz, Shabbat, Shacharit, Pesukei Dezimra, Mizmor Letoda",
+      "prayer": "shabbat-shacharit",
+      "group": "shabbat",
+      "foundIn": []
+    },
+    {
+      "ref": "Siddur Ashkenaz, Shabbat, Shacharit, Amidah, Holiness of God",
+      "prayer": "shabbat-shacharit",
+      "group": "shabbat",
+      "foundIn": []
+    },
+    {
+      "ref": "Siddur Ashkenaz, Shabbat, Shacharit, Torah Reading, Reading from Sefer, Mi Sheberach, Bat Mitzvah",
+      "prayer": "shabbat-torah-reading",
+      "group": "shabbat",
+      "foundIn": []
+    }
+  ]
+}

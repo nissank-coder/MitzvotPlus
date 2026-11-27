@@ -1,0 +1,839 @@
+{
+  "title": "הצעת מיפוי: מאגר המצוות לספר המצוות לרמב״ם",
+  "status": "PROPOSED – not approved; not shown in the app as a number",
+  "method": "rambam-sefer-hamitzvot (248 עשה, 365 לא תעשה)",
+  "source": {
+    "name": "Sefaria",
+    "edition": "Sefer HaMitzvot, Warsaw 1883",
+    "license": "Public Domain",
+    "versionSource": "https://www.nli.org.il/he/books/NNL_ALEPH001769510"
+  },
+  "generatedAt": "2026-11-27T08:39:56.658Z",
+  "summary": {
+    "entries": 55,
+    "mapped": 54,
+    "notCounted": 1
+  },
+  "rows": [
+    {
+      "id": "emunah",
+      "title": "האמונה בה׳",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 1,
+        "canonicalId": "rambam:aseh:1"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 1",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.1?lang=he",
+      "rambamOpening": "היא הצווי אשר צונו בהאמנת האלהות, והוא שנאמין שיש שם עלה וסבה הוא פועל לכל הנמצאים, והוא אמרו אנכי ה' אלהיך. ובסוף גמרא מכות (דף כ\"ג:) אמרו תרי\"ג מצות נאמרו למשה בסיני, מאי קראה תורה צוה לנו משה, ר\"ל מנין תור\"ה. והקשו על",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "achdut",
+      "title": "ייחוד ה׳",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 2,
+        "canonicalId": "rambam:aseh:2"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 2",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.2?lang=he",
+      "rambamOpening": "היא הצווי שצונו בהאמנת היחוד, והוא שנאמין שפועל המציאות וסבתו הראשונה אחד, והוא אמרו יתעלה שמע ישראל ה' אלהינו ה' אחד, וברוב המדרשות תמצאם אומרים על מנת ליחד את שמי, על מנת ליחדני, ורבים כאלה, רוצים בזה המאמר אנחנו אמנם ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "ahavat-hashem",
+      "title": "אהבת ה׳",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 3,
+        "canonicalId": "rambam:aseh:3"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 3",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.3?lang=he",
+      "rambamOpening": "היא שצונו באהבתו יתעלה. וזה שנחשוב ונתבונן במצותיו ומאמריו ופעולותיו עד שנשיגהו ונהנה בהשגתו בתכלית ההנאה, וזאת היא האהבה המחוייבת, ולשון ספרי לפי שנאמר ואהבת את ה' אלהיך איני יודע כיצד אוהב את המקום תלמוד לומר והיו הדבר",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "yirat-hashem",
+      "title": "יראת ה׳",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 4,
+        "canonicalId": "rambam:aseh:4"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 4",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.4?lang=he",
+      "rambamOpening": "היא שצונו להאמין יראתו יתעלה ולהפחד ממנו, ולא נהיה ככופרים ההולכים בשרירות לבם ובקרי אבל נירא ביראת ענשו בכל עת וזהו אמרו את ה' אלהיך תירא, ובגמרא (סנהדרין נ\"ו) אמרו על דרך ויכוח באמרו ונוקב שם ה' מות יומת ואימר פירש דכת",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-elohim-acherim",
+      "title": "שלא להאמין באלוה זולתו",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 1,
+        "canonicalId": "rambam:lav:1"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 1",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.1?lang=he",
+      "rambamOpening": "היא שהזהירנו מהאמין באל אחר זולתו. והוא אמרו יתעלה לא יהיה לך אלהים אחרים על פני. וכבר התבאר בגמרא מכות (דף כ\"ג:) שלאו זה מכלל תרי\"ג מצות, והוא אמרם שם תרי\"ג מצות נאמרו למשה בסיני וכו', כמו שבארו במצוה ראשונה ממצות עשה. ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-tatur",
+      "title": "שלא לתור אחר הלב והעיניים",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 47,
+        "canonicalId": "rambam:lav:47"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 47",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.47?lang=he",
+      "rambamOpening": "הזהירנו שלא לתור אחר לבבנו עד שנאמין דעות הפך הדעות שחייבתנו התורה אבל נקצר מחשבותינו ונשים להן גבול נעמוד אצלו, והוא מצות התורה ואזהרותיה. והוא אמרו ולא תתורו אחרי לבבכם ואחרי עיניכם. ולשון ספרי אחרי לבבכם זה מינות כעני",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "talmud-torah",
+      "title": "תלמוד תורה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 11,
+        "canonicalId": "rambam:aseh:11"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 11",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.11?lang=he",
+      "rambamOpening": "היא שצונו ללמוד תורה וללמדה וזהו הנקרא תלמוד תורה, והוא אמרו ושננתם לבניך וכתוב בספרי לבניך אלו התלמידים שהתלמידים קרויים בנים שנאמר יצאו בני הנביאים, ושם נאמר ושננתם שיהיו מחודדים בתוך פיך כשאדם שואלך דבר לא תהא מגמגם ל",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "kriat-shema",
+      "title": "קריאת שמע",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 10,
+        "canonicalId": "rambam:aseh:10"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 10",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.10?lang=he",
+      "rambamOpening": "היא שצונו לקרוא קריאת שמע ערבית ושחרית והוא אמרו ודברת בם. וכבר נתבארו משפטי מצוה זו במסכת ברכות (דף כ\"א) ושם נתבאר דקריאת שמע דאורייתא. וכתוב בתוספתא כשם שנתנה תורה קבע לקריאת שמע כך נתנו חכמים זמן לתפלה, רוצה לומר שזמנ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "tefilla",
+      "title": "תפילה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 5,
+        "canonicalId": "rambam:aseh:5"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 5",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.5?lang=he",
+      "rambamOpening": "הוא שצונו לעבדו, וכבר נכפל זה הצווי פעמים באמרו ועבדתם את ה' אלהיכם, ואמר ואותו תעבודו. ואע\"פ שזה הצווי הוא גם כן מהצוויים הכוללים כמו שביארנו בשורש ד', הנה יש בו יחוד אחר שהוא צווי לתפלה. ולשון ספרי ולעבדו זו תפלה. ואמר",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "tefillin-yad",
+      "title": "תפילין של יד",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 13,
+        "canonicalId": "rambam:aseh:13"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 13",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.13?lang=he",
+      "rambamOpening": "היא שצונו להניח תפילין של יד והוא אמרו וקשרתם לאות על ידך. וכבר נכפל זה הצווי ארבע פעמים, והראיה על היות תפילין של ראש ושל יד שתי מצות אמרם בגמרא (מנחות מ\"ד) על צד התימה ממי שיחשוב שתפילין של ראש ושל יד לא יונח אחד מהם ב",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "tefillin-rosh",
+      "title": "תפילין של ראש",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 12,
+        "canonicalId": "rambam:aseh:12"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 12",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.12?lang=he",
+      "rambamOpening": "היא שצונו להניח תפילין של ראש והוא אמרו והיו לטוטפות בין עיניך. וכבר נכפל זה הצווי ארבע פעמים. (בפ' בוא ואתחנן עקב, אהבה הלכות תפילין ומזוזה פ\"א):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "mezuzah",
+      "title": "מזוזה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 15,
+        "canonicalId": "rambam:aseh:15"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 15",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.15?lang=he",
+      "rambamOpening": "היא שצונו לעשות מזוזה והוא אמרו יתעלה וכתבתם על מזוזות ביתך. והנה נכפל הצווי הזה. וכבר התבארו דיני מצוה זו בפ\"ג ממנחות. (בפרשת ואתחנן, עקב, אהבה הלכות תפילין פרק ה'):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "tzitzit",
+      "title": "ציצית",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 14,
+        "canonicalId": "rambam:aseh:14"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 14",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.14?lang=he",
+      "rambamOpening": "היא שצונו לעשות ציצית והוא אמרו יתעלה ועשו להם ציצית ונתנו על ציצית הכנף. ואינה נמנית בשתי מצות, ואף על פי שהעיקר אצלנו התכלת אינה מעכבת את הלבן והלבן אינו מעכב את התכלת, שהרי נאמר בספרי יכול שהן שתי מצות מצות תכלת ומצות",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "birkat-hamazon",
+      "title": "ברכת המזון",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 19,
+        "canonicalId": "rambam:aseh:19"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 19",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.19?lang=he",
+      "rambamOpening": "היא שצונו לברכו אחר אכילה והוא אמרו ואכלת ושבעת וברכת את ה' אלהיך. ולשון התוספתא ברכת המזון מן התורה שנאמר ואכלת ושבעת וברכת. וכבר התבארו משפטי מצוה זו במקומות רבים ממסכת ברכות. (והיה עקב, אהבה הלכות ברכות פ\"א):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "kibud-av-vaem",
+      "title": "כיבוד אב ואם",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 210,
+        "canonicalId": "rambam:aseh:210"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 210",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.210?lang=he",
+      "rambamOpening": "היא שצונו לכבד אב ואם. והוא אמרו יתעלה כבד את אביך ואת אמך. וכבר התבארו משפטי מצוה זו בתלמוד ועיקרו בקדושין. ולשון ספרא איזהו כבוד מאכיל ומשקה מכניס ומוציא. (וישמע יתרו, הלכות ממרים פ\"ו):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "mora-av-vaem",
+      "title": "מורא אב ואם",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 211,
+        "canonicalId": "rambam:aseh:211"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 211",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.211?lang=he",
+      "rambamOpening": "היא שצונו לירא מאב ואם, והוא שיתנהג עמהם כמנהג מי שהוא ירא ממנו שיענישהו כמו המלך, וילך עמהם כדרך שילך עם מי שמפחד ממנו וירא מהגיע לו ממנו מה שימאס. והוא אמרו יתעלה איש אמו ואביו תיראו. ולשון סיפרא איזהו מורא לא יושב במק",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "ahavat-israel",
+      "title": "ואהבת לרעך כמוך",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 206,
+        "canonicalId": "rambam:aseh:206"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 206",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.206?lang=he",
+      "rambamOpening": "היא שצונו לאהוב קצתנו את קצתנו כאשר נאהב עצמנו ושתהיה אהבתו וחמלתו לאחיו כאהבתו וחמלתו לעצמו בממונו ובגופו וכל מה שיהיה ברשותו אם ירצה אותו ארצה אני אותו וכל מה שארצה לעצמי ארצה לו כמוהו. והוא אמרו יתעלה ואהבת לרעך כמוך.",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "ahavat-ger",
+      "title": "אהבת הגר",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 207,
+        "canonicalId": "rambam:aseh:207"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 207",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.207?lang=he",
+      "rambamOpening": "היא שצונו לאהוב את הגרים והוא אמרו יתעלה ואהבתם את הגר, ואע\"פ שהיה נכלל בזה עם ישראל באמרו ואהבת לרעך כמוך שזה הגר גר צדק אבל מפני שנכנס בתורתנו הוסיף האל אהבה על אהבתו וייחד לו מצוה נוספת כמו שעשה באזהרת ולא תונו ואמר ו",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "tzedakah",
+      "title": "צדקה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 195,
+        "canonicalId": "rambam:aseh:195"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 195",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.195?lang=he",
+      "rambamOpening": "היא שצונו לעשות צדקה ולחזק החלשים ולהרחיב אליהם. וכבר בא הצווי במצוה זו במלות מתחלפות, אמרו יתעלה פתוח תפתח את ידך וגו' אמר והחזקת בו ואמר וחי אחיך עמך, והכוונה באלו הלשונות כולם אחת והוא שנעזור אותם ונחזקם די ספוקם. וכב",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "halvaah",
+      "title": "הלוואה לעני",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 197,
+        "canonicalId": "rambam:aseh:197"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 197",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.197?lang=he",
+      "rambamOpening": "היא שצונו להלוות לעני להקל לו מעניו ולהרחיב לו, וזה מצוה היותר חזקה ויותר מחוייבת מכל מצות צדקה, כי מי שנתגלה ונתבזה לשאול מיד האנשים אין צרת עניו כמו צרת המסתתר שירצה להעזר עד שלא יתגלה עניו ויתבזה. והצווי במצוה זו הוא ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "hashavat-aveda",
+      "title": "השבת אבידה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 204,
+        "canonicalId": "rambam:aseh:204"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 204",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.204?lang=he",
+      "rambamOpening": "היא שצונו להשיב האבדה לבעליה. והוא אמרו יתעלה השב תשיבם לאחיך ובבאור אמרו השבת אבדה עשה היא ואמרו גם כן באבדה נמצינו למדין שהוא עובר על עשה ועל לא תעשה. והנה נבאר לא תעשה של אבדה במקומו. וכבר התבארו דיני מצוה זו בשני ממצ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "vehalachta",
+      "title": "והלכת בדרכיו",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 8,
+        "canonicalId": "rambam:aseh:8"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 8",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.8?lang=he",
+      "rambamOpening": "היא שצונו להדמות בו יתעלה כפי היכולת והוא אמרו והלכת בדרכיו. וכבר נכפל זה הצווי ואמר ללכת בכל דרכיו ובא בפירוש (סוטה י\"ד) מה הקב\"ה נקרא חנון אף אתה היה חנון מה הקב\"ה נקרא רחום אף אתה היה רחום מה הקב\"ה נקרא חסיד אף אתה הי",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "dvekut-chachamim",
+      "title": "הדבקות בחכמים",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 6,
+        "canonicalId": "rambam:aseh:6"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 6",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.6?lang=he",
+      "rambamOpening": "היא שצונו להתחבר עם החכמים ולהתיחד עמהם ולהתמיד בישיבתם בכל אופן מאופני העבודה והחברה במאכל ובמשתה והעסק כדי שיגיע לנו להדמות במעשיהם ולהאמין האמתיות מדבריהם. והוא אמרו יתעלה ובו תדבק וכבר נכפל זה הצווי גם כן ולדבקה בו. ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "kibud-zaken",
+      "title": "כבוד תלמידי חכמים וזקנים",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 209,
+        "canonicalId": "rambam:aseh:209"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 209",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.209?lang=he",
+      "rambamOpening": "היא שצונו לכבד החכמים ולקום מפניהם ולגדל אותם. והוא אמרו יתעלה מפני שיבה תקום והדרת פני זקן. ולשון ספרא תקום והדרת קימה שיש בה הדור. וכבר התבארו משפטי מצוה זו בפרק ראשון מקדושין. ודע שעם היות מצוה זו מחוייבת לאנשים כלם ב",
+      "status": "PROPOSED",
+      "note": "עשה רט כולל כבוד חכמים וזקנים יחד, כמו כותרת הפריט."
+    },
+    {
+      "id": "tochacha",
+      "title": "תוכחה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 205,
+        "canonicalId": "rambam:aseh:205"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 205",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.205?lang=he",
+      "rambamOpening": "היא שצונו להוכיח החוטא או מי שירצה לחטוא ולמנוע אותו ממנו במאמר התוכחה ואין ראוי שיאמר אחר שאני לא אחטא אם יחטא אחר זולתי מה לי עם אלהיו, זה הפך התורה אבל אנחנו מצווין שלא נחטא ושלא נעזוב זולתנו מאומתנו שימרה ואם השתדל ל",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "teshuva",
+      "title": "תשובה ווידוי",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 73,
+        "canonicalId": "rambam:aseh:73"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 73",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.73?lang=he",
+      "rambamOpening": "היא שצונו להתודות על העונות והחטאים שחטאנו לפני האל ולאמר אותם עם התשובה. וזהו הודוי וכונתו שיאמר אנא השם חטאתי עויתי ופשעתי ועשיתי כך וכך. ויאריך המאמר ויבקש המחילה בזה הענין לפי צחות לשונו. ודע שאפילו החטאים שחייבין על",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "kiddush-hashem",
+      "title": "קידוש ה׳",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 9,
+        "canonicalId": "rambam:aseh:9"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 9",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.9?lang=he",
+      "rambamOpening": "היא שצונו לקדש את שמו והוא אמרו ונקדשתי בתוך בני ישראל. וענין זאת המצוה אשר אנחנו מצווים לפרסם האמונה הזאת האמתית בעולם ושלא נפחד בהיזק שום מזיק ואע\"פ שבא עלינו מכריח לבקש ממנו לכפותנו שלא נשמע אליו אבל נמסור עצמנו למיתה",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-tisna",
+      "title": "לא תשנא את אחיך בלבבך",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 302,
+        "canonicalId": "rambam:lav:302"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 302",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.302?lang=he",
+      "rambamOpening": "הזהיר משנוא קצתנו את קצתנו. והוא אמרו לא תשנא את אחיך בלבבך. ולשון ספרי לא אמרתי אלא שנאה שבלב. אמנם כשהראה לו השנאה והודיעו שהוא שונא אותו אינו עובר על זה הלאו אבל על לא תקום ולא תטור, ועובר על עשה והוא אמרו ואהבת לרעך ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-tikom",
+      "title": "לא תקום",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 304,
+        "canonicalId": "rambam:lav:304"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 304",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.304?lang=he",
+      "rambamOpening": "הוא שהזהיר שלא לנקום קצתנו מקצתנו, והוא שתעשה מעשה אחד ולא תסור מלחפש אחריו עד שתגמלהו כמעשהו הרע אשר יביאהו כמו שהביאך, והזהיר מזה באמרו לא תקום. ובספרא עד היכן הוא כחה של נקימה אמר לו השאילני מגלך ולא השאילו ולמחר אמר ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-titor",
+      "title": "לא תטור",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 305,
+        "canonicalId": "rambam:lav:305"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 305",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.305?lang=he",
+      "rambamOpening": "הזהירנו שלא לנטור ואע\"פ שלא נשלם לו גמול, והוא שנזכור לו העון שחטא החוטא. והוא אמרו לא תטור. ולשון ספרא עד היכן הוא כחה של נטירה אמר לו השאילני מגלך ולא השאילו ולמחר אמר לו השאילני קרדומך ואומר לו הילך ואיני כמותך לכך נא",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-telech-rachil",
+      "title": "לא תלך רכיל",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 301,
+        "canonicalId": "rambam:lav:301"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 301",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.301?lang=he",
+      "rambamOpening": "הזהיר מהיות רכיל. והוא אמרו לא תלך רכיל בעמך, אמרו (ספרא) לא תהא רך בדברים לזה וקשה לזה. דבר אחר שלא תהא כרוכל שטוען דברים והולך, ובכלל לאו זה אזהרה מהוצאת שם רע. (קדושים תהיו, מדע הלכות דעות פ\"ז):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "onaat-devarim",
+      "title": "אונאת דברים",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 251,
+        "canonicalId": "rambam:lav:251"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 251",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.251?lang=he",
+      "rambamOpening": "הזהירנו מהונות קצתנו את קצתנו בדברים. והוא שנאמר לו מאמרים יכעיסוהו ויבהילוהו ולא יוכל לעמוד מפני שיתבייש מהם כמו שתזכור פעולת נערותו ועשה תשובה מהם ותאמר לו מי העתיקך מהדבר הפלוני אל זה הענין הטוב, ובזה נאמר לא תונו זה ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "onaat-mamon",
+      "title": "אונאת ממון",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 250,
+        "canonicalId": "rambam:lav:250"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 250",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.250?lang=he",
+      "rambamOpening": "הזהירנו מהונות קצתנו את קצתנו בסחורה ובמקח ובממכר. והוא אמרו וכי תמכרו ממכר וגו' אל תונו איש את אחיו. ובספרא אמרו באונאת ממון הכתוב מדבר. וכבר התבארו משפטי מצוה זו ברביעי ממציעא. (בהר, הלכות מכירה פי\"א):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-tignov",
+      "title": "לא תגנבו",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 244,
+        "canonicalId": "rambam:lav:244"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 244",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.244?lang=he",
+      "rambamOpening": "שהזהירנו שלא לגנוב ממון. והוא אמרו יתעלה לא תגנובו. ובמכילתא לא תגנובו הרי האזהרה לגונב ממון, והעובר על לאו זה הוא חייב לשלם מה שזכר הכתוב אם תשלומי כפל או תשלומי ארבעה וחמשה או להשיב קרן לבד. ובספרא לפי שנאמר בגניבה שני",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lifnei-iver",
+      "title": "לפני עיוור",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 299,
+        "canonicalId": "rambam:lav:299"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 299",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.299?lang=he",
+      "rambamOpening": "הזהיר מהכשיל קצתנו את קצתנו והוא שאם ישאלך אדם עצה בדבר נפתה בו, ובאה האזהרה מלרמותו ומהכשילו אבל תישירהו על הדבר שתחשוב שהוא טוב וישר, והוא אמרו ולפני עור לא תתן מכשול. ולשון ספרא למי שהוא סומא בדבר ונוטל עצה ממך אל תתן",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-tekalel-cheresh",
+      "title": "לא תקלל חרש",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 317,
+        "canonicalId": "rambam:lav:317"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 317",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.317?lang=he",
+      "rambamOpening": "הזהירנו מלקלל איש איזה שיהיה מישראל. והוא אמרו לא תקלל חרש, והבן ממני ענין זה החרש מהו, וזה כי כשהנפש כשהתנועעה לנקום מהמזיק לפי צורת ההיזק הקיימת בדמיון הנה לא תסור מהיות מתנועעת עד שתגמול למזיק לפי צורת ההיזק הרשומה בד",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "zachor-shabbat",
+      "title": "זכור את יום השבת",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 155,
+        "canonicalId": "rambam:aseh:155"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 155",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.155?lang=he",
+      "rambamOpening": "היא שצונו לקדש את השבת ולאמר דברים בכניסתו וביציאתו נזכיר בם יציאת מצרים וקדוש היום ומעלתו והבדלו משאר הימים הקודמים ממנו והבאים אחריו, והוא אמרו יתברך זכור את יום השבת לקדשו כלומר זכרהו וקדשהו בברכה. ובבאור אמרו (פסחים ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "shvitat-shabbat",
+      "title": "שביתה בשבת",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 154,
+        "canonicalId": "rambam:aseh:154"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 154",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.154?lang=he",
+      "rambamOpening": "היא שצונו שנשבות בשבת והוא אמרו יתברך וביום השביעי תשבות. והנה נכפל צווי מצוה זו פעמים ובאר לנו שהשביתה ממלאכות היא חובה עלינו ועל בהמתנו ועבדינו. והנה התבארו משפטי מצוה זו במסכת שבת ויום טוב. (כי תשא, זמנים הלכות שביתת ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lo-melacha-shabbat",
+      "title": "לא תעשה מלאכה בשבת",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 320,
+        "canonicalId": "rambam:lav:320"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 320",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.320?lang=he",
+      "rambamOpening": "הזהיר מעשות מלאכה בשבת. והוא אמרו לא תעשה כל מלאכה, והעובר על לאו זה באר בו הכתוב שהוא בכרת אם לא ידע בו הדיין ואם העידו עליו עדים חייב סקילה אם היה מזיד ואם היה שוגג חייב חטאת קבועה. וכבר התבארו משפטי מצוה זו במסכת שבת.",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "zechirat-yetziat-mitzrayim",
+      "title": "זכירת יציאת מצרים",
+      "type": "aseh",
+      "proposed": null,
+      "status": "PROPOSED",
+      "note": "לא נמנית כמצווה נפרדת ברשימת ספר המצוות לרמב״ם (חיפוש \"למען תזכור\" בטקסט לא מצא אותה). לבדיקה: להציג בלי מספר, או לקשר לקריאת שמע (עשה י)."
+    },
+    {
+      "id": "sippur-yetziat-mitzrayim",
+      "title": "סיפור יציאת מצרים",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 157,
+        "canonicalId": "rambam:aseh:157"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 157",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.157?lang=he",
+      "rambamOpening": "היא שצונו לספר ביציאת מצרים בליל חמשה עשר מניסן בתחלת הלילה כפי צחות לשון המספר. וכל מי שיוסיף במאמר ויאריך הדברים בהגדלת מה שעשה לנו השם ומה שעשו לנו המצרים מעול וחמס ואיך לקח השם נקמתנו מהם ולהודות לו יתעלה על כל טוב ש",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "matzah",
+      "title": "אכילת מצה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 158,
+        "canonicalId": "rambam:aseh:158"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 158",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.158?lang=he",
+      "rambamOpening": "היא שצונו לאכול מצה בליל חמשה עשר מניסן, יהיה שם כבש הפסח או לא יהיה. והוא אמרו יתברך בערב תאכלו מצות. וכבר התבארו משפטי מצוה זו במסכת פסחים. (בא אל פרעה, זמנים הלכות חמץ ומצה פ\"ו):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "hashbatat-chametz",
+      "title": "השבתת חמץ",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 156,
+        "canonicalId": "rambam:aseh:156"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 156",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.156?lang=he",
+      "rambamOpening": "היא שצונו לבער חמץ מבתינו ביום ארבעה עשר מניסן וזו היא מצות השבתת שאור. והוא אמרו יתברך אך ביום הראשון תשביתו שאור מבתיכם. והנה התבארו דיני מצוה זו בפרק ראשון מפסחים. (בא אל פרעה, זמנים הלכות חמץ ומצה פ\"ב):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "sefirat-haomer",
+      "title": "ספירת העומר",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 161,
+        "canonicalId": "rambam:aseh:161"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 161",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.161?lang=he",
+      "rambamOpening": "היא שצונו לספור מקצירת העומר תשעה וארבעים יום. והוא אמרו יתעלה וספרתם לכם ממחרת השבת וגו'. ודע כי כמו שנתחייבו בית דין למנות שנות יובל שנה שנה שמטה שמטה כמו שביארתי במה שקדם כן חייב כל אחד ואחד ממנו למנות ימות העומר יום ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "shofar",
+      "title": "שמיעת קול שופר",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 170,
+        "canonicalId": "rambam:aseh:170"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 170",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.170?lang=he",
+      "rambamOpening": "היא שצונו לשמוע קול שופר ביום ראשון מתשרי והוא אמרו יתעלה יום תרועה יהיה לכם. וכבר התבארו דיני מצוה זו במסכת ראש השנה. ואין הנשים חייבות בה. (פינחס, זמנים הלכות שופר וסוכה ולולב פ\"א):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "sukkah",
+      "title": "ישיבה בסוכה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 168,
+        "canonicalId": "rambam:aseh:168"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 168",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.168?lang=he",
+      "rambamOpening": "היא שצונו לישב בסוכה שבעת ימים בימי החג. והוא אמרו יתברך בסוכות תשבו שבעת ימים. וכבר התבארו משפטי מצוה זו במסכת סוכה. ואין הנשים חייבות בה. (אמור אל הכהנים, זמנים הלכות שופר וסוכה ולולב פ\"ו):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "lulav",
+      "title": "נטילת לולב",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 169,
+        "canonicalId": "rambam:aseh:169"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 169",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.169?lang=he",
+      "rambamOpening": "היא שצונו ליטול לולב ולשמוח בו לפני ה' שבעת ימים. והוא אמרו יתברך ולקחתם לכם ביום הראשון וגו'. וכבר התבארו משפטי מצוה זו בפ\"ג מסוכה, ושם התבאר שאין חובת מצוה זו שבעת ימים אלא במקדש, אולם בשאר הארצות יום ראשון לבד הם חייב",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "inui-yom-kippur",
+      "title": "עינוי ביום הכיפורים",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 164,
+        "canonicalId": "rambam:aseh:164"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 164",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.164?lang=he",
+      "rambamOpening": "היא שצונו להתענות ביום עשירי מתשרי. והוא אמרו יתעלה תענו את נפשותיכם ובא הפירוש בספרא תענו ענוי שהוא אבוד נפש ואיזהו זה אכילה ושתיה, וכן באה הקבלה שהוא אסור ברחיצה בסיכה ובנעילת הסנדל ובתשמיש המטה, והשביתה היא מיוחדת מאל",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "simchat-yom-tov",
+      "title": "שמחה ברגלים",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 54,
+        "canonicalId": "rambam:aseh:54"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 54",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.54?lang=he",
+      "rambamOpening": "היא שצונו לשמוח ברגלים, והוא אמרו יתעלה ושמחת בחגך, והיא מצוה שלישית מן השלש מצות שנוהגות ברגל. וענין הראשון הרמוז אלינו בצווי זה הוא שנקריב קרבן שלמים על כל פנים. ואלו השלמים נוספים על שלמי חגיגה והם הנקראים בתלמוד שלמי",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "chalah",
+      "title": "הפרשת חלה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 133,
+        "canonicalId": "rambam:aseh:133"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 133",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.133?lang=he",
+      "rambamOpening": "היא שצונו שנפריש חלה מעריסותינו וליתנה לכהן, והוא אמרו יתעלה ויתברך שמו ראשית עריסותיכם חלה תרימו תרומה. וכבר התבארו משפטי מצוה זו במסכת חלה ובמסכת תמורה. ואינה חובה מן התורה אלא בארץ ישראל לבד. (שלח לך, זרעים הלכות בכור",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "basar-bechalav",
+      "title": "בשר בחלב",
+      "type": "lav",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "lav",
+        "number": 186,
+        "canonicalId": "rambam:lav:186"
+      },
+      "ref": "Sefer HaMitzvot, Negative Commandments 186",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Negative_Commandments.186?lang=he",
+      "rambamOpening": "הזהירנו מלבשל בשר בחלב. והוא אמרו לא תבשל גדי בחלב אמו. ומי שבשלו לוקה אף על פי שלא אכל כמו שהתבאר במקומות מהתלמוד. (משפטים, שם פ\"ט):",
+      "status": "PROPOSED",
+      "note": "הפסוק מתייחס לבישול (ל״ת קפו). איסור האכילה נמנה בנפרד (ל״ת קפז). לבדיקה: איזה מהם הפריט מתאר."
+    },
+    {
+      "id": "shiluach-haken",
+      "title": "שילוח הקן",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 148,
+        "canonicalId": "rambam:aseh:148"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 148",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.148?lang=he",
+      "rambamOpening": "היא שצונו לשלוח הקן. והוא אמרו יתעלה שלח תשלח את האם ואת הבנים תקח לך. וכבר התבארו משפטי מצוה זו בפרק בתרא מחולין. (כי תצא, קדושה הלכות שחיטה):",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "maake",
+      "title": "מעקה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 184,
+        "canonicalId": "rambam:aseh:184"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 184",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.184?lang=he",
+      "rambamOpening": "היא שצונו להסיר המכשולים והסכנות מכל מושבותינו, וזה שנבנה כותל סביב הגג וסביב הבורות והשיחין והדומה להם כדי שלא יפול המסתכן מהם או בהם, וכן כל המקומות המסוכנין והרעועים כלם יבנו על סדר שיסור הרעוע והסכנה, והוא אמרו יתעלה",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "pru-urvu",
+      "title": "פרו ורבו",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 212,
+        "canonicalId": "rambam:aseh:212"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 212",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.212?lang=he",
+      "rambamOpening": "היא שצונו לפרות ולרבות לכוין לקיום המין, והיא מצות פריה ורביה. והוא אמרו יתעלה ואתם פרו ורבו. וכבר בארו (ברכות ט\"ו) שהחתן פטור מקריאת שמע כשישא בתולה מפני שהיא עסוק במצוה. וכבר התבארו משפטי מצוה זו בפרק ז' מיבמות. ומצוה ",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "milah",
+      "title": "ברית מילה",
+      "type": "aseh",
+      "proposed": {
+        "method": "rambam-sefer-hamitzvot",
+        "kind": "aseh",
+        "number": 215,
+        "canonicalId": "rambam:aseh:215"
+      },
+      "ref": "Sefer HaMitzvot, Positive Commandments 215",
+      "url": "https://www.sefaria.org/Sefer_HaMitzvot%2C_Positive_Commandments.215?lang=he",
+      "rambamOpening": "היא שצונו למול את הבן. והוא אמרו יתעלה לאברהם המול לכם כל זכר וכתיב בתורה שהוא בכרת מי שמבטל מצוה זו. וכבר התבארו משפטי מצוה זו בפרק י\"ח משבת וד' מיבמות, ואין האשה מצווה למול את בנה כמו שהאב מצווה בזה כמו שהתבאר בקדושין.",
+      "status": "PROPOSED"
+    }
+  ]
+}

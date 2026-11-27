@@ -1,0 +1,370 @@
+{
+  "generatedAt": "2026-11-27T08:57:43.812Z",
+  "book": "Siddur Edot HaMizrach",
+  "status": "coverage map only – no pack is built; in the app Edot HaMizrach is an outside link",
+  "editions": [
+    {
+      "versionTitle": "Shaliehsaboo Edition",
+      "license": "CC0",
+      "versionSource": "https://www.sefaria.org",
+      "allowed": true
+    },
+    {
+      "versionTitle": "Torat Emet 357",
+      "license": "Public Domain",
+      "versionSource": "http://www.toratemetfreeware.com/index.html?downloads",
+      "allowed": true
+    },
+    {
+      "versionTitle": "Shaliehsaboo Edition",
+      "license": "unknown",
+      "versionSource": "https://www.sefaria.org",
+      "allowed": false
+    },
+    {
+      "versionTitle": "Siddur Edot HaMizrach temp",
+      "license": "unknown",
+      "versionSource": "https://www.sefaria.org",
+      "allowed": false
+    }
+  ],
+  "prayers": [
+    {
+      "id": "upon-arising",
+      "group": "weekday",
+      "nodes": [
+        "Preparatory Prayers"
+      ],
+      "sections": 3,
+      "byEdition": {
+        "Shaliehsaboo Edition": 3,
+        "Torat Emet 357": 3
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shacharit",
+      "group": "weekday",
+      "nodes": [
+        "Weekday Shacharit"
+      ],
+      "sections": 18,
+      "byEdition": {
+        "Shaliehsaboo Edition": 18,
+        "Torat Emet 357": 18
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "mincha",
+      "group": "weekday",
+      "nodes": [
+        "Weekday Mincha"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "maariv",
+      "group": "weekday",
+      "nodes": [
+        "Weekday Arvit"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "bedtime-shema",
+      "group": "weekday",
+      "nodes": [
+        "Bedtime Shema"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "birkat-hamazon",
+      "group": "weekday",
+      "nodes": [
+        "Post Meal Blessing"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "blessings-after",
+      "group": "weekday",
+      "nodes": [
+        "Al Hamihya"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "tefillat-haderech",
+      "group": "weekday",
+      "nodes": [
+        "Assorted Blessings and Prayers > Traveler's Prayer"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "kabbalat-shabbat",
+      "group": "shabbat",
+      "nodes": [
+        "Kabbalat Shabbat"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-maariv",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Arvit"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-night-meal",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Evening"
+      ],
+      "sections": 8,
+      "byEdition": {
+        "Shaliehsaboo Edition": 8,
+        "Torat Emet 357": 8
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-shacharit",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Shacharit > Psalms for Shabbat",
+        "Shabbat Shacharit > Pesukei D'Zimra",
+        "Shabbat Shacharit > The Shema",
+        "Shabbat Shacharit > Amidah"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-torah-reading",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Shacharit > Torah Reading",
+        "Shabbat Shacharit > Haftarah",
+        "Shabbat Shacharit > Mi Sheberach",
+        "Shabbat Shacharit > Ashrei"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-musaf",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Mussaf"
+      ],
+      "sections": 3,
+      "byEdition": {
+        "Shaliehsaboo Edition": 3,
+        "Torat Emet 357": 3
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-day-meal",
+      "group": "shabbat",
+      "nodes": [
+        "Daytime Meal"
+      ],
+      "sections": 2,
+      "byEdition": {
+        "Shaliehsaboo Edition": 2,
+        "Torat Emet 357": 2
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "shabbat-mincha",
+      "group": "shabbat",
+      "nodes": [
+        "Shabbat Mincha"
+      ],
+      "sections": 4,
+      "byEdition": {
+        "Shaliehsaboo Edition": 4,
+        "Torat Emet 357": 4
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "seuda-shlishit",
+      "group": "shabbat",
+      "nodes": [
+        "Third Meal"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "havdalah",
+      "group": "shabbat",
+      "nodes": [
+        "Havdalah > Before Havdalah",
+        "Havdalah > Havdala"
+      ],
+      "sections": 2,
+      "byEdition": {
+        "Shaliehsaboo Edition": 2,
+        "Torat Emet 357": 2
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "rosh-chodesh",
+      "group": "holiday",
+      "nodes": [
+        "Rosh Hodesh"
+      ],
+      "sections": 9,
+      "byEdition": {
+        "Shaliehsaboo Edition": 9,
+        "Torat Emet 357": 9
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "yom-tov",
+      "group": "holiday",
+      "nodes": [
+        "Prayers for Three Festivals"
+      ],
+      "sections": 7,
+      "byEdition": {
+        "Shaliehsaboo Edition": 7,
+        "Torat Emet 357": 7
+      },
+      "missing": [],
+      "inThisSiddur": true
+    },
+    {
+      "id": "tal-geshem",
+      "group": "holiday",
+      "nodes": [],
+      "sections": 0,
+      "byEdition": {
+        "Shaliehsaboo Edition": 0,
+        "Torat Emet 357": 0
+      },
+      "missing": [],
+      "inThisSiddur": false
+    },
+    {
+      "id": "sukkah-lulav",
+      "group": "holiday",
+      "nodes": [],
+      "sections": 0,
+      "byEdition": {
+        "Shaliehsaboo Edition": 0,
+        "Torat Emet 357": 0
+      },
+      "missing": [],
+      "inThisSiddur": false
+    },
+    {
+      "id": "hoshanot",
+      "group": "holiday",
+      "nodes": [],
+      "sections": 0,
+      "byEdition": {
+        "Shaliehsaboo Edition": 0,
+        "Torat Emet 357": 0
+      },
+      "missing": [],
+      "inThisSiddur": false
+    },
+    {
+      "id": "chanukah",
+      "group": "holiday",
+      "nodes": [
+        "Hanukkah > Menorah Lighting"
+      ],
+      "sections": 1,
+      "byEdition": {
+        "Shaliehsaboo Edition": 1,
+        "Torat Emet 357": 1
+      },
+      "missing": [],
+      "inThisSiddur": true
+    }
+  ]
+}

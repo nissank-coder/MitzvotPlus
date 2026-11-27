@@ -1,11 +1,11 @@
 slot_id,planned_date,parasha_or_occasion,title,body_status,source_title,source_ref,edition,license_identifier,attribution,author,reviewer,review_date,content_sha256,approval_status
-dvar-torah/w01,2026-11-28,פרשת וַיִּשְׁלַח,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w02,2026-12-05,פרשת וַיֵּשֶׁב,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w03,2026-12-12,פרשת מִקֵּץ,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w04,2026-12-19,פרשת וַיִּגַּשׁ,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w05,2026-12-26,פרשת וַיְחִי,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w06,2027-01-02,פרשת שְׁמוֹת,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
-dvar-torah/w07,2027-01-09,פרשת וָאֵרָא,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
+dvar-torah/w01,2026-11-28,פרשת וַיִּשְׁלַח,עשרים שנה אצל לבן,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Genesis.32.5,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w02,2026-12-05,פרשת וַיֵּשֶׁב,מה ראה פוטיפר,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Genesis.39.3,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w03,2026-12-12,פרשת מִקֵּץ,בלעדי,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Genesis.41.16,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w04,2026-12-19,פרשת וַיִּגַּשׁ,אל תרגזו בדרך,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Genesis.45.24,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w05,2026-12-26,פרשת וַיְחִי,ישימך אלהים כאפרים וכמנשה,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Genesis.48.20:1,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w06,2027-01-02,פרשת שְׁמוֹת,לראות את הסבל,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Exodus.2.11:2,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
+dvar-torah/w07,2027-01-09,פרשת וָאֵרָא,להנהיג בנחת,DRAFT_FOR_REVIEW,רש״י על התורה,Rashi on Exodus.6.13:2,"Pentateuch with Rashi's commentary by M. Rosenbaum and A.M. Silbermann, 1929-1934",Public Domain,,טיוטה: Claude (לעריכה),,,,NOT_APPROVED
 dvar-torah/w08,2027-01-16,פרשת בֹּא,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
 dvar-torah/w09,2027-01-23,פרשת בְּשַׁלַּח,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED
 dvar-torah/w10,2027-01-30,פרשת יִתְרוֹ,,NOT_WRITTEN,,,,,,,,,,NOT_STARTED

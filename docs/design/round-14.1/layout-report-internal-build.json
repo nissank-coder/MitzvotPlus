@@ -1,0 +1,69 @@
+{
+  "build": "internal (VITE_DEMO_CONTENT=true)",
+  "commit": "6fddb19a461d20085618c112779be0e64202d163",
+  "captures": [
+    {
+      "scenario": "34-siddur-ashkenaz-preference",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "39-siddur-ashkenaz-prayer",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "42-siddur-ashkenaz-missing",
+      "width": 360,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "34-siddur-ashkenaz-preference",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "39-siddur-ashkenaz-prayer",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "42-siddur-ashkenaz-missing",
+      "width": 390,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "34-siddur-ashkenaz-preference",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "39-siddur-ashkenaz-prayer",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    },
+    {
+      "scenario": "42-siddur-ashkenaz-missing",
+      "width": 430,
+      "overflowPx": 0,
+      "smallTargets": [],
+      "consoleErrors": []
+    }
+  ]
+}
