@@ -45,6 +45,17 @@ export function accountApi(sb: SupabaseClient) {
       if (error && (error as { status?: number }).status === 429) throw new SyncError('rate_limited', 'code_rate_limited');
       if (error) throw new SyncError(errorCode(error), error.message);
     },
+    /**
+     * Staging test accounts only ("לומדים יחד"): an e-mail and a password created by the project owner
+     * in the dashboard. The screen offers it only when VITE_AUTH_PASSWORD=true (never in production –
+     * a production build has no account code at all).
+     */
+    async signInWithPassword(email: string, password: string): Promise<AccountUser> {
+      const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
+      if (error && (error as { status?: number }).status === 400) throw new SyncError('not_authenticated', 'password_invalid');
+      if (error || !data.user) throw new SyncError(errorCode(error), error?.message ?? 'no user');
+      return { id: data.user.id, email: data.user.email ?? null };
+    },
     async verifyCode(email: string, code: string): Promise<AccountUser> {
       const { data, error } = await sb.auth.verifyOtp({ email, token: code.trim(), type: 'email' });
       // A wrong, used or expired code (the server does not say which): ask for a new one.

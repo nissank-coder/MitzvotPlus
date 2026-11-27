@@ -26,10 +26,15 @@ const LearningScreen = lazy(() => import('./screens/LearningScreen').then((m) =>
 const CommunityScreen = COMMUNITY_ENABLED
   ? lazy(() => import('./screens/CommunityScreen').then((m) => ({ default: m.CommunityScreen })))
   : null;
+// "לומדים יחד": the real social challenge, only in builds with a backend and VITE_SOCIAL=true.
+const TogetherScreen = SOCIAL_ENABLED ? lazy(() => import('./screens/TogetherScreen')) : null;
+const TogetherAutoSync = SOCIAL_ENABLED ? lazy(() => import('./components/TogetherAutoSync')) : null;
 // Prayer and Tehillim texts are large; they load only when opened.
 const SiddurScreen = lazy(() => import('./screens/SiddurScreen').then((m) => ({ default: m.SiddurScreen })));
 const TehillimScreen = lazy(() => import('./screens/TehillimScreen').then((m) => ({ default: m.TehillimScreen })));
-import { COMMUNITY_ENABLED } from './config/features';
+import { COMMUNITY_ENABLED, SOCIAL_ENABLED } from './config/features';
+import { BACKEND_ENABLED } from './backend/config';
+import { onAuthReturn } from './backend/oauth';
 
 function MitzvotApp() {
   const { hydrated, state, calendar, storageError, flush, refreshClock } = useAppStore();
@@ -42,6 +47,16 @@ function MitzvotApp() {
   const quickAddVisible = quickAdd !== null;
   const openQuickAdd = (focus: RecordFocus | null) => setQuickAdd({ focus, n: (openings.current += 1) });
   const setQuickAddVisible = (open: boolean) => (open ? openQuickAdd(null) : setQuickAdd(null));
+
+  // A sign-in return (Google / Apple) – also on a cold start that opens on Home – brings up the
+  // account section, which finishes the sign-in ("לומדים יחד", review §5ב.2).
+  useEffect(() => {
+    if (!BACKEND_ENABLED) return;
+    return onAuthReturn(() => {
+      setFeature(null);
+      setTab('me');
+    });
+  }, []);
 
   // After "delete all data" the user goes through onboarding again and should land on the home tab.
   useEffect(() => {
@@ -142,6 +157,13 @@ function MitzvotApp() {
         );
       case 'mitzvot':
         return <MitzvotScreen {...common} />;
+      case 'together':
+        if (!TogetherScreen) break;
+        return (
+          <Suspense fallback={lazyFallback}>
+            <TogetherScreen {...common} onOpenLearning={() => openFeature('learning')} />
+          </Suspense>
+        );
       case 'holidays':
         return <HolidaysScreen {...common} />;
       case 'goals':
@@ -214,6 +236,11 @@ function MitzvotApp() {
       <BottomNav active={tab} onSelect={selectTab} onAdd={() => setQuickAddVisible(true)} />
       <QuickAddSheet key={quickAdd?.n ?? 0} visible={quickAddVisible} focus={quickAdd?.focus ?? null} onClose={() => setQuickAddVisible(false)} />
       <CelebrationToast />
+      {TogetherAutoSync ? (
+        <Suspense fallback={null}>
+          <TogetherAutoSync />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

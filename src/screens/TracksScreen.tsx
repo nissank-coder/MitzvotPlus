@@ -5,6 +5,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ChallengeCard, HabitEditorSheet } from '../components/gameplay';
 import { SectionHeader } from '../components/SectionHeader';
 import { DVAR_TORAH_AVAILABLE } from '../content/registry';
+import { SOCIAL_ENABLED } from '../config/features';
 import { CHALLENGES } from '../lib/challenges';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
@@ -43,6 +44,23 @@ export function TracksScreen({ onOpenFeature }: Props) {
         <h1 className="text-[24px] font-black text-ink">מסלולים ואתגרים</h1>
         <span className="text-[13px] text-ink-muted">אתה בוחר את הקצב. אפשר לעזוב בכל רגע.</span>
       </header>
+
+      {SOCIAL_ENABLED ? (
+        <button
+          type="button"
+          onClick={() => onOpenFeature('together')}
+          className="text-right rounded-[var(--radius-card)] bg-brand text-on-brand p-4 min-h-[64px] flex flex-row items-center gap-3"
+          aria-label="לומדים יחד – אתגר לימוד פרטי עם חבר"
+          data-testid="together-entry"
+        >
+          <AppIcon name="community" size={26} color={colors.white} />
+          <span className="flex-1 flex flex-col">
+            <span className="text-[16px] font-extrabold">לומדים יחד</span>
+            <span className="text-[13px] text-on-brand-muted">אתגר לימוד פרטי עם חבר – 3 ימי לימוד בשבוע</span>
+          </span>
+          <AppIcon name="chevronLeft" size={20} color={colors.white} />
+        </button>
+      ) : null}
 
       {active.length > 0 ? (
         <section aria-label="אתגרים פעילים" className="flex flex-col gap-3">

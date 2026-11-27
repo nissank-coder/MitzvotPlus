@@ -9,6 +9,7 @@ export type FeatureKey =
   | 'blessingGuide'
   | 'learning'
   | 'mitzvot'
+  | 'together'
   | 'holidays'
   | 'siddur'
   | 'tehillim'

@@ -1,0 +1,217 @@
+{
+  "target": "hosted Supabase (xietijnljqrucdirwfxb)",
+  "at": "2026-11-27T12:34:28.619Z",
+  "steps": [
+    {
+      "at": "2026-11-27T12:34:08.144Z",
+      "step": "three accounts, three ids",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:13.680Z",
+      "step": "consent on both sides",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:14.149Z",
+      "step": "A created an invitation",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:14.297Z",
+      "step": "B sees the inviter and the terms before joining",
+      "ok": true,
+      "detail": {
+        "days": 7,
+        "state": "ok",
+        "target": 3,
+        "inviter": "אבי (בדיקה)",
+        "expiresAt": "2026-12-04T12:34:13.753011+00:00",
+        "definition": "learn-3-of-7"
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:14.970Z",
+      "step": "B joined",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:15.121Z",
+      "step": "C cannot use the used code",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:15.463Z",
+      "step": "C cannot see the challenge",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:15.805Z",
+      "step": "before: A has 0 learning days for B",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:15.823Z",
+      "step": "the entry is in the SQLite outbox before sending",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:18.016Z",
+      "step": "A sync",
+      "ok": true,
+      "detail": {
+        "state": "ok",
+        "at": 1795782857146,
+        "pushed": 1,
+        "pulled": 1,
+        "pending": 0,
+        "rejected": 0
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:18.350Z",
+      "step": "B sees A at 1 learning day (server-confirmed)",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:19.953Z",
+      "step": "after undo, B sees A at 0",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:20.441Z",
+      "step": "first send fails (no connection)",
+      "ok": true,
+      "detail": {
+        "state": "error",
+        "code": "offline",
+        "at": 1795782861125,
+        "pending": 1
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:20.441Z",
+      "step": "the entry is still in the outbox",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:21.690Z",
+      "step": "the retry sends it, and it is accepted",
+      "ok": true,
+      "detail": {
+        "s2": {
+          "state": "ok",
+          "at": 1795786460599,
+          "pushed": 1,
+          "pulled": 1,
+          "pending": 0,
+          "rejected": 0
+        },
+        "item": "accepted"
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:21.999Z",
+      "step": "B sees A at 1 day after the retry",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:23.586Z",
+      "step": "sending the same entry again is a duplicate, not a second entry",
+      "ok": true,
+      "detail": [
+        {
+          "eventId": "log-mwyyqysy-2-k20a",
+          "outcome": "duplicate",
+          "serverReceivedAtUtc": "2026-11-27T12:34:23.586Z"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-27T12:34:23.729Z",
+      "step": "B sees A at exactly 1 day (two entries, one day; no double count)",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:23.888Z",
+      "step": "B cheers A",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:24.028Z",
+      "step": "the same request again: duplicate",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:24.169Z",
+      "step": "A sees one cheer",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:25.463Z",
+      "step": "no private action on the server",
+      "ok": true,
+      "detail": [
+        "torahStudy",
+        "torahStudy",
+        "learningTrack",
+        "mitzvahStudy"
+      ]
+    },
+    {
+      "at": "2026-11-27T12:34:25.753Z",
+      "step": "A stops sharing → B no longer sees A",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:26.395Z",
+      "step": "B blocks A → A no longer sees B",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:26.548Z",
+      "step": "…and A cannot cheer B",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:27.203Z",
+      "step": "after unblocking, the agreed progress shows again",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:27.839Z",
+      "step": "C's space on the same device has none of A's entries",
+      "ok": true,
+      "detail": {
+        "aLogs": 3
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:27.980Z",
+      "step": "C still cannot see the challenge",
+      "ok": true
+    },
+    {
+      "at": "2026-11-27T12:34:28.321Z",
+      "step": "after a restart A has the same entries and nothing left to send",
+      "ok": true,
+      "detail": {
+        "logs": [
+          3,
+          3
+        ],
+        "outbox": [
+          "create:accepted",
+          "void:accepted",
+          "create:accepted",
+          "create:accepted"
+        ]
+      }
+    },
+    {
+      "at": "2026-11-27T12:34:28.618Z",
+      "step": "B left → A sees \"left\"",
+      "ok": true
+    }
+  ]
+}

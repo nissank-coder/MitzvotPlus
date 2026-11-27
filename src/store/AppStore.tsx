@@ -140,11 +140,18 @@ function useNow(): [Date, () => void] {
   return [now, refresh];
 }
 
+const WEB_SQLITE = import.meta.env.VITE_WEB_SQLITE === 'true' && (import.meta.env.VITE_BACKEND_ENV === 'staging' || import.meta.env.VITE_BACKEND_ENV === 'development');
 /** SQLite on iOS/Android, browser storage on the web – one data space per account. */
 async function openSpaces(): Promise<SpaceManager> {
   if (Capacitor.isNativePlatform()) {
     const { openNativeSpaces } = await import('../storage/sqliteStorage');
     return openNativeSpaces();
+  }
+  // Web staging builds of "לומדים יחד": the same SQLite storage in the browser (sql.js), so the
+  // outbox and sync work there too. Folded away in every other build.
+  if (WEB_SQLITE) {
+    const { openWebSqlSpaces } = await import('../storage/webSqlite');
+    return openWebSqlSpaces() as unknown as SpaceManager;
   }
   return localStorageSpaces() as unknown as SpaceManager;
 }

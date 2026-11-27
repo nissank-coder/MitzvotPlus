@@ -61,10 +61,23 @@ export function parseAuthCallback(url: string, webOrigin?: string): AuthCallback
  */
 let pending: AuthCallback | null = null;
 const listeners = new Set<(cb: AuthCallback) => void>();
+/**
+ * "לומדים יחד" (review §5ב.2): the app is notified of every return, also on a cold start that opens
+ * on Home, so it can bring the account screen up at once – the return no longer waits until the
+ * user happens to open the profile. Observers do not consume it; the account section still does.
+ */
+const observers = new Set<(cb: AuthCallback) => void>();
 export function deliverAuthCallback(cb: AuthCallback) {
   if (listeners.size === 0) pending = cb;
+  for (const o of observers) o(cb);
   for (const l of listeners) l(cb);
 }
+export function onAuthReturn(observer: (cb: AuthCallback) => void): () => void {
+  observers.add(observer);
+  if (pending) observer(pending); // arrived before the app was listening (cold start)
+  return () => void observers.delete(observer);
+}
+export const hasPendingAuthCallback = () => pending !== null;
 export function onAuthCallback(listener: (cb: AuthCallback) => void): () => void {
   listeners.add(listener);
   if (pending) {

@@ -31,6 +31,9 @@ const forbidden = [
   // Round 14: content packs not approved for distribution (the nusach Ashkenaz siddur, pending the
   // owner's approval of the edition and a rabbinic check) – internal builds only.
   ['NOT_APPROVED', 'content pack not approved for distribution'],
+  // "לומדים יחד": the browser SQLite and the social screen are staging-only.
+  ['sql-wasm', 'browser SQLite (web staging builds only)'],
+  ['create_challenge_invite', 'the social challenge (staging builds only)'],
   ['siddur-ashkenaz', 'nusach Ashkenaz pack (internal review only)'],
   ['Daat Siddur Ashkenaz', 'nusach Ashkenaz pack text (internal review only)'],
 ];
@@ -41,6 +44,7 @@ for (const [needle, why] of forbidden) {
 }
 const html = readFileSync(join(DIST, 'index.html'), 'utf8');
 if (!html.includes('Content-Security-Policy')) problems.push('index.html has no Content-Security-Policy');
+if (/wasm-unsafe-eval/.test(html)) problems.push("production script-src must not allow 'wasm-unsafe-eval'");
 // Round 12.5: a production build may connect only to itself and the Sefaria API – never a backend.
 const connect = /connect-src ([^;"]*)/.exec(html)?.[1]?.trim();
 if (connect !== "'self' https://www.sefaria.org") problems.push(`production connect-src must be "'self' https://www.sefaria.org" (got: ${connect ?? 'none'})`);
