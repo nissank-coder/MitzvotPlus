@@ -264,7 +264,8 @@ try {
   check(anonTables.length === 0, '14: the anonymous role has no access to any table', JSON.stringify(anonTables));
   const fnPriv = async (role) => (await db.query(`select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and has_function_privilege('${role}', p.oid, 'execute') order by 1`)).rows.map((r) => r.proname);
   check((await fnPriv('anon')).length === 0, '14: the anonymous role can call no function', (await fnPriv('anon')).join(','));
-  const API = ['backup_state', 'block_user', 'create_invite', 'delete_my_account', 'export_my_data', 'get_blessing_goals', 'give_kudos', 'pull_events', 'redeem_invite', 'set_backup_scope', 'set_blessing_goals', 'set_consent', 'share_achievement', 'submit_events', 'submit_report'];
+  // + learning together: create / preview / join an invitation, read, cheer, leave, another round.
+  const API = ['backup_from_now', 'backup_state', 'block_user', 'cheer_together', 'create_challenge_invite', 'create_invite', 'delete_my_account', 'export_my_data', 'get_blessing_goals', 'give_kudos', 'join_challenge_invite', 'leave_together', 'my_together', 'preview_challenge_invite', 'pull_events', 'redeem_invite', 'rematch_together', 'set_backup_scope', 'set_blessing_goals', 'set_consent', 'share_achievement', 'submit_events', 'submit_report', 'together_progress'];
   check(JSON.stringify(await fnPriv('authenticated')) === JSON.stringify(API), '14: signed-in users can call exactly the API functions', (await fnPriv('authenticated')).join(','));
   const writes = (await db.query("select c.relname || ':' || string_agg(p, ',' order by p) w from pg_class c join pg_namespace n on n.oid = c.relnamespace cross join unnest(array['INSERT','UPDATE','DELETE']) p where n.nspname = 'public' and c.relkind = 'r' and (has_table_privilege('authenticated', c.oid, p) or (p <> 'DELETE' and has_any_column_privilege('authenticated', c.oid, p))) group by c.relname order by 1")).rows.map((r) => r.w);
   const WRITES = ['blocks:DELETE', 'friendships:DELETE', 'group_members:DELETE', 'groups:DELETE,INSERT,UPDATE', 'invites:DELETE', 'kudos:DELETE', 'profiles:UPDATE', 'shared_achievements:DELETE', 'social_profiles:DELETE,INSERT,UPDATE'];
@@ -475,6 +476,111 @@ try {
   const k2 = await goalsOf();
   check(k2?.version === 3 && k2.goals.length === 0, '19: deleting the cloud copy clears the goals and moves the version on', JSON.stringify(k2));
 
+  {
+  // 20. Learning together (main decision §4): an invitation, consent and terms, progress from the
+  //     backed-up events (one per day, an undo removes it), cheers that do not double, privacy, leaving,
+  //     the result after the challenge closes, and another round with the same partner.
+  const TA = await newUser();
+  const TB = await newUser();
+  const TC = await newUser();
+  const tg = async (uid, sql, params = []) => (await as(uid, sql, params)).rows[0]?.r;
+  const tgErr = async (uid, sql, params = []) => (await as(uid, sql, params)).error ?? '';
+  check(/consent_required/.test(await tgErr(TA, "select public.create_challenge_invite('learn-3-of-7') r")), '20: no invitation without social consent');
+  for (const u of [TA, TB, TC]) await as(u, 'select public.set_consent(true, true)');
+  await as(TA, "update public.profiles set display_name = 'אבי'");
+  await as(TB, "update public.profiles set display_name = 'בתיה'");
+  check(/bad_definition/.test(await tgErr(TA, "select public.create_challenge_invite('learn-999') r")), '20: only the defined challenge can be created');
+  const inv = await tg(TA, "select public.create_challenge_invite('learn-3-of-7', 'Asia/Jerusalem') r");
+  check(/^[A-HJ-NP-Z2-9]{8}$/.test(inv?.code ?? ''), '20: an 8-character invitation code', JSON.stringify(inv));
+  check((await tg(TC, "select public.preview_challenge_invite('ZZZZZZZZ') r"))?.state === 'invalid', '20: a wrong code shows nothing');
+  const pv = await tg(TB, 'select public.preview_challenge_invite($1) r', [inv.code.toLowerCase()]);
+  check(pv?.state === 'ok' && pv.inviter === 'אבי' && pv.target === 3 && pv.days === 7, '20: the invitee sees who invites and the terms (code not case sensitive)', JSON.stringify(pv));
+  check((await tg(TA, 'select public.preview_challenge_invite($1) r', [inv.code]))?.state === 'invalid', '20: the inviter cannot use the own invitation');
+  check((await tg(TB, 'select public.join_challenge_invite($1, false) r', [inv.code]))?.state === 'terms_required', '20: joining needs an explicit yes to the terms');
+  await as(TB, 'select public.set_consent(true, false)');
+  check(/consent_required/.test(await tgErr(TB, 'select public.join_challenge_invite($1, true) r', [inv.code])), '20: joining needs social consent');
+  await as(TB, 'select public.set_consent(true, true)');
+  const jn = await tg(TB, 'select public.join_challenge_invite($1, true) r', [inv.code]);
+  check(jn?.state === 'joined' && jn.challengeId === inv.challengeId, '20: B joins on purpose', JSON.stringify(jn));
+  check((await tg(TC, 'select public.join_challenge_invite($1, true) r', [inv.code]))?.state === 'invalid', '20: a used code lets nobody else in');
+  check((await tg(TC, 'select public.together_progress($1) r', [inv.challengeId]))?.state === 'unavailable', '20: C (not invited) sees nothing of the challenge');
+  check((await as(TC, 'select * from public.together_members')).error !== null, '20: the challenge tables are not readable directly');
+  check((await as(null, 'select public.my_together()')).error !== null, '20: the anonymous role cannot call the challenge functions');
+
+  const tz = 'Asia/Jerusalem';
+  const dayOf = (ms) => new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(ms));
+  const tt0 = Date.now();
+  let sa = reducer(createFreshState(tt0), { type: 'addAction', payload: { key: 'torahStudy', now: tt0, dateKey: dayOf(tt0) } });
+  sa = reducer(sa, { type: 'addAction', payload: { key: 'mitzvahStudy', now: tt0 + 1, dateKey: dayOf(tt0), refId: 'emunah' } });
+  sa = reducer(sa, { type: 'addAction', payload: { key: 'shacharit', now: tt0 + 2, dateKey: dayOf(tt0) } });
+  check((await submit(TA, eventsFrom(sa, 'dev-ta'))).rows.every((r) => r.outcome === 'accepted'), '20: A backs up two learning entries and a prayer');
+  const progOf = async (uid, cid = inv.challengeId) => await tg(uid, 'select public.together_progress($1) r', [cid]);
+  const memberOf = (p, uid) => p?.members?.find((m) => m.userId === uid);
+  let pb = await progOf(TB);
+  check(pb?.state === 'active' && pb.startDate === dayOf(tt0) && memberOf(pb, TA)?.days === 1 && memberOf(pb, TB)?.days === 0, '20: B sees A at one learning day (two entries the same day count once; a prayer does not count)', JSON.stringify(pb?.members));
+  const voidOfT = (target) => ({ eventId: `void:${target}`, operation: 'void', targetEventId: target, payload: JSON.parse(voidEventPayload(`void:${target}`, target, 'dev-ta', tt0 + 5000)) });
+  const studyIds = sa.logs.filter((l) => l.actionKey !== 'shacharit').map((l) => l.id);
+  await submit(TA, [voidOfT(studyIds[0])]);
+  check(memberOf(await progOf(TB), TA)?.days === 1, '20: undoing one of two entries keeps the day');
+  await submit(TA, [voidOfT(studyIds[1])]);
+  check(memberOf(await progOf(TB), TA)?.days === 0, '20: undoing the last learning entry of the day removes the day for the partner too');
+
+  const r1 = randomUUID();
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, r1])) === 'ok', '20: B cheers A');
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, r1])) === 'duplicate', '20: the same cheer sent again (a network retry) is not counted twice');
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, randomUUID()])) === 'already_today', '20: one cheer a day from B to A');
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TB, randomUUID()])) === 'unavailable', '20: no cheering oneself');
+  check((await tg(TC, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, randomUUID()])) === 'unavailable', '20: C cannot cheer in a challenge C is not in');
+  const pa = await progOf(TA);
+  check(memberOf(pa, TA)?.cheersReceived === 1 && memberOf(await progOf(TB), TA)?.cheeredToday === true, '20: A sees one cheer; B sees it was given today');
+
+  await as(TA, 'select public.set_consent(true, false)');
+  const hidden = memberOf(await progOf(TB), TA);
+  check(hidden?.visibility === 'hidden' && hidden.days === null, '20: A withdraws social consent → B no longer sees A\'s progress', JSON.stringify(hidden));
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, randomUUID()])) === 'unavailable', '20: …and cannot cheer A');
+  await as(TA, 'select public.set_consent(true, true)');
+  await as(TA, 'select public.block_user($1)', [TB]);
+  check(memberOf(await progOf(TB), TA)?.visibility === 'hidden' && memberOf(await progOf(TA), TB)?.visibility === 'hidden', '20: a block hides both sides at once');
+  await as(TA, 'delete from public.blocks where blocked = $1', [TB]);
+  check(memberOf(await progOf(TB), TA)?.visibility === 'visible', '20: after unblocking, the agreed progress shows again');
+
+  // The result after the challenge closes (dates moved back by the test; learning days inserted directly).
+  const past = (n) => dayOf(Date.now() - n * 86400000);
+  await db.query('update public.together_challenges set start_date = $2, end_date = $3 where id = $1', [inv.challengeId, past(9), past(3)]);
+  const put = (uid, d, k) => db.query("insert into public.activity_events (event_id, user_id, installation_id, schema_version, operation, action_type, local_date, payload) values ($1, $2, 'dev', 2, 'create', $3, $4, '{}')", [`seed-${randomUUID()}`, uid, k, d]);
+  for (const d of [9, 7, 5]) await put(TA, past(d), 'learningTrack');
+  for (const d of [8, 6]) await put(TB, past(d), 'torahStudy');
+  await put(TB, past(2), 'torahStudy'); // after the last day: not counted
+  const fa = await progOf(TA);
+  const fb = await progOf(TB);
+  check(fa?.state === 'finished' && memberOf(fa, TA)?.days === 3 && memberOf(fa, TB)?.days === 2, '20: after it closes: A 3 days, B 2 (a day after the end does not count)', JSON.stringify(fa?.members));
+  check(fa?.result?.outcome === 'first' && fa.result.met === true && fb?.result?.outcome === 'second' && fb.result.met === false, '20: the result by the agreed rule – more days first, the goal of 3 met or not', JSON.stringify([fa?.result, fb?.result]));
+  check((await tg(TB, 'select public.cheer_together($1, $2, $3) r', [inv.challengeId, TA, randomUUID()])) === 'unavailable', '20: no cheering after the challenge closed');
+
+  const again = await tg(TA, 'select public.rematch_together($1) r', [inv.challengeId]);
+  check((await tg(TC, 'select public.preview_challenge_invite($1) r', [again?.code]))?.state === 'invalid', '20: another round: only the partner can use that invitation');
+  const mine = await tg(TB, 'select public.my_together() r');
+  check(mine?.invitations?.some((i) => i.code === again?.code && i.inviter === 'אבי'), '20: …and the partner sees it waiting', JSON.stringify(mine?.invitations));
+
+  const inv2 = await tg(TA, "select public.create_challenge_invite('learn-3-of-7') r");
+  await tg(TC, 'select public.join_challenge_invite($1, true) r', [inv2.code]);
+  await as(TC, 'select public.leave_together($1)', [inv2.challengeId]);
+  check(memberOf(await progOf(TA, inv2.challengeId), TC)?.visibility === 'left' && (await progOf(TC, inv2.challengeId))?.state === 'unavailable', '20: leaving: the other side sees "left"; the one who left sees nothing more');
+
+  const ex = await tg(TA, 'select public.export_my_data() r');
+  check(Array.isArray(ex?.togetherChallenges) && ex.togetherChallenges.length >= 2 && ex.togetherCheersReceived?.length >= 1 && !JSON.stringify(ex).includes(TB), "20: A's own export includes the challenges and cheers – and nothing of the partner's", JSON.stringify(ex?.togetherChallenges?.length));
+
+  // Turning backup on for the challenge: "only from now" sets the floor – once, and only before anything was backed up.
+  const TF = await newUser();
+  await as(TF, 'select public.set_consent(true, true)');
+  const bf = await tg(TF, 'select public.backup_from_now() r');
+  check(bf?.floor !== null && bf?.epoch === 1 && bf?.decisionPending === false, '20: "only from now" on first backup sets the floor', JSON.stringify(bf));
+  let sf = reducer(createFreshState(Date.now() - 3600000), { type: 'addAction', payload: { key: 'torahStudy', now: Date.now() - 3600000, dateKey: dayOf(Date.now() - 3600000) } });
+  const before = await submit(TF, eventsFrom(sf, 'dev-tf'));
+  check(before.rows[0]?.outcome === 'rejected' && before.rows[0]?.reason === 'before_backup_floor', '20: an entry recorded before it is not uploaded', JSON.stringify(before.rows));
+  check((await tg(TA, 'select public.backup_from_now() r'))?.floor === null, '20: an account that already has entries on the server keeps its history (no floor added later)');
+
+  }
   await c1.end();
   await c2.end();
 } catch (e) {

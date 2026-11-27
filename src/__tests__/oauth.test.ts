@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { authRedirect, enabledProviders, NATIVE_AUTH_CALLBACK, onAuthCallback, deliverAuthCallback, parseAuthCallback } from '../backend/oauth';
+import { authRedirect, enabledProviders, NATIVE_AUTH_CALLBACK, onAuthCallback, onAuthReturn, deliverAuthCallback, parseAuthCallback } from '../backend/oauth';
 
 /** Round 13 (review §6) – Google / Apple next to guest use: the pure parts of the flow. */
 describe('sign-in return links', () => {
@@ -35,5 +35,22 @@ describe('sign-in return links', () => {
     onAuthCallback((cb) => again.push(cb.kind))();
     expect(got).toEqual(['cold-start-1', 'while-open-2']);
     expect(again).toEqual([]);
+  });
+});
+
+describe('a sign-in return on a cold start (learning together, review §5ב.2)', () => {
+  it('the app is told at once – before the account screen exists – and the return still waits for it', () => {
+    const seen: string[] = [];
+    deliverAuthCallback({ kind: 'code', code: 'cold-start-home' }); // the app opened on Home
+    const offApp = onAuthReturn((cb) => seen.push(cb.kind === 'code' ? cb.code : cb.error));
+    expect(seen).toEqual(['cold-start-home']); // → the app brings up the account section
+    const got: string[] = [];
+    const offAccount = onAuthCallback((cb) => got.push(cb.kind === 'code' ? cb.code : cb.error));
+    expect(got).toEqual(['cold-start-home']); // the account section finishes the sign-in, once
+    deliverAuthCallback({ kind: 'code', code: 'while-open' });
+    expect(seen).toEqual(['cold-start-home', 'while-open']);
+    expect(got).toEqual(['cold-start-home', 'while-open']);
+    offApp();
+    offAccount();
   });
 });

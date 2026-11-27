@@ -1,0 +1,92 @@
+{
+  "target": "hosted Supabase staging (xietijnljqrucdirwfxb)",
+  "build": "web staging build (VITE_SOCIAL, VITE_WEB_SQLITE, VITE_AUTH_PASSWORD) – Chromium 390×844 ×2, not phones",
+  "commit": "16b83be9aa9d17fc78e2c98081f49fef30b65f2c",
+  "steps": [
+    {
+      "step": "both open the app (two separate browsers) and finish the short onboarding",
+      "ok": true,
+      "frame": "01"
+    },
+    {
+      "step": "both sign in with their own test account (hosted staging)",
+      "ok": true,
+      "frame": "02"
+    },
+    {
+      "step": "A opens \"לומדים יחד\": what the partner will see, what not, backup from now",
+      "ok": true,
+      "frame": "03"
+    },
+    {
+      "step": "A agrees and shares (display name, backup only from now)",
+      "ok": true,
+      "frame": "04"
+    },
+    {
+      "step": "A invites: a single-use code",
+      "ok": true,
+      "frame": "05"
+    },
+    {
+      "step": "B opens \"לומדים יחד\" and agrees to share",
+      "ok": true,
+      "frame": "06"
+    },
+    {
+      "step": "B types the code: who invites, the metric, the period, the comparison – before joining",
+      "ok": true,
+      "frame": "07"
+    },
+    {
+      "step": "B agrees to the terms and joins",
+      "ok": true,
+      "frame": "08"
+    },
+    {
+      "step": "A sees B in the challenge (0 of 3 each)",
+      "ok": true,
+      "frame": "09"
+    },
+    {
+      "step": "A reads today's halacha in the app – reading records nothing",
+      "ok": true,
+      "frame": "10"
+    },
+    {
+      "step": "A records \"למדתי\" on purpose – the message names it, with undo",
+      "ok": true,
+      "frame": "11"
+    },
+    {
+      "step": "B refreshes: A at 1 of 3 (sent from A's SQLite, confirmed by the server)",
+      "ok": true,
+      "frame": "12"
+    },
+    {
+      "step": "B cheers A (יישר כוח) – once a day",
+      "ok": true,
+      "frame": "13"
+    },
+    {
+      "step": "A undoes the entry from Home; B sees A back at 0",
+      "ok": true,
+      "frame": "14"
+    },
+    {
+      "step": "A records again, sees the cheer from B",
+      "ok": true,
+      "frame": "15"
+    },
+    {
+      "step": "(demo) the challenge's dates moved back 8 days on the server: 201",
+      "ok": true,
+      "frame": null
+    },
+    {
+      "step": "after it closes: the result by the agreed rule, the goal, and another round",
+      "ok": true,
+      "frame": "17"
+    }
+  ]
+}

@@ -16,6 +16,8 @@ import { ConfirmDialog } from './ConfirmDialog';
  * in, or a deleted account → guest. Signing out returns to the guest's own data.
  */
 const GUEST = 'guest';
+/** Staging test accounts: e-mail + password (VITE_AUTH_PASSWORD=true; never in a production build). */
+const PASSWORD_LOGIN = import.meta.env.VITE_AUTH_PASSWORD === 'true' && BACKEND.env === 'staging';
 const spaceOf = (u: AccountUser) => `user:${u.id}`;
 
 const STATUS_TEXT: Record<SyncStatus['state'], string> = {
@@ -43,6 +45,7 @@ const ERROR_TEXT: Record<SyncErrorCode, string> = {
 };
 
 const AUTH_TEXT: Record<string, string> = {
+  password_invalid: 'הדוא״ל או הסיסמה לא נכונים.',
   code_invalid_or_expired: 'הקוד שגוי או שפג תוקפו. אפשר לבקש קוד חדש.',
   code_rate_limited: 'אפשר לבקש קוד חדש בעוד דקה.',
   oauth_failed: 'ההתחברות לא הושלמה. אפשר לנסות שוב או להמשיך כאורח.',
@@ -64,6 +67,7 @@ export default function AccountSection() {
   const [consent, setConsentState] = useState<Consent>({ cloudBackup: false, social: false });
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [status, setStatus] = useState<SyncStatus>({ state: 'signed-out' });
   const [message, setMessage] = useState<string | null>(null);
@@ -235,6 +239,30 @@ export default function AccountSection() {
                 {PROVIDER_LABEL[p]}
               </button>
             ))}
+            {PASSWORD_LOGIN ? (
+              <div className="flex flex-col gap-2 rounded-[14px] bg-[#FFF5DB] p-3" data-testid="password-signin">
+                <p className="text-[12px] text-[#8A5A00]">חשבון בדיקה (staging בלבד): דוא״ל וסיסמה שנוצרו בלוח הבקרה.</p>
+                <input aria-label="דוא״ל חשבון בדיקה" type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3 bg-white" />
+                <input aria-label="סיסמת חשבון בדיקה" type="password" dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3 bg-white" />
+                <button
+                  type="button"
+                  disabled={busy || !email || !password}
+                  onClick={() =>
+                    run(async () => {
+                      const u = await api.signInWithPassword(email, password);
+                      setPassword('');
+                      setUser(u);
+                      setConsentState(await api.consent());
+                      setStatus({ state: 'off' });
+                      await enterAccount(u);
+                    })
+                  }
+                  className="min-h-[48px] rounded-[14px] bg-brand text-white font-extrabold"
+                >
+                  כניסה לחשבון בדיקה
+                </button>
+              </div>
+            ) : null}
             {PROVIDERS.length > 0 ? <p className="text-[12px] text-[#5C6F82]">או עם קוד בדוא״ל:</p> : null}
             <label className="text-[13px] font-bold text-[#17324D]" htmlFor="acct-email">דוא״ל</label>
             <input id="acct-email" type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} className="min-h-[48px] rounded-[14px] border border-[#DDE8EE] px-3" />

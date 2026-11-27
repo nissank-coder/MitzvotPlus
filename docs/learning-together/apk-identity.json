@@ -1,0 +1,29 @@
+{
+  "main": {
+    "file": "MitzvotPlus-0.1.0-main-12a3610.apk",
+    "kind": "debug (internal; not for distribution)",
+    "config": "debug+backend=none+dbenc=off – the merged main, no server (as before)",
+    "versionCode": 142,
+    "commit": "12a36105da9374e81147a3bf8809c06ce58d85ec",
+    "embedded": "commit 12a3610…, source fingerprint 2d93cc9bdaa9, dirty=false, mode Production",
+    "buildId": "fp=5c69c96e1d88d012;cfg=debug+backend=none+dbenc=off;sha256=5a837f9ef7db545d",
+    "sha256": "5a837f9ef7db545d49143f9510af1cd31ecce35e48298489a2fa6fdff7969aa1",
+    "sizeBytes": 14702391,
+    "note": "the same code as the round-14.1 APK (141): same source and release fingerprints"
+  },
+  "staging": {
+    "file": "MitzvotPlus-0.1.0-staging-together-16b83be.apk",
+    "kind": "debug (internal; STAGING – synthetic test accounts only; not for distribution)",
+    "config": "debug+backend=staging+dbenc=off; VITE_SOCIAL=true (לומדים יחד), VITE_AUTH_PASSWORD=true (test accounts); no Google/Apple (not configured in the project)",
+    "server": "https://xietijnljqrucdirwfxb.supabase.co (mitzvotplus-staging) – CSP connect-src allows only it and www.sefaria.org",
+    "versionCode": 143,
+    "commit": "16b83be9aa9d17fc78e2c98081f49fef30b65f2c",
+    "embedded": "commit 16b83be…, source fingerprint a6b13f708034, dirty=false",
+    "buildId": "fp=813460ae3506b973;cfg=debug+backend=staging+dbenc=off;sha256=60784a21b933958a",
+    "sha256": "60784a21b933958a5ff94c1c1e2eafd7579c067259f22da53633e54e3414c8f6",
+    "sizeBytes": 15170314,
+    "publicKeyOnly": "the publishable key (public by design); no secret key, no service role (checked)"
+  },
+  "signingCertSha256": "57f7d8c4c84a8ddf25092495e5968a2b64778b5dc87c25aaad58c264fb026dd3 – the same debug key as every APK sent in this project (an update keeps the data); CI-built APKs use another key",
+  "pageSize16k": "OK for both (zipalign -P 16)"
+}

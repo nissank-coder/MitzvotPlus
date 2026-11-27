@@ -17,6 +17,15 @@ export const FEATURES = { demoContent: DEMO_CONTENT } as const;
 export const COMMUNITY_ENABLED: boolean = DEMO_CONTENT;
 
 /**
+ * "לומדים יחד" – the REAL social challenge (main decision doc §3): its own switch, separate from the
+ * demo content, and only in a build with a backend (staging). Production builds have neither.
+ */
+export const SOCIAL_ENABLED: boolean =
+  import.meta.env.VITE_SOCIAL === 'true' &&
+  (import.meta.env.VITE_BACKEND_ENV === 'staging' || import.meta.env.VITE_BACKEND_ENV === 'development') &&
+  Boolean(import.meta.env.VITE_SUPABASE_URL);
+
+/**
  * Server sync (stage G3). Off until the backend exists and D04 is decided. While off, every point is
  * local and provisional; the UI says so instead of presenting it as confirmed.
  */

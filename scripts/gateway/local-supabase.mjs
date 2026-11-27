@@ -254,6 +254,29 @@ export async function startGateway({ databaseUrl, port = 0, accessTtlSeconds = 3
           return pgError(res, e);
         }
       }
+      // "לומדים יחד": unblocking (DELETE on blocks, limited by row-level security to the user's own blocks).
+      if (url.pathname === '/rest/v1/blocks' && req.method === 'DELETE') {
+        const blocked = /^eq\.([0-9a-f-]{36})$/.exec(url.searchParams.get('blocked') ?? '')?.[1];
+        if (!blocked) return send(res, 400, { message: 'blocked=eq.<id> only' });
+        try {
+          await asRole(claims?.sub ? claims : null, (c) => c.query('delete from public.blocks where blocked = $1', [blocked]));
+          return send(res, 204);
+        } catch (e) {
+          return pgError(res, e);
+        }
+      }
+      // "לומדים יחד": the display name (the only profile column a user may change – the grant says so).
+      if (url.pathname === '/rest/v1/profiles' && req.method === 'PATCH') {
+        const name = typeof body?.display_name === 'string' ? body.display_name : null;
+        const uid = /^eq\.([0-9a-f-]{36})$/.exec(url.searchParams.get('user_id') ?? '')?.[1];
+        if (name === null || !uid || Object.keys(body).length !== 1) return send(res, 400, { message: 'only display_name of one user' });
+        try {
+          await asRole(claims?.sub ? claims : null, (c) => c.query('update public.profiles set display_name = $1 where user_id = $2', [name, uid]));
+          return send(res, 204);
+        } catch (e) {
+          return pgError(res, e);
+        }
+      }
       if (url.pathname === '/rest/v1/profiles' && req.method === 'GET') {
         const cols = (url.searchParams.get('select') ?? '*').split(',').map((s) => s.trim()).filter((s) => /^[a-z_*]+$/.test(s));
         try {

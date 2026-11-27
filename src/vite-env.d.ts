@@ -13,6 +13,12 @@ interface ImportMetaEnv {
   readonly VITE_BACKEND_ENV?: string;
   /** Round 13: social sign-in shown in the account section, e.g. "google,apple" (dev/staging only). */
   readonly VITE_AUTH_PROVIDERS?: string;
+  /** "לומדים יחד": the real social challenge (staging builds only, with a backend). */
+  readonly VITE_SOCIAL?: string;
+  /** Staging test accounts: sign in with an e-mail and a password (never in production). */
+  readonly VITE_AUTH_PASSWORD?: string;
+  /** Web staging builds: the app's SQLite storage in the browser (sql.js), so sync works there too. */
+  readonly VITE_WEB_SQLITE?: string;
 }
 
 /** Injected by vite.config.ts (scripts/build-info.mjs). */
@@ -26,3 +32,11 @@ declare const __BUILD_INFO__: {
   fingerprint: string;
   kind: 'dev-server' | 'build';
 };
+
+// sql.js has no bundled types; only the few calls of src/storage/webSqlite.ts are used.
+declare module 'sql.js' {
+  type Statement = { bind(v: unknown): void; step(): boolean; getAsObject(): Record<string, unknown>; free(): void };
+  type Database = { exec(sql: string): unknown; run(sql: string, values?: unknown): void; prepare(sql: string): Statement; export(): Uint8Array };
+  const initSqlJs: (o: { locateFile: (f: string) => string }) => Promise<{ Database: new (data?: Uint8Array) => Database }>;
+  export default initSqlJs;
+}

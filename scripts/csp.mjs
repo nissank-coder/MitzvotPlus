@@ -29,9 +29,11 @@ export function backendOrigin(env) {
 export function cspFor(env) {
   const origin = backendOrigin(env);
   const connect = origin ? [...PRODUCTION_CONNECT, origin] : PRODUCTION_CONNECT;
+  // Web staging builds with the browser SQLite (sql.js) need WebAssembly; nothing else ever does.
+  const wasm = origin && env.VITE_WEB_SQLITE === 'true' ? " 'wasm-unsafe-eval'" : '';
   return [
     "default-src 'self'",
-    "script-src 'self'",
+    `script-src 'self'${wasm}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self' data:",
