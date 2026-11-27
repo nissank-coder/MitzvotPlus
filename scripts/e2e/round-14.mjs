@@ -164,7 +164,7 @@ try {
     await p.locator('[role=alert]').waitFor({ timeout: 20000 });
     check((await p.locator('text=ספריא עמוסה כרגע').count()) === 1, 'L: a failure says why (429: Sefaria is busy)');
     await p.locator('summary', { hasText: 'פרטים טכניים' }).click();
-    const tech = await p.locator('details p').innerText();
+    const tech = await p.locator('details p').first().innerText();
     check(/rate-limited · Kitzur_Shulchan_Arukh\.10 · HTTP 429 · \d+ ms · attempts 3/.test(tech), 'L: the technical reason is on the screen (kind, ref, status, time, attempts)', tech);
     check((await p.locator('[role=dialog] button', { hasText: 'לנסות שוב' }).count()) === 1 && (await p.locator('[role=dialog] a', { hasText: 'פתיחה בספריא' }).count()) === 1, 'L: retry and the link to the source are offered');
     await ctx.close();
